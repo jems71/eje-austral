@@ -1,0 +1,9 @@
+{
+  "name": "eje-austral",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Directorio de la Red de Titulados Miraflores - UACh",
+  "engines": {
+    "node": ">=18"
+  }
+}
