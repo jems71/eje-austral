@@ -4,80 +4,204 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Eje Austral · Directorio UACh</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    :root { --uach-blue: #003366; }
-    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+    :root { --uach-blue: #003366; --uach-gold: #D4AF37; }
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
     .bg-uach { background-color: var(--uach-blue); }
-    .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .card-shadow { box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1); }
+    .btn-uach { background-color: var(--uach-blue); transition: all 0.2s; }
+    .btn-uach:active { transform: scale(0.95); }
   </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
-  <header class="bg-uach text-white p-8 shadow-xl rounded-b-[2.5rem] mb-6">
+  <header class="bg-uach text-white p-8 shadow-2xl rounded-b-[3rem] mb-8">
     <div class="max-w-md mx-auto text-center">
-      <h1 class="text-2xl font-black tracking-tight uppercase">EJE AUSTRAL</h1>
-      <p class="text-[10px] opacity-70 mt-1 tracking-widest font-bold">RED TÉCNICA · TITULADOS UACh</p>
+      <h1 class="text-3xl font-extrabold tracking-tight">EJE AUSTRAL</h1>
+      <p class="text-xs opacity-80 mt-2 uppercase tracking-[0.2em] font-semibold">Red de Titulados Miraflores · UACh</p>
     </div>
   </header>
 
+  <div class="max-w-md mx-auto px-4 mb-8">
+    <div class="relative group">
+      <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Buscar especialidad o nombre..."
+             class="w-full p-4 pl-12 rounded-2xl border-none shadow-lg focus:ring-2 focus:ring-blue-600 text-sm transition-all">
+      <span class="absolute left-4 top-4 text-gray-400">🔍</span>
+    </div>
+  </div>
+
   <main id="directory" class="max-w-md mx-auto px-4 space-y-4">
-    <div class="text-center py-20 text-slate-400">
-      <div class="animate-spin h-8 w-8 border-4 border-blue-900 border-t-transparent rounded-full mx-auto mb-4"></div>
-      <p class="text-sm">Sincronizando datos de obra...</p>
+    <div class="flex flex-col items-center justify-center py-20 text-gray-400">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-900 mb-4"></div>
+      <p class="text-sm font-medium">Conectando con base de datos técnica...</p>
     </div>
   </main>
 
-<script src="data.js?v=1.1"></script>
+  <button onclick="openModal()" class="fixed bottom-8 right-8 bg-orange-500 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-4xl font-light hover:rotate-90 transition-all z-40">
+    +
+  </button>
+
+  <div id="modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-uach">Nuevo Aporte</h2>
+        <button onclick="closeModal()" class="text-gray-300 text-3xl hover:text-gray-500 transition-colors">&times;</button>
+      </div>
+
+      <form id="addForm" class="space-y-5">
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Nombre Proveedor / Empresa</label>
+          <input type="text" id="formNombre" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100" required>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Partida o Especialidad</label>
+          <select id="formEsp" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 appearance-none">
+            <option value="Obra Gruesa">Obra Gruesa</option>
+            <option value="Terminaciones">Terminaciones</option>
+            <option value="Instalaciones">Instalaciones</option>
+            <option value="Servicios Técnicos">Servicios Técnicos</option>
+            <option value="Colegas">Colegas</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Teléfono (WhatsApp)</label>
+          <input type="tel" id="formTel" placeholder="+569" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100">
+        </div>
+
+        <div>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Reseña Técnica / Comentario</label>
+          <textarea id="formCom" rows="3" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100"></textarea>
+        </div>
+
+        <div class="bg-blue-50/50 p-5 rounded-[1.5rem] border border-blue-100 space-y-4">
+          <input type="text" id="formColega" placeholder="Tu Nombre (Firma UACh)" class="w-full p-3 bg-white border border-blue-100 rounded-xl text-sm placeholder:text-blue-200" required>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full py-4 btn-uach text-white rounded-2xl font-bold shadow-lg shadow-blue-900/30">
+          Publicar en la Red
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
 
   <script>
-    async function loadData() {
-      const container = document.getElementById('directory');
-      try {
-        const records = await obtenerProveedores();
-        // Usar registros de Airtable o los locales definidos en data.js
-        const finalData = (records && records.length > 0) ? records : (window.DATOS_LOCALES || []);
-        
-        if (finalData.length === 0) {
-          container.innerHTML = '<p class="text-center py-10">No hay registros cargados.</p>';
-          return;
-        }
+    let dataCache = [];
 
-        container.innerHTML = finalData.map(r => {
-          // LA MAGIA: Esto detecta automáticamente dónde están los datos
-          const d = r.fields ? r.fields : r;
-          
-          return `
-            <div class="bg-white p-5 rounded-3xl card-shadow border border-white">
-              <div class="flex justify-between items-start">
-                <div>
-                  <span class="text-[9px] font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded-md uppercase tracking-tighter">
-                    ${d.Especialidad || 'General'}
-                  </span>
-                  <h3 class="text-lg font-bold text-slate-800 mt-1">${d.Nombre || 'Sin Nombre'}</h3>
-                </div>
-                ${d.Telefono ? `
-                  <a href="https://wa.me/${String(d.Telefono).replace(/\D/g,'')}" class="bg-green-500 text-white p-3 rounded-2xl shadow-lg shadow-green-100">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.675 1.439 5.662 1.439h.056c6.552 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                  </a>
-                ` : ''}
-              </div>
-              <p class="text-slate-600 text-xs mt-3 leading-relaxed">
-                ${d.Comentario || 'Sin reseña técnica disponible.'}
-              </p>
-              <div class="mt-4 pt-3 border-t border-slate-50 flex justify-between items-center text-[9px] text-slate-400 font-bold uppercase tracking-tighter">
-                <span>Aporte de: <span class="text-blue-900">${d.Colega || 'Red Inicial'}</span></span>
-              </div>
-            </div>
-          `;
-        }).join('');
+    // CARGAR DATOS DESDE DATA.JS
+    async function loadData() {
+      try {
+        // Llama a la función que definimos en tu data.js
+        const records = await obtenerProveedores(); 
+        dataCache = records || [];
+        render(dataCache);
       } catch (e) {
-        container.innerHTML = '<p class="text-center py-10 text-red-500 font-bold">Error de conexión.</p>';
+        console.error("Error al cargar:", e);
+        document.getElementById('directory').innerHTML =
+          `<p class="text-center text-red-400 p-10">Error de conexión con la base de datos.</p>`;
       }
     }
+
+    function render(records) {
+      const container = document.getElementById('directory');
+      if (!records || records.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-400 py-20">No se encontraron registros.</p>`;
+        return;
+      }
+
+      container.innerHTML = records.map(r => {
+        const f = r.fields || {};
+        const colorClase = f.Especialidad === "Colegas"
+          ? "text-blue-600 bg-blue-50"
+          : "text-slate-500 bg-slate-100";
+
+        // Ajustamos los nombres de los campos para que coincidan con Airtable
+        const nombre = f.Nombre || 'Sin nombre';
+        const especialidad = f.Especialidad || 'GENERAL';
+        const telefono = f.Telefono || f.telefono || ''; 
+        const comentario = f.Comentario || 'Proveedor validado.';
+        const colega = f.Colega || 'Red Inicial';
+
+        return `
+          <div class="bg-white p-6 rounded-[2rem] card-shadow border border-white/50 transition-all active:scale-[0.98]">
+            <div class="flex justify-between items-start mb-4">
+              <div class="flex-1">
+                <span class="px-3 py-1 ${colorClase} text-[10px] font-bold rounded-lg uppercase tracking-widest">${escapeHtml(especialidad)}</span>
+                <h3 class="text-xl font-bold text-slate-800 mt-2 leading-tight">${escapeHtml(nombre)}</h3>
+              </div>
+              ${telefono ? `
+              <a href="https://wa.me/${String(telefono).replace(/\D/g,'')}" target="_blank" class="bg-green-500 text-white p-4 rounded-2xl shadow-lg shadow-green-100">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+              </a>` : ''}
+            </div>
+            <p class="text-slate-600 text-sm leading-relaxed mb-4">${escapeHtml(comentario)}</p>
+            <div class="pt-4 border-t border-gray-50 flex items-center justify-between">
+              <span class="text-[10px] text-gray-400 uppercase font-medium tracking-tighter">Aporte de: <span class="text-blue-800 font-bold">${escapeHtml(colega)}</span></span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function filterList() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      render(dataCache.filter(r =>
+        ((r.fields && r.fields.Nombre) || "").toLowerCase().includes(q) ||
+        ((r.fields && r.fields.Especialidad) || "").toLowerCase().includes(q)
+      ));
+    }
+
+    function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+    function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+    // FORMULARIO DE ENVÍO DIRECTO A AIRTABLE
+    document.getElementById('addForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = "Publicando...";
+
+      const nuevoRegistro = {
+        Nombre: document.getElementById('formNombre').value,
+        Especialidad: document.getElementById('formEsp').value,
+        Telefono: document.getElementById('formTel').value,
+        Comentario: document.getElementById('formCom').value,
+        Colega: document.getElementById('formColega').value
+      };
+
+      try {
+        // Esta función debe estar definida en tu data.js
+        const exito = await agregarProveedor(nuevoRegistro);
+        if (exito) {
+          closeModal();
+          e.target.reset();
+          loadData(); // Recarga la lista
+        } else {
+          alert("Error al guardar. Revisa la conexión.");
+        }
+      } catch (err) {
+        alert("Error de red al intentar publicar.");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Publicar en la Red";
+      }
+    };
+
+    // Iniciar carga al abrir la página
     loadData();
   </script>
-
 </body>
 </html>
