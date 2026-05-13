@@ -7,201 +7,975 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    :root { --uach-blue: #003366; --uach-gold: #D4AF37; }
-    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0; padding: 0; }
-    .bg-uach { background-color: var(--uach-blue); }
-    .card-shadow { box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.1); }
-    .btn-uach { background-color: var(--uach-blue); transition: all 0.2s; }
-    .btn-uach:active { transform: scale(0.95); }
+    :root {
+      --uach-blue: #0a2447;
+      --uach-blue-dark: #061735;
+      --uach-blue-light: #1a3a6b;
+      --uach-gold: #c9a961;
+      --uach-gold-light: #e0c789;
+      --bg: #f5f3ee;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-muted: #6b6b6b;
+      --border: #e8e4dc;
+      --green: #25d366;
+      --amber: #d97706;
+      --red: #b91c1c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 80px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .serif { font-family: 'Fraunces', serif; }
+
+    /* === ACCESS BAR === */
+    .access-bar {
+      background: var(--uach-blue-dark);
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .access-bar .left { display: flex; align-items: center; gap: 10px; }
+    .access-bar .lock { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.5px; }
+    .access-bar .group-badge {
+      background: var(--uach-gold);
+      color: var(--uach-blue-dark);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* === HERO === */
+    .hero {
+      background: linear-gradient(135deg, var(--uach-blue) 0%, var(--uach-blue-light) 100%);
+      color: #fff;
+      padding: 30px 20px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(201,169,97,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    .uach-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .uach-logo {
+      width: 44px; height: 44px;
+      border: 2px solid var(--uach-gold);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-weight: 700;
+      font-size: 24px;
+      color: var(--uach-gold);
+    }
+    .uach-header h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    .uach-header .subtitle {
+      font-size: 10px;
+      letter-spacing: 2px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .user-chip {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .user-chip .avatar {
+      width: 32px; height: 32px;
+      background: var(--uach-gold);
+      color: var(--uach-blue-dark);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: end;
+    }
+    @media (min-width: 768px) {
+      .hero-content { grid-template-columns: 1.4fr 1fr; }
+    }
+
+    .hero-text .version {
+      font-size: 11px;
+      letter-spacing: 2px;
+      opacity: 0.6;
+      margin-bottom: 12px;
+    }
+    .hero-text h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 32px;
+      font-weight: 500;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+    .hero-text h2 em { font-style: italic; color: var(--uach-gold-light); font-weight: 400; }
+    .hero-text p {
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0.85;
+      max-width: 480px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 18px;
+      border-radius: 4px;
+    }
+    .stat-box .num {
+      font-family: 'Fraunces', serif;
+      font-size: 36px;
+      font-weight: 600;
+      line-height: 1;
+      color: #fff;
+    }
+    .stat-box .label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      opacity: 0.7;
+      margin-top: 6px;
+      text-transform: uppercase;
+    }
+
+    /* === TABS === */
+    .tabs-wrap {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+    .tabs {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      padding: 18px 4px;
+      margin-right: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--uach-blue);
+      border-bottom-color: var(--uach-blue);
+      font-weight: 600;
+    }
+    .tab .count {
+      display: inline-block;
+      background: var(--border);
+      color: var(--text-muted);
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-size: 11px;
+      margin-left: 6px;
+      font-weight: 600;
+    }
+    .tab.active .count {
+      background: var(--uach-blue);
+      color: #fff;
+    }
+
+    /* === SEARCH + FILTERS === */
+    .toolbar {
+      max-width: 1200px;
+      margin: 24px auto 16px;
+      padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 220px;
+      padding: 12px 16px 12px 42px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--card) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2'><circle cx='11' cy='11' r='8'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat 14px center;
+      background-size: 16px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+    }
+    .search-input:focus { outline: none; border-color: var(--uach-blue); }
+
+    .chip {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--text);
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .chip:hover { border-color: var(--uach-blue); }
+    .chip.active {
+      background: var(--uach-blue);
+      color: #fff;
+      border-color: var(--uach-blue);
+    }
+
+    .add-btn {
+      padding: 10px 18px;
+      background: var(--uach-blue);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .add-btn:hover { background: var(--uach-blue-dark); }
+
+    /* === GRID === */
+    .grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 8px 20px 40px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } }
+    @media (min-width: 1080px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+      position: relative;
+      transition: all 0.2s;
+    }
+    .card:hover { border-color: var(--uach-blue); box-shadow: 0 8px 24px -10px rgba(10,36,71,0.15); }
+
+    .card-id {
+      font-family: 'Fraunces', serif;
+      font-size: 13px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+    .card-tag {
+      position: absolute;
+      top: 20px; right: 20px;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      padding: 4px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tag-sub { background: #e6efff; color: #1d4d99; }
+    .tag-mano { background: #fff4d6; color: #8c6900; }
+
+    .card h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 19px;
+      font-weight: 600;
+      margin: 6px 0 4px;
+      letter-spacing: -0.2px;
+      line-height: 1.25;
+    }
+    .card .rubro {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .info-row {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 8px;
+      font-size: 13px;
+      padding: 6px 0;
+      line-height: 1.5;
+    }
+    .info-row .label {
+      color: var(--text-muted);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding-top: 2px;
+      font-weight: 500;
+    }
+    .info-row .value { color: var(--text); }
+
+    .rating-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+    .stars { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; }
+    .stars .star { color: var(--uach-gold); font-size: 14px; }
+    .recom {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .recom .ini {
+      width: 22px; height: 22px;
+      background: var(--uach-blue);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      color: var(--text-muted);
+    }
+    .icon-btn:hover { background: var(--bg); color: var(--uach-blue); border-color: var(--uach-blue); }
+    .icon-btn.whatsapp { background: var(--green); color: #fff; border-color: var(--green); }
+    .icon-btn.whatsapp:hover { background: #1eb955; }
+    .icon-btn svg { width: 16px; height: 16px; }
+
+    /* === SOLICITUDES === */
+    .request-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--uach-blue);
+      border-radius: 6px;
+      padding: 20px 22px;
+      margin-bottom: 12px;
+    }
+    .request-card.resuelta { border-left-color: var(--green); opacity: 0.85; }
+    .request-card.informativa { border-left-color: var(--uach-gold); }
+    .request-head {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 12px; font-size: 13px;
+    }
+    .request-head .ini {
+      width: 28px; height: 28px;
+      background: var(--uach-blue);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700;
+    }
+    .request-head .who { font-weight: 600; }
+    .request-head .when { color: var(--text-muted); font-size: 12px; }
+    .req-badge {
+      margin-left: auto;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+    .req-badge.abierta { background: #e6efff; color: #1d4d99; }
+    .req-badge.resuelta { background: #d6f5e3; color: #0e6e3b; }
+    .req-badge.informativa { background: #fff4d6; color: #8c6900; }
+    .request-card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .request-card .meta { font-size: 12px; color: var(--text-muted); }
+
+    /* === HISTORIAL === */
+    .timeline {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+    .timeline-item .date {
+      color: var(--text-muted);
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      padding-top: 2px;
+    }
+    .timeline-item .who { font-weight: 600; }
+    .timeline-item .accion { color: var(--uach-blue); font-weight: 500; }
+    .timeline-item .detalle { color: var(--text-muted); font-size: 13px; margin-top: 2px; }
+
+    /* === ALERTAS === */
+    .alert-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: 6px;
+      padding: 22px;
+      margin-bottom: 14px;
+    }
+    .alert-card.alta { border-left-color: var(--red); background: #fef7f7; }
+    .alert-card.media { border-left-color: var(--amber); }
+    .alert-card.baja { border-left-color: var(--uach-gold); }
+    .alert-head {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .alert-head h4 {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .alert-sev {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .alert-sev.alta { background: #fee; color: var(--red); }
+    .alert-sev.media { background: #fff4d6; color: var(--amber); }
+    .alert-sev.baja { background: #fffaeb; color: #8c6900; }
+    .alert-card .motivo { font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--text); }
+    .alert-card .detalle { font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
+    .alert-card .footer {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: var(--text-muted);
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* === MODAL === */
+    .modal-bg {
+      position: fixed; inset: 0;
+      background: rgba(10,36,71,0.6);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+    .modal {
+      background: var(--card);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+    }
+    .modal h3 {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      margin-bottom: 4px;
+      color: var(--uach-blue);
+    }
+    .modal .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .modal label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      margin-top: 14px;
+      font-weight: 600;
+    }
+    .modal input, .modal select, .modal textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+    }
+    .modal input:focus, .modal select:focus, .modal textarea:focus {
+      outline: none;
+      border-color: var(--uach-blue);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .btn-primary { background: var(--uach-blue); color: #fff; }
+    .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border) !important; }
   </style>
 </head>
-<body class="pb-24">
+<body>
 
-  <header class="bg-uach text-white p-8 shadow-2xl rounded-b-[3rem] mb-8">
-    <div class="max-w-md mx-auto text-center">
-      <h1 class="text-3xl font-extrabold tracking-tight">EJE AUSTRAL</h1>
-      <p class="text-xs opacity-80 mt-2 uppercase tracking-[0.2em] font-semibold">Red de Titulados Miraflores · UACh</p>
+  <!-- Access Bar -->
+  <div class="access-bar">
+    <div class="left">
+      <span class="lock">🔒 ACCESO RESTRINGIDO</span>
+      <span>Solo titulados de Construcción Civil e Ingeniería en Construcción · UACh</span>
     </div>
-  </header>
+    <span class="group-badge">GRUPO WHATSAPP · 28 MIEMBROS</span>
+  </div>
 
-  <div class="max-w-md mx-auto px-4 mb-8">
-    <div class="relative group">
-      <input type="text" id="searchInput" onkeyup="filterList()" placeholder="Buscar especialidad o nombre..."
-             class="w-full p-4 pl-12 rounded-2xl border-none shadow-lg focus:ring-2 focus:ring-blue-600 text-sm transition-all">
-      <span class="absolute left-4 top-4 text-gray-400">🔍</span>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <div class="uach-header">
+        <div class="uach-logo">U</div>
+        <div>
+          <h1>Universidad Austral de Chile</h1>
+          <div class="subtitle">Titulados Construcción Civil · Ingeniería en Construcción</div>
+        </div>
+        <div class="user-chip">
+          <span>Conectado como Tú</span>
+          <div class="avatar">TU</div>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-text">
+          <div class="version">DIR-UACH/CC · v1.4 · 2026</div>
+          <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
+          <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="num" id="stat-contactos">0</div><div class="label">Contactos</div></div>
+          <div class="stat-box"><div class="num" id="stat-subs">0</div><div class="label">Subcontratos</div></div>
+          <div class="stat-box"><div class="num" id="stat-mano">0</div><div class="label">Mano de obra</div></div>
+          <div class="stat-box"><div class="num" id="stat-solicitudes">0</div><div class="label">Solicitudes abiertas</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <div class="tab active" data-tab="directorio">Directorio <span class="count" id="cnt-directorio">0</span></div>
+      <div class="tab" data-tab="solicitudes">Solicitudes <span class="count" id="cnt-solicitudes">0</span></div>
+      <div class="tab" data-tab="historial">Historial <span class="count" id="cnt-historial">0</span></div>
+      <div class="tab" data-tab="alertas">Alertas <span class="count" id="cnt-alertas">0</span></div>
     </div>
   </div>
 
-  <main id="directory" class="max-w-md mx-auto px-4 space-y-4">
-    <div class="flex flex-col items-center justify-center py-20 text-gray-400">
-      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-900 mb-4"></div>
-      <p class="text-sm font-medium">Conectando con base de datos técnica...</p>
+  <!-- DIRECTORIO -->
+  <section id="view-directorio">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Buscar por rubro, nombre, ciudad o quién lo recomendó..." class="search-input" />
+      <button class="chip filter-tipo active" data-tipo="todos">Todos</button>
+      <button class="chip filter-tipo" data-tipo="Subcontrato">Subcontrato</button>
+      <button class="chip filter-tipo" data-tipo="Mano de obra">Mano de obra</button>
+      <button class="chip filter-region active" data-region="todas">Todas</button>
+      <button class="chip filter-region" data-region="Los Ríos">Los Ríos</button>
+      <button class="chip filter-region" data-region="Los Lagos">Los Lagos</button>
+      <button class="add-btn" onclick="openModal()">+ Agregar contacto</button>
     </div>
-  </main>
+    <div class="grid" id="grid-contactos"></div>
+  </section>
 
-  <button onclick="openModal()" class="fixed bottom-8 right-8 bg-orange-500 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-4xl font-light hover:rotate-90 transition-all z-40">
-    +
-  </button>
+  <!-- SOLICITUDES -->
+  <section id="view-solicitudes" class="hidden">
+    <div class="container" style="padding: 24px 20px;">
+      <div id="list-solicitudes"></div>
+    </div>
+  </section>
 
-  <div id="modal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
-    <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-uach">Nuevo Aporte</h2>
-        <button onclick="closeModal()" class="text-gray-300 text-3xl hover:text-gray-500 transition-colors">&times;</button>
+  <!-- HISTORIAL -->
+  <section id="view-historial" class="hidden">
+    <div class="timeline" style="padding-top: 24px;" id="list-historial"></div>
+  </section>
+
+  <!-- ALERTAS -->
+  <section id="view-alertas" class="hidden">
+    <div class="container" style="padding: 24px 20px; max-width: 800px;">
+      <div id="list-alertas"></div>
+    </div>
+  </section>
+
+  <!-- Modal -->
+  <div id="modal" class="modal-bg hidden">
+    <div class="modal">
+      <h3 class="serif">Nuevo aporte</h3>
+      <p class="sub">Súmalo al directorio para el resto del grupo.</p>
+      <label>Nombre / Empresa</label>
+      <input type="text" id="f-nombre" required>
+      <label>Tipo</label>
+      <select id="f-tipo">
+        <option>Subcontrato</option>
+        <option>Mano de obra</option>
+      </select>
+      <label>Rubro</label>
+      <input type="text" id="f-rubro" placeholder="Ej: Movimiento de tierras">
+      <label>Teléfono / WhatsApp</label>
+      <input type="tel" id="f-fono" placeholder="+56 9 ...">
+      <label>Ciudad</label>
+      <input type="text" id="f-ciudad">
+      <label>Región</label>
+      <select id="f-region">
+        <option>Los Ríos</option>
+        <option>Los Lagos</option>
+      </select>
+      <label>Notas / Reseña</label>
+      <textarea id="f-notas" rows="3"></textarea>
+      <label>Tu nombre (quién recomienda)</label>
+      <input type="text" id="f-recom">
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button class="btn-primary" onclick="addContact()">Publicar</button>
       </div>
-
-      <form id="addForm" class="space-y-5">
-        <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Nombre Proveedor / Empresa</label>
-          <input type="text" id="formNombre" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100" required>
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Partida o Especialidad</label>
-          <select id="formEsp" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 appearance-none">
-            <option value="Obra Gruesa">Obra Gruesa</option>
-            <option value="Terminaciones">Terminaciones</option>
-            <option value="Instalaciones">Instalaciones</option>
-            <option value="Servicios Técnicos">Servicios Técnicos</option>
-            <option value="Colegas">Colegas</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Teléfono (WhatsApp)</label>
-          <input type="tel" id="formTel" placeholder="+569" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100">
-        </div>
-
-        <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Reseña Técnica / Comentario</label>
-          <textarea id="formCom" rows="3" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100"></textarea>
-        </div>
-
-        <div class="bg-blue-50/50 p-5 rounded-[1.5rem] border border-blue-100 space-y-4">
-          <input type="text" id="formColega" placeholder="Tu Nombre (Firma UACh)" class="w-full p-3 bg-white border border-blue-100 rounded-xl text-sm placeholder:text-blue-200" required>
-        </div>
-
-        <button type="submit" id="submitBtn" class="w-full py-4 btn-uach text-white rounded-2xl font-bold shadow-lg shadow-blue-900/30">
-          Publicar en la Red
-        </button>
-      </form>
     </div>
   </div>
 
   <script src="data.js"></script>
-
   <script>
-    let dataCache = [];
+    const D = window.APP_DATA || {};
+    let state = {
+      tab: 'directorio',
+      tipo: 'todos',
+      region: 'todas',
+      q: ''
+    };
 
-    // CARGAR DATOS DESDE DATA.JS
-    async function loadData() {
-      try {
-        // Llama a la función que definimos en tu data.js
-        const records = await obtenerProveedores(); 
-        dataCache = records || [];
-        render(dataCache);
-      } catch (e) {
-        console.error("Error al cargar:", e);
-        document.getElementById('directory').innerHTML =
-          `<p class="text-center text-red-400 p-10">Error de conexión con la base de datos.</p>`;
-      }
+    // ---------- HELPERS ----------
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+    function stars(n) {
+      const full = Math.round(n);
+      return '★'.repeat(full) + '☆'.repeat(5-full);
+    }
+    function iniciales(nombre) {
+      return nombre.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     }
 
-    function render(records) {
-      const container = document.getElementById('directory');
-      if (!records || records.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-400 py-20">No se encontraron registros.</p>`;
+    // ---------- STATS ----------
+    function paintStats() {
+      const contactos = D.contactos || [];
+      const subs = contactos.filter(c => c.tipo === 'Subcontrato').length;
+      const mano = contactos.filter(c => c.tipo === 'Mano de obra').length;
+      const solAbiertas = (D.solicitudes || []).filter(s => s.estado === 'abierta').length;
+
+      document.getElementById('stat-contactos').textContent = contactos.length;
+      document.getElementById('stat-subs').textContent = subs;
+      document.getElementById('stat-mano').textContent = mano;
+      document.getElementById('stat-solicitudes').textContent = solAbiertas;
+
+      document.getElementById('cnt-directorio').textContent = contactos.length;
+      document.getElementById('cnt-solicitudes').textContent = (D.solicitudes || []).length;
+      document.getElementById('cnt-historial').textContent = (D.historial || []).length;
+      document.getElementById('cnt-alertas').textContent = (D.alertas || []).length;
+    }
+
+    // ---------- DIRECTORIO ----------
+    function renderContactos() {
+      const grid = document.getElementById('grid-contactos');
+      const data = (D.contactos || []).filter(c => {
+        if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
+        if (state.region !== 'todas' && c.region !== state.region) return false;
+        if (state.q) {
+          const q = state.q.toLowerCase();
+          const hay = [c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo]
+            .join(' ').toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if (data.length === 0) {
+        grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se encontraron contactos con esos filtros.</div>';
         return;
       }
 
-      container.innerHTML = records.map(r => {
-        const f = r.fields || {};
-        const colorClase = f.Especialidad === "Colegas"
-          ? "text-blue-600 bg-blue-50"
-          : "text-slate-500 bg-slate-100";
-
-        // Ajustamos los nombres de los campos para que coincidan con Airtable
-        const nombre = f.Nombre || 'Sin nombre';
-        const especialidad = f.Especialidad || 'GENERAL';
-        const telefono = f.Telefono || f.telefono || ''; 
-        const comentario = f.Comentario || 'Proveedor validado.';
-        const colega = f.Colega || 'Red Inicial';
-
+      grid.innerHTML = data.map(c => {
+        const tagClass = c.tipo === 'Mano de obra' ? 'tag-mano' : 'tag-sub';
+        const numeroId = c.id.toUpperCase();
+        const ini = iniciales(c.recomendadoPor || '');
+        const wa = (c.whatsapp || c.fono || '').replace(/\D/g,'');
         return `
-          <div class="bg-white p-6 rounded-[2rem] card-shadow border border-white/50 transition-all active:scale-[0.98]">
-            <div class="flex justify-between items-start mb-4">
-              <div class="flex-1">
-                <span class="px-3 py-1 ${colorClase} text-[10px] font-bold rounded-lg uppercase tracking-widest">${escapeHtml(especialidad)}</span>
-                <h3 class="text-xl font-bold text-slate-800 mt-2 leading-tight">${escapeHtml(nombre)}</h3>
-              </div>
-              ${telefono ? `
-              <a href="https://wa.me/${String(telefono).replace(/\D/g,'')}" target="_blank" class="bg-green-500 text-white p-4 rounded-2xl shadow-lg shadow-green-100">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+          <div class="card">
+            <span class="card-tag ${tagClass}">${esc(c.tipo)}</span>
+            <div class="card-id">${esc(numeroId)}</div>
+            <h3 class="serif">${esc(c.nombre)}</h3>
+            <div class="rubro">${esc(c.rubro)}</div>
+
+            <div class="info-row"><div class="label">Contacto</div><div class="value">${esc(c.contacto || '—')}</div></div>
+            <div class="info-row"><div class="label">Fono</div><div class="value">${esc(c.fono || '—')}</div></div>
+            ${c.email ? `<div class="info-row"><div class="label">Email</div><div class="value">${esc(c.email)}</div></div>` : ''}
+            <div class="info-row"><div class="label">Zona</div><div class="value">${esc(c.ciudad || '')}, ${esc(c.region || '')}</div></div>
+            ${c.ultimoProyecto ? `<div class="info-row"><div class="label">Último</div><div class="value">${esc(c.ultimoProyecto)}</div></div>` : ''}
+
+            <div class="rating-bar">
+              <div class="stars"><span class="star">${stars(c.rating || 0)}</span> ${(c.rating || 0).toFixed(1)}</div>
+              <div class="recom"><div class="ini">${esc(ini)}</div> ${esc(c.recomendadoPor || '')}</div>
+            </div>
+
+            <div class="actions">
+              ${wa ? `<a class="icon-btn whatsapp" href="https://wa.me/${wa}" target="_blank" title="WhatsApp">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3 1.2 4.6 1.2 5.5 0 10-4.5 10-10s-4.4-9.9-9.8-9.9zm0 18c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3c-.8-1.2-1.2-2.7-1.2-4.2 0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 7.9-8 7.9z"/></svg>
               </a>` : ''}
+              <a class="icon-btn" href="tel:${esc(c.fono || '').replace(/\s/g,'')}" title="Llamar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </a>
+              ${c.email ? `<a class="icon-btn" href="mailto:${esc(c.email)}" title="Email">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </a>` : ''}
+              <button class="icon-btn" onclick="copy('${esc(c.fono || '')}')" title="Copiar fono">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
             </div>
-            <p class="text-slate-600 text-sm leading-relaxed mb-4">${escapeHtml(comentario)}</p>
-            <div class="pt-4 border-t border-gray-50 flex items-center justify-between">
-              <span class="text-[10px] text-gray-400 uppercase font-medium tracking-tighter">Aporte de: <span class="text-blue-800 font-bold">${escapeHtml(colega)}</span></span>
-            </div>
+
+            ${c.notas ? `<div style="margin-top:14px; font-size:12px; color:var(--text-muted); line-height:1.55; padding-top:12px; border-top:1px solid var(--border); font-style: italic;">"${esc(c.notas)}"</div>` : ''}
           </div>
         `;
       }).join('');
     }
 
-    function escapeHtml(s) {
-      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    // ---------- SOLICITUDES ----------
+    function renderSolicitudes() {
+      const list = document.getElementById('list-solicitudes');
+      const data = D.solicitudes || [];
+      if (data.length === 0) { list.innerHTML = '<div class="empty">Sin solicitudes.</div>'; return; }
+      list.innerHTML = data.map(s => `
+        <div class="request-card ${esc(s.estado)}">
+          <div class="request-head">
+            <div class="ini">${esc(s.iniciales)}</div>
+            <div>
+              <div class="who">${esc(s.autor)}</div>
+              <div class="when">${esc(s.tiempo)} · ${esc(s.region || '')}</div>
+            </div>
+            <span class="req-badge ${esc(s.estado)}">${esc(s.estado)}</span>
+          </div>
+          <p>${esc(s.texto)}</p>
+          <div class="meta">💬 ${esc(s.respuestas)} respuestas · <strong>${esc(s.etiqueta)}</strong></div>
+        </div>
+      `).join('');
     }
 
-    function filterList() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      render(dataCache.filter(r =>
-        ((r.fields && r.fields.Nombre) || "").toLowerCase().includes(q) ||
-        ((r.fields && r.fields.Especialidad) || "").toLowerCase().includes(q)
-      ));
+    // ---------- HISTORIAL ----------
+    function renderHistorial() {
+      const list = document.getElementById('list-historial');
+      const data = D.historial || [];
+      if (data.length === 0) { list.innerHTML = '<div class="empty">Sin movimientos.</div>'; return; }
+      list.innerHTML = data.map(h => `
+        <div class="timeline-item">
+          <div class="date">${esc(h.fecha)}</div>
+          <div>
+            <span class="who">${esc(h.quien)}</span> <span class="accion">${esc(h.accion)}</span>
+            <div class="detalle">${esc(h.detalle)}</div>
+          </div>
+        </div>
+      `).join('');
     }
 
+    // ---------- ALERTAS ----------
+    function renderAlertas() {
+      const list = document.getElementById('list-alertas');
+      const data = D.alertas || [];
+      if (data.length === 0) { list.innerHTML = '<div class="empty">Sin alertas. ¡Mejor!</div>'; return; }
+      list.innerHTML = data.map(a => `
+        <div class="alert-card ${esc(a.severidad)}">
+          <div class="alert-head">
+            <h4>${esc(a.proveedor)}</h4>
+            <span class="alert-sev ${esc(a.severidad)}">Severidad ${esc(a.severidad)}</span>
+          </div>
+          <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+            ${esc(a.rubro)} · ${esc(a.ciudad)}, ${esc(a.region)}
+          </div>
+          <div class="motivo">⚠️ ${esc(a.motivo)}</div>
+          <div class="detalle">${esc(a.detalle)}</div>
+          <div class="footer">
+            <span>Obra: ${esc(a.obra)}</span>
+            <span>Reportado por <strong>${esc(a.reportadoPor)}</strong> · ${esc(a.fecha)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ---------- TAB SWITCHING ----------
+    function switchTab(tab) {
+      state.tab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+      ['directorio','solicitudes','historial','alertas'].forEach(name => {
+        document.getElementById('view-' + name).classList.toggle('hidden', name !== tab);
+      });
+      if (tab === 'directorio') renderContactos();
+      if (tab === 'solicitudes') renderSolicitudes();
+      if (tab === 'historial') renderHistorial();
+      if (tab === 'alertas') renderAlertas();
+    }
+
+    // ---------- EVENTS ----------
+    document.querySelectorAll('.tab').forEach(t => {
+      t.addEventListener('click', () => switchTab(t.dataset.tab));
+    });
+    document.querySelectorAll('.filter-tipo').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tipo').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.tipo = btn.dataset.tipo;
+        renderContactos();
+      });
+    });
+    document.querySelectorAll('.filter-region').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-region').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.region = btn.dataset.region;
+        renderContactos();
+      });
+    });
+    document.getElementById('search').addEventListener('input', e => {
+      state.q = e.target.value;
+      renderContactos();
+    });
+
+    // ---------- MODAL ----------
     function openModal() { document.getElementById('modal').classList.remove('hidden'); }
     function closeModal() { document.getElementById('modal').classList.add('hidden'); }
-
-    // FORMULARIO DE ENVÍO DIRECTO A AIRTABLE
-    document.getElementById('addForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-      btn.innerText = "Publicando...";
-
-      const nuevoRegistro = {
-        Nombre: document.getElementById('formNombre').value,
-        Especialidad: document.getElementById('formEsp').value,
-        Telefono: document.getElementById('formTel').value,
-        Comentario: document.getElementById('formCom').value,
-        Colega: document.getElementById('formColega').value
+    function addContact() {
+      const nuevo = {
+        id: 'c-' + String((D.contactos.length + 1)).padStart(3,'0'),
+        tipo: document.getElementById('f-tipo').value,
+        rubro: document.getElementById('f-rubro').value,
+        nombre: document.getElementById('f-nombre').value,
+        contacto: document.getElementById('f-nombre').value,
+        fono: document.getElementById('f-fono').value,
+        whatsapp: document.getElementById('f-fono').value.replace(/\D/g,''),
+        email: '',
+        region: document.getElementById('f-region').value,
+        ciudad: document.getElementById('f-ciudad').value,
+        recomendadoPor: document.getElementById('f-recom').value,
+        anioRecomendacion: 2026,
+        rating: 0,
+        reviews: 0,
+        notas: document.getElementById('f-notas').value
       };
+      if (!nuevo.nombre) { alert('Falta el nombre'); return; }
+      D.contactos.push(nuevo);
+      paintStats();
+      renderContactos();
+      closeModal();
+      document.querySelectorAll('#modal input, #modal textarea').forEach(i => i.value = '');
+      alert('Contacto agregado en esta sesión.\n\nNota: para guardarlo permanentemente hay que editar el data.js o conectar Airtable.');
+    }
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.addContact = addContact;
 
-      try {
-        // Esta función debe estar definida en tu data.js
-        const exito = await agregarProveedor(nuevoRegistro);
-        if (exito) {
-          closeModal();
-          e.target.reset();
-          loadData(); // Recarga la lista
-        } else {
-          alert("Error al guardar. Revisa la conexión.");
-        }
-      } catch (err) {
-        alert("Error de red al intentar publicar.");
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "Publicar en la Red";
-      }
-    };
+    function copy(text) {
+      navigator.clipboard.writeText(text);
+    }
+    window.copy = copy;
 
-    // Iniciar carga al abrir la página
-    loadData();
+    // ---------- INIT ----------
+    paintStats();
+    renderContactos();
   </script>
 </body>
 </html>
