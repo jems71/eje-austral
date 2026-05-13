@@ -39,7 +39,7 @@
   <main id="directory" class="max-w-md mx-auto px-4 space-y-4">
     <div class="flex flex-col items-center justify-center py-20 text-gray-400">
       <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-900 mb-4"></div>
-      <p class="text-sm font-medium">Conectando con base de datos técnica...</p>
+      <p class="text-sm font-medium">Sincronizando con base de datos...</p>
     </div>
   </main>
 
@@ -57,32 +57,31 @@
       <form id="addForm" class="space-y-5">
         <div>
           <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Nombre Proveedor / Empresa</label>
-          <input type="text" id="formNombre" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100" required>
+          <input type="text" id="formNombre" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:ring-2 focus:ring-blue-100" required>
         </div>
 
         <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Partida o Especialidad</label>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Especialidad</label>
           <select id="formEsp" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 appearance-none">
             <option value="Obra Gruesa">Obra Gruesa</option>
             <option value="Terminaciones">Terminaciones</option>
             <option value="Instalaciones">Instalaciones</option>
             <option value="Servicios Técnicos">Servicios Técnicos</option>
-            <option value="Colegas">Colegas</option>
           </select>
         </div>
 
         <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Teléfono (WhatsApp)</label>
-          <input type="tel" id="formTel" placeholder="+569" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">WhatsApp (+569...)</label>
+          <input type="tel" id="formTel" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1">
         </div>
 
         <div>
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Reseña Técnica / Comentario</label>
-          <textarea id="formCom" rows="3" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1 focus:outline-none focus:ring-2 focus:ring-blue-100"></textarea>
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1">Comentario Técnico</label>
+          <textarea id="formCom" rows="3" class="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl mt-1"></textarea>
         </div>
 
-        <div class="bg-blue-50/50 p-5 rounded-[1.5rem] border border-blue-100 space-y-4">
-          <input type="text" id="formColega" placeholder="Tu Nombre (Firma UACh)" class="w-full p-3 bg-white border border-blue-100 rounded-xl text-sm placeholder:text-blue-200" required>
+        <div>
+          <input type="text" id="formColega" placeholder="Tu Nombre (Firma UACh)" class="w-full p-4 bg-blue-50 border border-blue-100 rounded-2xl text-sm" required>
         </div>
 
         <button type="submit" id="submitBtn" class="w-full py-4 btn-uach text-white rounded-2xl font-bold shadow-lg shadow-blue-900/30">
@@ -97,55 +96,52 @@
   <script>
     let dataCache = [];
 
-    // CARGAR DATOS DESDE DATA.JS
     async function loadData() {
       try {
-        // Llama a la función que definimos en tu data.js
+        // Llama a la función en data.js
         const records = await obtenerProveedores(); 
-        dataCache = records || [];
+        
+        // Si Airtable devuelve registros, los usamos. Si no, usamos los DATOS_LOCALES de data.js
+        dataCache = (records && records.length > 0) ? records : (window.DATOS_LOCALES || []);
         render(dataCache);
       } catch (e) {
-        console.error("Error al cargar:", e);
-        document.getElementById('directory').innerHTML =
-          `<p class="text-center text-red-400 p-10">Error de conexión con la base de datos.</p>`;
+        console.error("Error:", e);
+        document.getElementById('directory').innerHTML = `<p class="text-center text-red-400 p-10">Error de conexión.</p>`;
       }
     }
 
     function render(records) {
       const container = document.getElementById('directory');
       if (!records || records.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-400 py-20">No se encontraron registros.</p>`;
+        container.innerHTML = `<p class="text-center text-gray-400 py-20">No hay datos disponibles.</p>`;
         return;
       }
 
       container.innerHTML = records.map(r => {
-        const f = r.fields || {};
-        const colorClase = f.Especialidad === "Colegas"
-          ? "text-blue-600 bg-blue-50"
-          : "text-slate-500 bg-slate-100";
-
-        // Ajustamos los nombres de los campos para que coincidan con Airtable
-        const nombre = f.Nombre || 'Sin nombre';
-        const especialidad = f.Especialidad || 'GENERAL';
-        const telefono = f.Telefono || f.telefono || ''; 
-        const comentario = f.Comentario || 'Proveedor validado.';
-        const colega = f.Colega || 'Red Inicial';
+        // Detecta si es formato Airtable (.fields) o formato simple (local)
+        const d = r.fields ? r.fields : r; 
+        
+        const nombre = d.Nombre || 'Proveedor';
+        const especialidad = d.Especialidad || 'General';
+        const telefono = d.Telefono || '';
+        const comentario = d.Comentario || 'Sin descripción.';
+        const colega = d.Colega || 'Red Inicial';
 
         return `
           <div class="bg-white p-6 rounded-[2rem] card-shadow border border-white/50 transition-all active:scale-[0.98]">
             <div class="flex justify-between items-start mb-4">
               <div class="flex-1">
-                <span class="px-3 py-1 ${colorClase} text-[10px] font-bold rounded-lg uppercase tracking-widest">${escapeHtml(especialidad)}</span>
+                <span class="px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-lg uppercase tracking-widest">${escapeHtml(especialidad)}</span>
                 <h3 class="text-xl font-bold text-slate-800 mt-2 leading-tight">${escapeHtml(nombre)}</h3>
               </div>
               ${telefono ? `
-              <a href="https://wa.me/${String(telefono).replace(/\D/g,'')}" target="_blank" class="bg-green-500 text-white p-4 rounded-2xl shadow-lg shadow-green-100">
+              <a href="https://wa.me/${String(telefono).replace(/\D/g,'')}" target="_blank" class="bg-green-500 text-white p-4 rounded-2xl shadow-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
               </a>` : ''}
             </div>
             <p class="text-slate-600 text-sm leading-relaxed mb-4">${escapeHtml(comentario)}</p>
             <div class="pt-4 border-t border-gray-50 flex items-center justify-between">
-              <span class="text-[10px] text-gray-400 uppercase font-medium tracking-tighter">Aporte de: <span class="text-blue-800 font-bold">${escapeHtml(colega)}</span></span>
+              <span class="text-[10px] text-gray-400 uppercase font-medium tracking-tighter">Sugerido por: <span class="text-blue-800 font-bold">${escapeHtml(colega)}</span></span>
             </div>
           </div>
         `;
@@ -158,23 +154,22 @@
 
     function filterList() {
       const q = document.getElementById('searchInput').value.toLowerCase();
-      render(dataCache.filter(r =>
-        ((r.fields && r.fields.Nombre) || "").toLowerCase().includes(q) ||
-        ((r.fields && r.fields.Especialidad) || "").toLowerCase().includes(q)
-      ));
+      render(dataCache.filter(r => {
+        const d = r.fields ? r.fields : r;
+        return (d.Nombre || "").toLowerCase().includes(q) || (d.Especialidad || "").toLowerCase().includes(q);
+      }));
     }
 
     function openModal() { document.getElementById('modal').classList.remove('hidden'); }
     function closeModal() { document.getElementById('modal').classList.add('hidden'); }
 
-    // FORMULARIO DE ENVÍO DIRECTO A AIRTABLE
     document.getElementById('addForm').onsubmit = async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
       btn.innerText = "Publicando...";
 
-      const nuevoRegistro = {
+      const registro = {
         Nombre: document.getElementById('formNombre').value,
         Especialidad: document.getElementById('formEsp').value,
         Telefono: document.getElementById('formTel').value,
@@ -183,24 +178,22 @@
       };
 
       try {
-        // Esta función debe estar definida en tu data.js
-        const exito = await agregarProveedor(nuevoRegistro);
+        const exito = await agregarProveedor(registro);
         if (exito) {
           closeModal();
           e.target.reset();
-          loadData(); // Recarga la lista
+          loadData(); 
         } else {
-          alert("Error al guardar. Revisa la conexión.");
+          alert("Error al guardar en Airtable.");
         }
       } catch (err) {
-        alert("Error de red al intentar publicar.");
+        alert("Error de red.");
       } finally {
         btn.disabled = false;
         btn.innerText = "Publicar en la Red";
       }
     };
 
-    // Iniciar carga al abrir la página
     loadData();
   </script>
 </body>
