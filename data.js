@@ -1,6 +1,4 @@
-// CONFIGURACIÓN DE DATOS (data.js)
-
-// 1. Datos locales de respaldo (Aparecen si no hay conexión a Airtable)
+// CONFIGURACIÓN DE DATOS LOCALES PARA OSORNO
 window.DATOS_LOCALES = [
   {
     fields: {
@@ -31,21 +29,19 @@ window.DATOS_LOCALES = [
   }
 ];
 
-// 2. Función para obtener datos
+// Función para obtener datos (No tocar)
 async function obtenerProveedores() {
   try {
     const response = await fetch('/api/records');
-    if (!response.ok) throw new Error("API no disponible");
+    if (!response.ok) throw new Error();
     const data = await response.json();
-    // Si la API trae datos reales, los usa; si no, usa los locales
     return (data.records && data.records.length > 0) ? data.records : window.DATOS_LOCALES;
   } catch (error) {
-    console.warn("Cargando datos locales...");
     return window.DATOS_LOCALES;
   }
 }
 
-// 3. Función para agregar nuevo proveedor
+// Función para agregar datos (No tocar)
 async function agregarProveedor(registro) {
   try {
     const response = await fetch('/api/add', {
