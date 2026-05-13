@@ -1,5 +1,5 @@
 // /api/agregar.js
-// Función serverless: agrega un nuevo contacto a la tabla "Contactos" de Airtable.
+// Versión con manejo de errores detallado y typecast activado.
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -13,25 +13,27 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Faltan variables de entorno' });
   }
 
-  // Vercel parsea automáticamente JSON, pero por las dudas:
   const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-
-  // Validación mínima
   if (!body || !body.nombre || !body.nombre.trim()) {
     return res.status(400).json({ error: 'El campo "nombre" es obligatorio' });
   }
 
-  // Armamos los fields para Airtable.
-  // Sólo enviamos campos con valor (Airtable rechaza algunos campos vacíos).
+  // Armamos los fields permitidos
   const fields = {};
   const allowed = ['id','tipo','rubro','nombre','contacto','fono','whatsapp','email','region','ciudad','recomendadoPor','rating','reviews','ultimoProyecto','notas'];
   for (const k of allowed) {
-    if (body[k] !== undefined && body[k] !== null && body[k] !== '') {
-      fields[k] = body[k];
+    const v = body[k];
+    if (v !== undefined && v !== null && v !== '') {
+      // Convertimos rating y reviews a número
+      if (k === 'rating' || k === 'reviews') {
+        const num = Number(v);
+        if (!isNaN(num) && num > 0) fields[k] = num;
+      } else {
+        fields[k] = v;
+      }
     }
   }
 
-  // Si no vino un id, generamos uno
   if (!fields.id) {
     fields.id = 'c-' + Date.now().toString().slice(-6);
   }
@@ -44,16 +46,24 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${TOKEN}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ fields })
+      // typecast: true le dice a Airtable "si la opción de Single select no existe, créala"
+      body: JSON.stringify({ fields, typecast: true })
     });
 
+    const responseText = await r.text();
+
     if (!r.ok) {
-      const txt = await r.text();
-      console.error('Airtable error:', r.status, txt);
-      return res.status(500).json({ error: 'Airtable rechazó el registro', detail: txt });
+      // Devolvemos el error EXACTO de Airtable para diagnosticar
+      console.error('Airtable rechazó:', r.status, responseText);
+      return res.status(500).json({
+        error: 'Airtable rechazó el registro',
+        airtableStatus: r.status,
+        airtableResponse: responseText,
+        fieldsSent: fields
+      });
     }
 
-    const created = await r.json();
+    const created = JSON.parse(responseText);
     return res.status(200).json({ ok: true, record: { _id: created.id, ...created.fields } });
   } catch (err) {
     console.error('Error escribiendo en Airtable:', err);
