@@ -1,5 +1,6 @@
 // /api/data.js
-// Lee Contactos, Solicitudes, Alertas y Recomendaciones.
+// Lee Contactos, Solicitudes, Alertas y Recomendaciones de Airtable.
+// Esta versión expone errores específicos en _errors para diagnóstico.
 
 import crypto from 'crypto';
 
@@ -29,30 +30,46 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Faltan variables de entorno' });
   }
 
+  // Captura errores por tabla para que sean visibles
+  const errors = {};
+
   const fetchTable = async (tableName) => {
-    const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
-    const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-    if (!r.ok) {
-      const txt = await r.text();
-      throw new Error(`Airtable ${tableName}: ${r.status} ${txt}`);
+    try {
+      const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+      if (!r.ok) {
+        const txt = await r.text();
+        errors[tableName] = `${r.status}: ${txt.slice(0, 200)}`;
+        return [];
+      }
+      const json = await r.json();
+      return (json.records || []).map(rec => ({ _id: rec.id, ...rec.fields }));
+    } catch (err) {
+      errors[tableName] = String(err.message || err);
+      return [];
     }
-    const json = await r.json();
-    return (json.records || []).map(rec => ({ _id: rec.id, ...rec.fields }));
   };
 
-  try {
-    const [contactos, solicitudes, alertas, recomendaciones] = await Promise.all([
-      fetchTable('Contactos'),
-      fetchTable('Solicitudes').catch(() => []),
-      fetchTable('Alertas').catch(() => []),
-      fetchTable('Recomendaciones').catch(() => []),
-    ]);
+  const [contactos, solicitudes, alertas, recomendaciones] = await Promise.all([
+    fetchTable('Contactos'),
+    fetchTable('Solicitudes'),
+    fetchTable('Alertas'),
+    fetchTable('Recomendaciones'),
+  ]);
 
-    res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Cache-Control', 'private, no-store');
 
-    return res.status(200).json({ contactos, solicitudes, alertas, recomendaciones });
-  } catch (err) {
-    console.error('Error leyendo Airtable:', err);
-    return res.status(500).json({ error: 'Error al leer Airtable', detail: String(err.message || err) });
-  }
+  return res.status(200).json({
+    contactos,
+    solicitudes,
+    alertas,
+    recomendaciones,
+    _errors: Object.keys(errors).length > 0 ? errors : undefined,
+    _counts: {
+      contactos: contactos.length,
+      solicitudes: solicitudes.length,
+      alertas: alertas.length,
+      recomendaciones: recomendaciones.length
+    }
+  });
 }
