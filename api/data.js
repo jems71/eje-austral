@@ -1,52 +1,75 @@
 // /api/data.js
-// Función serverless de Vercel: lee Contactos, Solicitudes y Alertas desde Airtable.
-// Las credenciales viven SOLO acá (lado servidor), nunca llegan al navegador.
+// Lee Contactos, Solicitudes, Alertas y Recomendaciones de Airtable.
+// Esta versión expone errores específicos en _errors para diagnóstico.
+
+import crypto from 'crypto';
+
+function isAuthorized(req) {
+  const APP_PASSWORD = process.env.APP_PASSWORD;
+  if (!APP_PASSWORD) return false;
+  const auth = req.headers.authorization || '';
+  const token = auth.replace(/^Bearer\s+/i, '').trim();
+  if (!token) return false;
+  const expected = crypto.createHmac('sha256', APP_PASSWORD).update('grupo-uach-session').digest('hex');
+  return token === expected;
+}
 
 export default async function handler(req, res) {
-  // Solo permitir GET
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Método no permitido' });
+  }
+
+  if (!isAuthorized(req)) {
+    return res.status(401).json({ error: 'No autorizado. Inicia sesión.' });
   }
 
   const TOKEN = process.env.AIRTABLE_TOKEN;
   const BASE_ID = process.env.AIRTABLE_BASE_ID;
 
   if (!TOKEN || !BASE_ID) {
-    return res.status(500).json({ error: 'Faltan variables de entorno (AIRTABLE_TOKEN o AIRTABLE_BASE_ID)' });
+    return res.status(500).json({ error: 'Faltan variables de entorno' });
   }
+
+  // Captura errores por tabla para que sean visibles
+  const errors = {};
 
   const fetchTable = async (tableName) => {
-    const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
-    const r = await fetch(url, {
-      headers: { Authorization: `Bearer ${TOKEN}` }
-    });
-    if (!r.ok) {
-      const txt = await r.text();
-      throw new Error(`Airtable ${tableName}: ${r.status} ${txt}`);
+    try {
+      const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+      if (!r.ok) {
+        const txt = await r.text();
+        errors[tableName] = `${r.status}: ${txt.slice(0, 200)}`;
+        return [];
+      }
+      const json = await r.json();
+      return (json.records || []).map(rec => ({ _id: rec.id, ...rec.fields }));
+    } catch (err) {
+      errors[tableName] = String(err.message || err);
+      return [];
     }
-    const json = await r.json();
-    // Devolvemos solo los fields, con el id de Airtable agregado
-    return (json.records || []).map(rec => ({ _id: rec.id, ...rec.fields }));
   };
 
-  try {
-    const [contactos, solicitudes, alertas] = await Promise.all([
-      fetchTable('Contactos'),
-      fetchTable('Solicitudes').catch(() => []), // si la tabla no existe aún, no rompemos
-      fetchTable('Alertas').catch(() => []),
-    ]);
+  const [contactos, solicitudes, alertas, recomendaciones] = await Promise.all([
+    fetchTable('Contactos'),
+    fetchTable('Solicitudes'),
+    fetchTable('Alertas'),
+    fetchTable('Recomendaciones'),
+  ]);
 
-    // Caché ligero en el navegador (30 segundos) para no abusar de la API
-    res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=60');
+  res.setHeader('Cache-Control', 'private, no-store');
 
-    return res.status(200).json({
-      contactos,
-      solicitudes,
-      alertas,
-      // historial lo construimos en frontend para que sea automático
-    });
-  } catch (err) {
-    console.error('Error leyendo Airtable:', err);
-    return res.status(500).json({ error: 'Error al leer Airtable', detail: String(err.message || err) });
-  }
+  return res.status(200).json({
+    contactos,
+    solicitudes,
+    alertas,
+    recomendaciones,
+    _errors: Object.keys(errors).length > 0 ? errors : undefined,
+    _counts: {
+      contactos: contactos.length,
+      solicitudes: solicitudes.length,
+      alertas: alertas.length,
+      recomendaciones: recomendaciones.length
+    }
+  });
 }
