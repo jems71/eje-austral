@@ -42,7 +42,23 @@
     .container { max-width: 1200px; margin: 0 auto; }
 
     .uach-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.15); }
-    .uach-logo { width: 44px; height: 44px; border: 2px solid var(--uach-gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-weight: 700; font-size: 24px; color: var(--uach-gold); }
+    .uach-logo {
+      width: 56px; height: 56px;
+      border: 2px solid var(--uach-gold);
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      background: #f5f3ee;
+      padding: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .uach-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
     .uach-header h1 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
     .uach-header .subtitle { font-size: 10px; letter-spacing: 2px; opacity: 0.7; text-transform: uppercase; margin-top: 2px; }
     .user-chip { margin-left: auto; display: flex; align-items: center; gap: 10px; font-size: 12px; }
@@ -54,7 +70,8 @@
     .hero-text h2 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 500; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.5px; }
     .hero-text h2 em { font-style: italic; color: var(--uach-gold-light); font-weight: 400; }
     .hero-text p { font-size: 14px; line-height: 1.6; opacity: 0.85; max-width: 480px; }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
     .stat-box { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 18px; border-radius: 4px; }
     .stat-box .num { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; line-height: 1; color: #fff; }
     .stat-box .label { font-size: 10px; letter-spacing: 1.5px; opacity: 0.7; margin-top: 6px; text-transform: uppercase; }
@@ -133,34 +150,6 @@
     .icon-btn.whatsapp { background: var(--green); color: #fff; border-color: var(--green); }
     .icon-btn.whatsapp:hover { background: #1eb955; }
     .icon-btn svg { width: 16px; height: 16px; }
-
-    .request-card { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--uach-blue); border-radius: 6px; padding: 20px 22px; margin-bottom: 12px; }
-    .request-card.resuelta { border-left-color: var(--green); opacity: 0.85; }
-    .request-card.informativa { border-left-color: var(--uach-gold); }
-    .request-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13px; }
-    .request-head .ini { width: 28px; height: 28px; background: var(--uach-blue); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
-    .request-head .who { font-weight: 600; }
-    .request-head .when { color: var(--text-muted); font-size: 12px; }
-    .req-badge { margin-left: auto; font-size: 9px; letter-spacing: 1.5px; padding: 3px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; background: var(--border); color: var(--text-muted); }
-    .req-badge.abierta { background: #e6efff; color: #1d4d99; }
-    .req-badge.resuelta { background: #d6f5e3; color: #0e6e3b; }
-    .req-badge.informativa { background: #fff4d6; color: #8c6900; }
-    .request-card p { font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: 10px; }
-    .request-card .meta { font-size: 12px; color: var(--text-muted); }
-
-    .alert-card { background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--amber); border-radius: 6px; padding: 22px; margin-bottom: 14px; }
-    .alert-card.alta { border-left-color: var(--red); background: #fef7f7; }
-    .alert-card.media { border-left-color: var(--amber); }
-    .alert-card.baja { border-left-color: var(--uach-gold); }
-    .alert-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .alert-head h4 { font-family: 'Fraunces', serif; font-size: 17px; font-weight: 600; }
-    .alert-sev { font-size: 9px; letter-spacing: 1.5px; padding: 3px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
-    .alert-sev.alta { background: #fee; color: var(--red); }
-    .alert-sev.media { background: #fff4d6; color: var(--amber); }
-    .alert-sev.baja { background: #fffaeb; color: #8c6900; }
-    .alert-card .motivo { font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--text); }
-    .alert-card .detalle { font-size: 13px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
-    .alert-card .footer { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--text-muted); padding-top: 10px; border-top: 1px solid var(--border); }
 
     .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
     .loading { text-align: center; padding: 80px 20px; color: var(--text-muted); }
@@ -243,15 +232,22 @@
       text-align: center;
     }
     .login-logo {
-      width: 64px; height: 64px;
+      width: 96px; height: 96px;
       border: 2px solid var(--uach-gold);
-      border-radius: 8px;
+      border-radius: 50%;
+      overflow: hidden;
       display: inline-flex; align-items: center; justify-content: center;
-      font-family: 'Fraunces', serif;
-      font-weight: 700;
-      font-size: 36px;
-      color: var(--uach-blue);
+      background: #fff;
+      padding: 0;
       margin-bottom: 18px;
+      box-shadow: 0 4px 14px rgba(10,36,71,0.12);
+    }
+    .login-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
     }
     .login-box h2 {
       font-family: 'Fraunces', serif;
@@ -447,9 +443,9 @@
   <!-- === LOGIN SCREEN === -->
   <div id="login-screen" class="login-screen">
     <div class="login-box">
-      <div class="login-logo">U</div>
+      <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v3.1</div>
+      <div class="subtitle">DIR-UACH/CC · v3.3</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -478,7 +474,7 @@
   <section class="hero">
     <div class="container">
       <div class="uach-header">
-        <div class="uach-logo">U</div>
+        <div class="uach-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
         <div>
           <h1>Universidad Austral de Chile</h1>
           <div class="subtitle">Titulados Construcción Civil · Ingeniería en Construcción</div>
@@ -490,7 +486,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v3.0 · 2026</div>
+          <div class="version">DIR-UACH/CC · v3.3 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -498,7 +494,6 @@
           <div class="stat-box"><div class="num" id="stat-contactos">—</div><div class="label">Contactos</div></div>
           <div class="stat-box"><div class="num" id="stat-subs">—</div><div class="label">Subcontratos</div></div>
           <div class="stat-box"><div class="num" id="stat-mano">—</div><div class="label">Mano de obra</div></div>
-          <div class="stat-box"><div class="num" id="stat-solicitudes">—</div><div class="label">Solicitudes abiertas</div></div>
         </div>
       </div>
     </div>
@@ -507,8 +502,6 @@
   <div class="tabs-wrap">
     <div class="tabs">
       <div class="tab active" data-tab="directorio">Directorio <span class="count" id="cnt-directorio">0</span></div>
-      <div class="tab" data-tab="solicitudes">Solicitudes <span class="count" id="cnt-solicitudes">0</span></div>
-      <div class="tab" data-tab="alertas">Alertas <span class="count" id="cnt-alertas">0</span></div>
     </div>
   </div>
 
@@ -530,24 +523,12 @@
     </div>
   </section>
 
-  <section id="view-solicitudes" class="hidden">
-    <div class="container" style="padding: 24px 20px;">
-      <div id="list-solicitudes"></div>
-    </div>
-  </section>
-
-  <section id="view-alertas" class="hidden">
-    <div class="container" style="padding: 24px 20px; max-width: 800px;">
-      <div id="list-alertas"></div>
-    </div>
-  </section>
-
   <!-- === FOOTER === -->
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v3.0 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v3.3 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -579,7 +560,9 @@
       <label>Tipo</label>
       <select id="f-tipo"><option>Subcontrato</option><option>Mano de obra</option></select>
       <label>Rubro</label>
-      <input type="text" id="f-rubro" placeholder="Ej: Movimiento de tierras">
+      <input type="text" id="f-rubro" list="rubros-list" placeholder="Escribí o elegí de la lista..." autocomplete="off">
+      <datalist id="rubros-list"></datalist>
+      <div class="help-text">Tipeá y elegí una opción, o escribí un rubro nuevo si no está.</div>
       <label>Persona de contacto</label>
       <input type="text" id="f-contacto" placeholder="Ej: Don Hernán Maldonado">
       <label>Teléfono / WhatsApp</label>
@@ -684,11 +667,11 @@
       <div class="about-section">
         <h4>Cómo funciona</h4>
         <ul>
-          <li>Acceso restringido al grupo</li>
-          <li>Cualquiera puede sumar contactos</li>
+          <li>Acceso restringido con contraseña compartida del grupo</li>
+          <li>Cualquiera del grupo puede sumar contactos nuevos</li>
           <li>Cualquiera puede agregar su recomendación a un contacto existente</li>
-          <li>Las alertas y solicitudes las maneja el grupo</li>
-          <li>Sin moderación central — todos somos administradores</li>
+          <li>Las correcciones, borrados y moderación los hace el administrador</li>
+          <li>Cualquier idea, mejora o consulta, escribime al email del pie</li>
         </ul>
       </div>
 
@@ -703,14 +686,14 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 3.0 · Mayo 2026
+        DIR-UACH/CC · Versión 3.3 · Mayo 2026
       </div>
     </div>
   </div>
 
   <script>
-    let DATA = { contactos: [], solicitudes: [], alertas: [], recomendaciones: [] };
-    let state = { tab: 'directorio', tipo: 'todos', region: 'todas', q: '' };
+    let DATA = { contactos: [], recomendaciones: [] };
+    let state = { tipo: 'todos', region: 'todas', q: '' };
     let currentDetailContact = null;
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -774,8 +757,6 @@
         }
         DATA = await r.json();
         DATA.contactos = DATA.contactos || [];
-        DATA.solicitudes = DATA.solicitudes || [];
-        DATA.alertas = DATA.alertas || [];
         DATA.recomendaciones = DATA.recomendaciones || [];
         paintStats();
         renderContactos();
@@ -789,14 +770,10 @@
     function paintStats() {
       const subs = DATA.contactos.filter(c => c.tipo === 'Subcontrato').length;
       const mano = DATA.contactos.filter(c => c.tipo === 'Mano de obra').length;
-      const solAbiertas = DATA.solicitudes.filter(s => s.estado === 'abierta').length;
       document.getElementById('stat-contactos').textContent = DATA.contactos.length;
       document.getElementById('stat-subs').textContent = subs;
       document.getElementById('stat-mano').textContent = mano;
-      document.getElementById('stat-solicitudes').textContent = solAbiertas;
       document.getElementById('cnt-directorio').textContent = DATA.contactos.length;
-      document.getElementById('cnt-solicitudes').textContent = DATA.solicitudes.length;
-      document.getElementById('cnt-alertas').textContent = DATA.alertas.length;
     }
 
     // Obtener todas las recomendaciones de un contacto, INCLUYENDO al recomendador original
@@ -887,50 +864,6 @@
       }).join('');
     }
 
-    function renderSolicitudes() {
-      const list = document.getElementById('list-solicitudes');
-      const data = DATA.solicitudes;
-      if (data.length === 0) { list.innerHTML = '<div class="empty">Sin solicitudes.</div>'; return; }
-      list.innerHTML = data.map(s => `
-        <div class="request-card ${esc(s.estado)}">
-          <div class="request-head">
-            <div class="ini">${esc(s.iniciales)}</div>
-            <div><div class="who">${esc(s.autor)}</div><div class="when">${esc(s.tiempo)} · ${esc(s.region || '')}</div></div>
-            <span class="req-badge ${esc(s.estado)}">${esc(s.estado)}</span>
-          </div>
-          <p>${esc(s.texto)}</p>
-          <div class="meta">💬 ${esc(s.respuestas)} respuestas · <strong>${esc(s.etiqueta)}</strong></div>
-        </div>
-      `).join('');
-    }
-
-    function renderAlertas() {
-      const list = document.getElementById('list-alertas');
-      const data = DATA.alertas;
-      if (data.length === 0) { list.innerHTML = '<div class="empty">Sin alertas. ¡Mejor!</div>'; return; }
-      list.innerHTML = data.map(a => `
-        <div class="alert-card ${esc(a.severidad)}">
-          <div class="alert-head"><h4>${esc(a.proveedor)}</h4><span class="alert-sev ${esc(a.severidad)}">Severidad ${esc(a.severidad)}</span></div>
-          <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">${esc(a.rubro)} · ${esc(a.ciudad)}, ${esc(a.region)}</div>
-          <div class="motivo">⚠️ ${esc(a.motivo)}</div>
-          <div class="detalle">${esc(a.detalle)}</div>
-          <div class="footer"><span>Obra: ${esc(a.obra)}</span><span>Reportado por <strong>${esc(a.reportadoPor)}</strong> · ${esc(a.fecha)}</span></div>
-        </div>
-      `).join('');
-    }
-
-    function switchTab(tab) {
-      state.tab = tab;
-      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
-      ['directorio','solicitudes','alertas'].forEach(name => {
-        document.getElementById('view-' + name).classList.toggle('hidden', name !== tab);
-      });
-      if (tab === 'directorio') renderContactos();
-      if (tab === 'solicitudes') renderSolicitudes();
-      if (tab === 'alertas') renderAlertas();
-    }
-
-    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
     document.querySelectorAll('.filter-tipo').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-tipo').forEach(b => b.classList.remove('active'));
@@ -949,7 +882,60 @@
     });
     document.getElementById('search').addEventListener('input', e => { state.q = e.target.value; renderContactos(); });
 
-    function openAddModal() { document.getElementById('modal-add').classList.remove('hidden'); }
+    // === Lista de rubros estándar (fija en el código) ===
+    const RUBROS_ESTANDAR = [
+      // Obra gruesa
+      'Movimiento de tierras',
+      'Hormigones y radieres',
+      'Albañilería',
+      'Estructuras de madera',
+      'Estructuras de acero',
+      'Techumbres y cubiertas',
+      // Instalaciones
+      'Instalaciones eléctricas',
+      'Instalaciones sanitarias',
+      'Instalaciones de gas',
+      'Climatización y calefacción',
+      // Terminaciones
+      'Yeso cartón y tabiquería',
+      'Pinturas',
+      'Pavimentos y revestimientos',
+      'Aluminio y vidrios',
+      'Carpintería de terminaciones',
+      'Estucos y revestimientos',
+      // Servicios
+      'Aislaciones e impermeabilizaciones',
+      'Áridos y materiales',
+      'Arriendo de maquinaria',
+      'Topografía y replanteos'
+    ];
+
+    // Llena el datalist mezclando rubros estándar + los que ya hay cargados
+    function poblarListaRubros() {
+      const datalist = document.getElementById('rubros-list');
+      if (!datalist) return;
+
+      const rubrosUsados = [...new Set(
+        DATA.contactos
+          .map(c => (c.rubro || '').trim())
+          .filter(r => r.length > 0)
+      )];
+
+      const todos = [...RUBROS_ESTANDAR];
+      rubrosUsados.forEach(r => {
+        const yaEsta = todos.some(t => t.toLowerCase() === r.toLowerCase());
+        if (!yaEsta) todos.push(r);
+      });
+
+      todos.sort((a, b) => a.localeCompare(b, 'es'));
+
+      datalist.innerHTML = todos.map(r => `<option value="${esc(r)}">`).join('');
+    }
+
+    function openAddModal() {
+      poblarListaRubros();
+      document.getElementById('modal-add').classList.remove('hidden');
+    }
     function closeAddModal() { document.getElementById('modal-add').classList.add('hidden'); }
 
     async function addContact() {
@@ -1212,3 +1198,8 @@
   </script>
 </body>
 </html>
+
+    
+    
+    
+  
