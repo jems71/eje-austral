@@ -592,7 +592,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v5.1</div>
+      <div class="subtitle">DIR-UACH/CC · v5.2</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -633,7 +633,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v5.1 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.2 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -712,7 +712,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v5.1 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.2 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -759,8 +759,6 @@
         <input type="checkbox" id="f-tiene-whatsapp" style="width: auto; margin: 0;" checked>
         <span style="text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--text);">Este número también tiene WhatsApp</span>
       </label>
-      <label>Email</label>
-      <input type="email" id="f-email">
       <label>Ciudades de cobertura</label>
       <input type="text" id="f-ciudad" placeholder="Ej: Valdivia, Osorno, La Unión">
       <div class="help-text">Si trabaja en varias ciudades, separá con comas.</div>
@@ -908,7 +906,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 5.1 · Mayo 2026
+        DIR-UACH/CC · Versión 5.2 · Mayo 2026
       </div>
     </div>
   </div>
@@ -1328,7 +1326,6 @@
         whatsapp: document.getElementById('f-tiene-whatsapp').checked
           ? document.getElementById('f-fono').value.replace(/\D/g,'')
           : '',
-        email: document.getElementById('f-email').value.trim(),
         region: document.getElementById('f-region').value,
         ciudad: document.getElementById('f-ciudad').value.trim(),
         recomendadoPor: recom,
