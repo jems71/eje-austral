@@ -263,6 +263,7 @@
     .tag-arriendo { background: #e8f5e9; color: #1b5e20; }
     .tag-proveedor { background: #f3e5f5; color: #6a1b9a; }
     .tag-flete { background: #fff3e0; color: #bf5500; }
+    .tag-profesional { background: #e0f2fe; color: #075985; }
     .card h3 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; margin: 6px 0 4px; letter-spacing: -0.2px; line-height: 1.25; }
     .card .rubro { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
 
@@ -582,7 +583,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v5.5</div>
+      <div class="subtitle">DIR-UACH/CC · v5.7</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -623,7 +624,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v5.5 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.7 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -634,6 +635,7 @@
           <div class="stat-box"><div class="num" id="stat-arriendo">—</div><div class="label"><span class="label-icon">🏗️</span>Arriendo</div></div>
           <div class="stat-box"><div class="num" id="stat-proveedor">—</div><div class="label"><span class="label-icon">📦</span>Proveedores</div></div>
           <div class="stat-box"><div class="num" id="stat-flete">—</div><div class="label"><span class="label-icon">🚛</span>Fletes</div></div>
+          <div class="stat-box"><div class="num" id="stat-profesional">—</div><div class="label"><span class="label-icon">🎓</span>Profesionales</div></div>
         </div>
       </div>
     </div>
@@ -674,6 +676,7 @@
           <button class="chip filter-tipo" data-tipo="Arriendo">🏗️ Arriendo</button>
           <button class="chip filter-tipo" data-tipo="Proveedor">📦 Proveedor</button>
           <button class="chip filter-tipo" data-tipo="Flete">🚛 Flete</button>
+          <button class="chip filter-tipo" data-tipo="Profesional">🎓 Profesional</button>
         </div>
         <button class="add-btn" onclick="openAddModal()">+ Agregar contacto</button>
       </div>
@@ -691,7 +694,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v5.5 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.7 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -718,19 +721,20 @@
       <h3 class="serif">Nuevo aporte</h3>
       <p class="sub">Súmalo al directorio. Lo verá todo el grupo.</p>
 
-      <label>Nombre / Empresa *</label>
+      <label id="lbl-nombre">Nombre / Empresa *</label>
       <input type="text" id="f-nombre" required>
       <label>Tipo</label>
-      <select id="f-tipo">
+      <select id="f-tipo" onchange="updateFormLabels()">
         <option value="Subcontrato">🔧 Subcontrato</option>
         <option value="Mano de obra">👷 Mano de obra</option>
         <option value="Arriendo">🏗️ Arriendo</option>
         <option value="Proveedor">📦 Proveedor</option>
         <option value="Flete">🚛 Flete</option>
+        <option value="Profesional">🎓 Profesional</option>
       </select>
-      <label>Rubro</label>
+      <label id="lbl-rubro">Rubro</label>
       <input type="text" id="f-rubro" placeholder="Ej: Instalaciones eléctricas" autocomplete="off">
-      <label>Persona de contacto</label>
+      <label id="lbl-contacto">Persona de contacto</label>
       <input type="text" id="f-contacto" placeholder="Ej: Don Hernán Maldonado">
       <label>Teléfono *</label>
       <input type="tel" id="f-fono" placeholder="+56 9 ...">
@@ -850,7 +854,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 5.5 · Mayo 2026
+        DIR-UACH/CC · Versión 5.7 · Mayo 2026
       </div>
     </div>
   </div>
@@ -867,14 +871,36 @@
 
     // === HELPERS DE TIPO ===
     const TIPO_CONFIG = {
-      'Subcontrato':  { icono: '🔧', tagClass: 'tag-sub',       miniClass: 'subcontrato', miniLabel: 'SUBCONTR.' },
-      'Mano de obra': { icono: '👷', tagClass: 'tag-mano',      miniClass: 'mano',        miniLabel: 'M.OBRA'    },
-      'Arriendo':     { icono: '🏗️', tagClass: 'tag-arriendo',  miniClass: 'arriendo',    miniLabel: 'ARRIENDO'  },
-      'Proveedor':    { icono: '📦', tagClass: 'tag-proveedor', miniClass: 'proveedor',   miniLabel: 'PROVEEDOR' },
-      'Flete':        { icono: '🚛', tagClass: 'tag-flete',     miniClass: 'flete',       miniLabel: 'FLETE'     }
+      'Subcontrato':  { icono: '🔧', tagClass: 'tag-sub',          miniClass: 'subcontrato', miniLabel: 'SUBCONTR.'  },
+      'Mano de obra': { icono: '👷', tagClass: 'tag-mano',         miniClass: 'mano',        miniLabel: 'M.OBRA'     },
+      'Arriendo':     { icono: '🏗️', tagClass: 'tag-arriendo',     miniClass: 'arriendo',    miniLabel: 'ARRIENDO'   },
+      'Proveedor':    { icono: '📦', tagClass: 'tag-proveedor',    miniClass: 'proveedor',   miniLabel: 'PROVEEDOR'  },
+      'Flete':        { icono: '🚛', tagClass: 'tag-flete',        miniClass: 'flete',       miniLabel: 'FLETE'      },
+      'Profesional':  { icono: '🎓', tagClass: 'tag-profesional',  miniClass: 'profesional', miniLabel: 'PROFESIONAL'}
     };
     function getTipoConfig(tipo) {
       return TIPO_CONFIG[tipo] || { icono: '', tagClass: 'tag-sub', miniClass: 'subcontrato', miniLabel: (tipo || '').toUpperCase() };
+    }
+
+    // === LABELS DINÁMICOS DEL FORMULARIO ===
+    // Cada tipo define cómo se llaman sus 3 campos principales
+    const FORM_LABELS = {
+      'Subcontrato':  { nombre: 'Empresa / Cuadrilla *', rubro: 'Especialidad',         contacto: 'Persona de contacto' },
+      'Mano de obra': { nombre: 'Nombre del maestro *',  rubro: 'Oficio',               contacto: 'Apodo / Referencia'   },
+      'Arriendo':     { nombre: 'Empresa / Dueño *',     rubro: 'Maquinaria / Equipo',  contacto: 'Persona de contacto' },
+      'Proveedor':    { nombre: 'Nombre del local *',    rubro: 'Tipo de productos',    contacto: 'Persona de contacto' },
+      'Flete':        { nombre: 'Nombre / Empresa *',    rubro: 'Tipo de vehículo',     contacto: 'Conductor / Encargado' },
+      'Profesional':  { nombre: 'Nombre / Consultora *', rubro: 'Profesión / Servicio', contacto: 'Persona de contacto' }
+    };
+    function updateFormLabels() {
+      const tipo = document.getElementById('f-tipo').value;
+      const labels = FORM_LABELS[tipo] || FORM_LABELS['Subcontrato'];
+      const lblNombre = document.getElementById('lbl-nombre');
+      const lblRubro = document.getElementById('lbl-rubro');
+      const lblContacto = document.getElementById('lbl-contacto');
+      if (lblNombre) lblNombre.textContent = labels.nombre;
+      if (lblRubro) lblRubro.textContent = labels.rubro;
+      if (lblContacto) lblContacto.textContent = labels.contacto;
     }
 
     // Formatea la zona del contacto (ciudad)
@@ -915,12 +941,14 @@
       const arriendo = DATA.contactos.filter(c => c.tipo === 'Arriendo').length;
       const proveedor = DATA.contactos.filter(c => c.tipo === 'Proveedor').length;
       const flete = DATA.contactos.filter(c => c.tipo === 'Flete').length;
+      const profesional = DATA.contactos.filter(c => c.tipo === 'Profesional').length;
       document.getElementById('stat-contactos').textContent = DATA.contactos.length;
       document.getElementById('stat-subs').textContent = subs;
       document.getElementById('stat-mano').textContent = mano;
       document.getElementById('stat-arriendo').textContent = arriendo;
       document.getElementById('stat-proveedor').textContent = proveedor;
       document.getElementById('stat-flete').textContent = flete;
+      document.getElementById('stat-profesional').textContent = profesional;
       document.getElementById('cnt-directorio').textContent = DATA.contactos.length;
     }
 
@@ -1076,6 +1104,7 @@
       // Resetear checkbox de WhatsApp a su valor por defecto (marcado)
       const cbWa = document.getElementById('f-tiene-whatsapp');
       if (cbWa) cbWa.checked = true;
+      updateFormLabels();
       document.getElementById('modal-add').classList.remove('hidden');
     }
     function closeAddModal() { document.getElementById('modal-add').classList.add('hidden'); }
