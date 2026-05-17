@@ -583,7 +583,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v5.7</div>
+      <div class="subtitle">DIR-UACH/CC · v5.8</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -624,7 +624,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v5.7 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.8 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -694,7 +694,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v5.7 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.8 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -721,8 +721,6 @@
       <h3 class="serif">Nuevo aporte</h3>
       <p class="sub">Súmalo al directorio. Lo verá todo el grupo.</p>
 
-      <label id="lbl-nombre">Nombre / Empresa *</label>
-      <input type="text" id="f-nombre" required>
       <label>Tipo</label>
       <select id="f-tipo" onchange="updateFormLabels()">
         <option value="Subcontrato">🔧 Subcontrato</option>
@@ -732,10 +730,12 @@
         <option value="Flete">🚛 Flete</option>
         <option value="Profesional">🎓 Profesional</option>
       </select>
+      <label id="lbl-nombre">Nombre / Empresa *</label>
+      <input type="text" id="f-nombre" required>
       <label id="lbl-rubro">Rubro</label>
-      <input type="text" id="f-rubro" placeholder="Ej: Instalaciones eléctricas" autocomplete="off">
+      <input type="text" id="f-rubro" autocomplete="off">
       <label id="lbl-contacto">Persona de contacto</label>
-      <input type="text" id="f-contacto" placeholder="Ej: Don Hernán Maldonado">
+      <input type="text" id="f-contacto">
       <label>Teléfono *</label>
       <input type="tel" id="f-fono" placeholder="+56 9 ...">
       <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 12px;">
@@ -854,7 +854,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 5.7 · Mayo 2026
+        DIR-UACH/CC · Versión 5.8 · Mayo 2026
       </div>
     </div>
   </div>
@@ -882,25 +882,55 @@
       return TIPO_CONFIG[tipo] || { icono: '', tagClass: 'tag-sub', miniClass: 'subcontrato', miniLabel: (tipo || '').toUpperCase() };
     }
 
-    // === LABELS DINÁMICOS DEL FORMULARIO ===
-    // Cada tipo define cómo se llaman sus 3 campos principales
+    // === LABELS Y PLACEHOLDERS DINÁMICOS DEL FORMULARIO ===
+    // Cada tipo define cómo se llaman sus campos y qué ejemplos mostrar
     const FORM_LABELS = {
-      'Subcontrato':  { nombre: 'Empresa / Cuadrilla *', rubro: 'Especialidad',         contacto: 'Persona de contacto' },
-      'Mano de obra': { nombre: 'Nombre del maestro *',  rubro: 'Oficio',               contacto: 'Apodo / Referencia'   },
-      'Arriendo':     { nombre: 'Empresa / Dueño *',     rubro: 'Maquinaria / Equipo',  contacto: 'Persona de contacto' },
-      'Proveedor':    { nombre: 'Nombre del local *',    rubro: 'Tipo de productos',    contacto: 'Persona de contacto' },
-      'Flete':        { nombre: 'Nombre / Empresa *',    rubro: 'Tipo de vehículo',     contacto: 'Conductor / Encargado' },
-      'Profesional':  { nombre: 'Nombre / Consultora *', rubro: 'Profesión / Servicio', contacto: 'Persona de contacto' }
+      'Subcontrato':  {
+        nombre:    { label: 'Empresa / Cuadrilla *',  ph: 'Ej: ElectroSur Ltda.' },
+        rubro:     { label: 'Especialidad',           ph: 'Ej: Instalaciones eléctricas' },
+        contacto:  { label: 'Persona de contacto',    ph: 'Ej: Don Hernán Maldonado' }
+      },
+      'Mano de obra': {
+        nombre:    { label: 'Nombre del maestro *',   ph: 'Ej: Don Pedro Soto' },
+        rubro:     { label: 'Oficio',                 ph: 'Ej: Albañil' },
+        contacto:  { label: 'Apodo / Referencia',     ph: 'Ej: El maestro de Niebla' }
+      },
+      'Arriendo':     {
+        nombre:    { label: 'Empresa / Dueño *',      ph: 'Ej: Arriendos del Sur' },
+        rubro:     { label: 'Maquinaria / Equipo',    ph: 'Ej: Retroexcavadora CAT 320' },
+        contacto:  { label: 'Persona de contacto',    ph: 'Ej: Don Ricardo' }
+      },
+      'Proveedor':    {
+        nombre:    { label: 'Nombre del local *',     ph: 'Ej: Maderera Valdivia' },
+        rubro:     { label: 'Tipo de productos',      ph: 'Ej: Maderas pino y nativo' },
+        contacto:  { label: 'Persona de contacto',    ph: 'Ej: Sra. María' }
+      },
+      'Flete':        {
+        nombre:    { label: 'Nombre / Empresa *',     ph: 'Ej: Transportes Juan' },
+        rubro:     { label: 'Tipo de vehículo',       ph: 'Ej: Camión tolva 8m³' },
+        contacto:  { label: 'Conductor / Encargado',  ph: 'Ej: Don Juan Pérez' }
+      },
+      'Profesional':  {
+        nombre:    { label: 'Nombre / Consultora *',  ph: 'Ej: Consultora Vial Sur' },
+        rubro:     { label: 'Profesión / Servicio',   ph: 'Ej: Estudios IMIV' },
+        contacto:  { label: 'Persona de contacto',    ph: 'Ej: Ing. Patricia Soto' }
+      }
     };
     function updateFormLabels() {
       const tipo = document.getElementById('f-tipo').value;
-      const labels = FORM_LABELS[tipo] || FORM_LABELS['Subcontrato'];
+      const cfg = FORM_LABELS[tipo] || FORM_LABELS['Subcontrato'];
       const lblNombre = document.getElementById('lbl-nombre');
       const lblRubro = document.getElementById('lbl-rubro');
       const lblContacto = document.getElementById('lbl-contacto');
-      if (lblNombre) lblNombre.textContent = labels.nombre;
-      if (lblRubro) lblRubro.textContent = labels.rubro;
-      if (lblContacto) lblContacto.textContent = labels.contacto;
+      const inpNombre = document.getElementById('f-nombre');
+      const inpRubro = document.getElementById('f-rubro');
+      const inpContacto = document.getElementById('f-contacto');
+      if (lblNombre) lblNombre.textContent = cfg.nombre.label;
+      if (lblRubro) lblRubro.textContent = cfg.rubro.label;
+      if (lblContacto) lblContacto.textContent = cfg.contacto.label;
+      if (inpNombre) inpNombre.placeholder = cfg.nombre.ph;
+      if (inpRubro) inpRubro.placeholder = cfg.rubro.ph;
+      if (inpContacto) inpContacto.placeholder = cfg.contacto.ph;
     }
 
     // Formatea la zona del contacto (ciudad)
