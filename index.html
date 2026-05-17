@@ -98,6 +98,70 @@
     @media (min-width: 720px) { .grid { grid-template-columns: 1fr 1fr; } }
     @media (min-width: 1080px) { .grid { grid-template-columns: 1fr 1fr 1fr; } }
 
+    /* === VISTA LISTA === */
+    .view-switcher { display: flex; gap: 6px; align-items: center; }
+    .view-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+      font-size: 12px; padding: 6px 12px; border-radius: 6px; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; font-weight: 500;
+      transition: all 0.15s ease;
+    }
+    .view-btn:hover { color: var(--uach-blue); border-color: var(--uach-blue); }
+    .view-btn.active { background: var(--uach-blue); color: #fff; border-color: var(--uach-blue); }
+    .view-btn svg { width: 14px; height: 14px; }
+
+    .list-wrap { max-width: 1200px; margin: 0 auto; padding: 8px 20px 40px; }
+    .list-header {
+      display: grid; grid-template-columns: 2fr 1.5fr 1fr;
+      gap: 16px; padding: 12px 16px; font-size: 11px;
+      font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--text-muted); border-bottom: 2px solid var(--border);
+    }
+    .list-row {
+      display: grid; grid-template-columns: 2fr 1.5fr 1fr;
+      gap: 16px; padding: 14px 16px; align-items: center;
+      border-bottom: 1px solid var(--border); cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .list-row:hover { background: rgba(10, 36, 71, 0.04); }
+    .list-row .col-nombre {
+      font-family: 'Fraunces', serif; font-size: 15px;
+      font-weight: 600; color: var(--text);
+    }
+    .list-row .col-nombre .tipo-mini {
+      display: inline-block; font-family: 'Inter', sans-serif;
+      font-size: 9px; padding: 2px 6px; border-radius: 3px;
+      margin-left: 6px; font-weight: 700; letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+    .list-row .col-nombre .tipo-mini.subcontrato { background: #e6efff; color: #1d4d99; }
+    .list-row .col-nombre .tipo-mini.mano { background: #fff4d6; color: #8c6900; }
+    .list-row .col-rubro { font-size: 13px; color: var(--text-muted); }
+    .list-row .col-recom {
+      display: flex; align-items: center; gap: 6px; font-size: 12px;
+    }
+    .list-row .col-recom .avatar-mini {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--uach-blue); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 700;
+      border: 2px solid var(--bg);
+      margin-left: -8px;
+    }
+    .list-row .col-recom .avatar-mini:first-child { margin-left: 0; }
+    .list-row .col-recom .count-text { color: var(--text-muted); margin-left: 4px; }
+
+    /* Mobile: lista adaptada */
+    @media (max-width: 720px) {
+      .list-header { display: none; }
+      .list-row {
+        grid-template-columns: 1fr;
+        gap: 4px; padding: 14px 16px;
+      }
+      .list-row .col-rubro { font-size: 12px; }
+      .list-row .col-recom { margin-top: 4px; }
+    }
+
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 22px; position: relative; transition: all 0.2s; cursor: pointer; }
     .card:hover { border-color: var(--uach-blue); box-shadow: 0 8px 24px -10px rgba(10,36,71,0.15); transform: translateY(-1px); }
     .card-id { font-family: 'Fraunces', serif; font-size: 13px; color: var(--text-muted); letter-spacing: 1px; font-weight: 500; }
@@ -445,7 +509,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v3.5</div>
+      <div class="subtitle">DIR-UACH/CC · v3.6</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -486,7 +550,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v3.5 · 2026</div>
+          <div class="version">DIR-UACH/CC · v3.6 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -516,10 +580,23 @@
       <button class="chip filter-region active" data-region="todas">Todas</button>
       <button class="chip filter-region" data-region="Los Ríos">Los Ríos</button>
       <button class="chip filter-region" data-region="Los Lagos">Los Lagos</button>
+      <div class="view-switcher" style="margin-left:auto;">
+        <button class="view-btn" id="btn-view-lista" onclick="switchView('lista')" title="Vista lista">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          Lista
+        </button>
+        <button class="view-btn" id="btn-view-tarjetas" onclick="switchView('tarjetas')" title="Vista tarjetas">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Tarjetas
+        </button>
+      </div>
       <button class="add-btn" onclick="openAddModal()">+ Agregar contacto</button>
     </div>
-    <div class="grid" id="grid-contactos">
+    <div class="grid hidden" id="grid-contactos">
       <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando contactos desde Airtable...</div></div>
+    </div>
+    <div class="list-wrap" id="list-contactos">
+      <div class="loading"><div class="spinner"></div><div>Cargando contactos desde Airtable...</div></div>
     </div>
   </section>
 
@@ -528,7 +605,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v3.5 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v3.6 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -690,14 +767,16 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 3.5 · Mayo 2026
+        DIR-UACH/CC · Versión 3.6 · Mayo 2026
       </div>
     </div>
   </div>
 
   <script>
     let DATA = { contactos: [], recomendaciones: [] };
-    let state = { tipo: 'todos', region: 'todas', q: '' };
+    let savedView = 'lista';
+    try { savedView = localStorage.getItem('eje_view') || 'lista'; } catch (e) {}
+    let state = { tipo: 'todos', region: 'todas', q: '', view: savedView };
     let currentDetailContact = null;
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -764,6 +843,7 @@
         DATA.recomendaciones = DATA.recomendaciones || [];
         paintStats();
         renderContactos();
+        switchView(state.view);
       } catch (e) {
         console.error(e);
         showError('No se pudo cargar los datos. Detalle: ' + e.message);
@@ -802,9 +882,8 @@
       return list.sort((a,b) => (b.fecha || '').localeCompare(a.fecha || ''));
     }
 
-    function renderContactos() {
-      const grid = document.getElementById('grid-contactos');
-      const data = DATA.contactos.filter(c => {
+    function getFilteredContactos() {
+      return DATA.contactos.filter(c => {
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
         if (state.region !== 'todas' && c.region !== state.region) return false;
         if (state.q) {
@@ -814,6 +893,65 @@
         }
         return true;
       });
+    }
+
+    function renderLista(data) {
+      const wrap = document.getElementById('list-contactos');
+      if (data.length === 0) {
+        wrap.innerHTML = '<div class="empty">No se encontraron contactos con esos filtros.</div>';
+        return;
+      }
+      const header = `
+        <div class="list-header">
+          <div>Nombre</div>
+          <div>Rubro</div>
+          <div>Recomiendan</div>
+        </div>
+      `;
+      const rows = data.map(c => {
+        const tipoClass = c.tipo === 'Mano de obra' ? 'mano' : 'subcontrato';
+        const tipoLabel = c.tipo === 'Mano de obra' ? 'M.OBRA' : 'SUBCONTR.';
+        const recs = getRecomendacionesDe(c);
+        const recCount = recs.length;
+        const shown = recs.slice(0, 3);
+        const avatares = shown.map(r => `<span class="avatar-mini" title="${esc(r.autor || '')}">${esc(r.iniciales || '?')}</span>`).join('');
+        const extra = recCount > 3 ? `<span class="avatar-mini" style="background:var(--text-muted);">+${recCount - 3}</span>` : '';
+        const countTxt = recCount === 0 ? '<span class="count-text">—</span>' : `<span class="count-text">${recCount} ${recCount === 1 ? 'persona' : 'personas'}</span>`;
+        return `
+          <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
+            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoLabel}</span></div>
+            <div class="col-rubro">${esc(c.rubro)}</div>
+            <div class="col-recom">${avatares}${extra}${countTxt}</div>
+          </div>
+        `;
+      }).join('');
+      wrap.innerHTML = header + rows;
+    }
+
+    function switchView(view) {
+      state.view = view;
+      try { localStorage.setItem('eje_view', view); } catch (e) {}
+      const grid = document.getElementById('grid-contactos');
+      const list = document.getElementById('list-contactos');
+      const btnLista = document.getElementById('btn-view-lista');
+      const btnTarjetas = document.getElementById('btn-view-tarjetas');
+      if (view === 'lista') {
+        grid.classList.add('hidden');
+        list.classList.remove('hidden');
+        btnLista.classList.add('active');
+        btnTarjetas.classList.remove('active');
+      } else {
+        grid.classList.remove('hidden');
+        list.classList.add('hidden');
+        btnLista.classList.remove('active');
+        btnTarjetas.classList.add('active');
+      }
+    }
+
+    function renderContactos() {
+      const grid = document.getElementById('grid-contactos');
+      const data = getFilteredContactos();
+      renderLista(data);
       if (data.length === 0) {
         grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se encontraron contactos con esos filtros.</div>';
         return;
@@ -1189,6 +1327,7 @@
     window.openAboutModal = openAboutModal;
     window.closeAboutModal = closeAboutModal;
     window.doLogin = doLogin;
+    window.switchView = switchView;
     function copy(text) { navigator.clipboard.writeText(text); }
     window.copy = copy;
 
