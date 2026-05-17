@@ -582,7 +582,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v5.4</div>
+      <div class="subtitle">DIR-UACH/CC · v5.5</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -623,7 +623,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v5.4 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.5 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -664,7 +664,7 @@
         </div>
       </div>
 
-      <!-- Fila 2: Filtros por TIPO -->
+      <!-- Fila 2: Filtros por TIPO + botón Agregar -->
       <div class="toolbar-row toolbar-filter-row">
         <span class="filter-label">TIPO</span>
         <div class="filter-group">
@@ -674,17 +674,6 @@
           <button class="chip filter-tipo" data-tipo="Arriendo">🏗️ Arriendo</button>
           <button class="chip filter-tipo" data-tipo="Proveedor">📦 Proveedor</button>
           <button class="chip filter-tipo" data-tipo="Flete">🚛 Flete</button>
-        </div>
-      </div>
-
-      <!-- Fila 3: Filtros por REGIÓN + botón Agregar -->
-      <div class="toolbar-row toolbar-filter-row">
-        <span class="filter-label">REGIÓN</span>
-        <div class="filter-group">
-          <button class="chip filter-region active" data-region="todas">Todas</button>
-          <button class="chip filter-region" data-region="Los Ríos">Los Ríos</button>
-          <button class="chip filter-region" data-region="Los Lagos">Los Lagos</button>
-          <button class="chip filter-region" data-region="otras">Otras regiones</button>
         </div>
         <button class="add-btn" onclick="openAddModal()">+ Agregar contacto</button>
       </div>
@@ -702,7 +691,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v5.4 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.5 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -752,33 +741,6 @@
       <label>Ciudades de cobertura</label>
       <input type="text" id="f-ciudad" placeholder="Ej: Valdivia, Osorno, La Unión">
       <div class="help-text">Si trabaja en varias ciudades, separá con comas.</div>
-      <label>Región</label>
-      <select id="f-region">
-        <optgroup label="Sur (donde está la mayoría)">
-          <option>Los Ríos</option>
-          <option>Los Lagos</option>
-          <option>La Araucanía</option>
-          <option>Aysén</option>
-          <option>Magallanes</option>
-        </optgroup>
-        <optgroup label="Centro">
-          <option>Valparaíso</option>
-          <option>Metropolitana de Santiago</option>
-          <option>O'Higgins</option>
-          <option>Maule</option>
-          <option>Ñuble</option>
-          <option>Biobío</option>
-        </optgroup>
-        <optgroup label="Norte">
-          <option>Arica y Parinacota</option>
-          <option>Tarapacá</option>
-          <option>Antofagasta</option>
-          <option>Atacama</option>
-          <option>Coquimbo</option>
-        </optgroup>
-        <option>Otra / Sin especificar</option>
-      </select>
-
       <div class="section-title">Notas y referencia</div>
       <label>Último proyecto</label>
       <input type="text" id="f-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
@@ -888,7 +850,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 5.4 · Mayo 2026
+        DIR-UACH/CC · Versión 5.5 · Mayo 2026
       </div>
     </div>
   </div>
@@ -897,7 +859,7 @@
     let DATA = { contactos: [], recomendaciones: [] };
     let savedView = 'lista';
     try { savedView = localStorage.getItem('eje_view') || 'lista'; } catch (e) {}
-    let state = { tipo: 'todos', region: 'todas', q: '', view: savedView };
+    let state = { tipo: 'todos', q: '', view: savedView };
     let currentDetailContact = null;
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -915,13 +877,10 @@
       return TIPO_CONFIG[tipo] || { icono: '', tagClass: 'tag-sub', miniClass: 'subcontrato', miniLabel: (tipo || '').toUpperCase() };
     }
 
-    // Formatea la zona del contacto: maneja ciudades múltiples + región
+    // Formatea la zona del contacto (ciudad)
     function formatZona(c) {
       const ciudad = String(c.ciudad || '').trim();
-      const region = String(c.region || '').trim();
-      if (!ciudad && !region) return '—';
-      if (ciudad && region) return ciudad + ' · ' + region;
-      return ciudad || region;
+      return ciudad || '—';
     }
 
     function showError(msg) {
@@ -990,14 +949,6 @@
     function getFilteredContactos() {
       return DATA.contactos.filter(c => {
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
-        if (state.region !== 'todas') {
-          if (state.region === 'otras') {
-            // "Otras" = todo lo que no es Los Ríos ni Los Lagos (incluye vacío/otra/Sin especificar)
-            if (c.region === 'Los Ríos' || c.region === 'Los Lagos') return false;
-          } else if (c.region !== state.region) {
-            return false;
-          }
-        }
         if (state.q) {
           const q = state.q.toLowerCase();
           const hay = [c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' ').toLowerCase();
@@ -1120,14 +1071,6 @@
         renderContactos();
       });
     });
-    document.querySelectorAll('.filter-region').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-region').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.region = btn.dataset.region;
-        renderContactos();
-      });
-    });
     document.getElementById('search').addEventListener('input', e => { state.q = e.target.value; renderContactos(); });
     function openAddModal() {
       // Resetear checkbox de WhatsApp a su valor por defecto (marcado)
@@ -1233,7 +1176,6 @@
             <div class="dup-meta">
               <strong>${esc(c.rubro || '')}</strong>
               ${c.ciudad ? ' · ' + esc(c.ciudad) : ''}
-              ${c.region ? ', ' + esc(c.region) : ''}
               ${c.fono ? '<br>📞 ' + esc(c.fono) : ''}
             </div>
             <div class="dup-actions">
@@ -1308,7 +1250,6 @@
         whatsapp: document.getElementById('f-tiene-whatsapp').checked
           ? document.getElementById('f-fono').value.replace(/\D/g,'')
           : '',
-        region: document.getElementById('f-region').value,
         ciudad: document.getElementById('f-ciudad').value.trim(),
         recomendadoPor: recom,
         ultimoProyecto: document.getElementById('f-ultimo-proyecto').value.trim(),
