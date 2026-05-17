@@ -70,8 +70,9 @@
     .hero-text h2 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 500; line-height: 1.1; margin-bottom: 16px; letter-spacing: -0.5px; }
     .hero-text h2 em { font-style: italic; color: var(--uach-gold-light); font-weight: 400; }
     .hero-text p { font-size: 14px; line-height: 1.6; opacity: 0.85; max-width: 480px; }
-    .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     @media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
+    .stat-box .label-icon { display: inline-block; margin-right: 4px; }
     .stat-box { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 18px; border-radius: 4px; }
     .stat-box .num { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; line-height: 1; color: #fff; }
     .stat-box .label { font-size: 10px; letter-spacing: 1.5px; opacity: 0.7; margin-top: 6px; text-transform: uppercase; }
@@ -136,6 +137,9 @@
     }
     .list-row .col-nombre .tipo-mini.subcontrato { background: #e6efff; color: #1d4d99; }
     .list-row .col-nombre .tipo-mini.mano { background: #fff4d6; color: #8c6900; }
+    .list-row .col-nombre .tipo-mini.arriendo { background: #e8f5e9; color: #1b5e20; }
+    .list-row .col-nombre .tipo-mini.proveedor { background: #f3e5f5; color: #6a1b9a; }
+    .list-row .col-nombre .tipo-mini.flete { background: #fff3e0; color: #bf5500; }
     .list-row .col-rubro { font-size: 13px; color: var(--text-muted); }
     .list-row .col-recom {
       display: flex; align-items: center; gap: 6px; font-size: 12px;
@@ -204,6 +208,9 @@
     .card-tag { position: absolute; top: 20px; right: 20px; font-size: 9px; letter-spacing: 1.5px; padding: 4px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
     .tag-sub { background: #e6efff; color: #1d4d99; }
     .tag-mano { background: #fff4d6; color: #8c6900; }
+    .tag-arriendo { background: #e8f5e9; color: #1b5e20; }
+    .tag-proveedor { background: #f3e5f5; color: #6a1b9a; }
+    .tag-flete { background: #fff3e0; color: #bf5500; }
     .card h3 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; margin: 6px 0 4px; letter-spacing: -0.2px; line-height: 1.25; }
     .card .rubro { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
 
@@ -545,7 +552,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v3.7</div>
+      <div class="subtitle">DIR-UACH/CC · v3.9</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -586,14 +593,17 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v3.7 · 2026</div>
+          <div class="version">DIR-UACH/CC · v3.9 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
         <div class="stats-grid">
-          <div class="stat-box"><div class="num" id="stat-contactos">—</div><div class="label">Contactos</div></div>
-          <div class="stat-box"><div class="num" id="stat-subs">—</div><div class="label">Subcontratos</div></div>
-          <div class="stat-box"><div class="num" id="stat-mano">—</div><div class="label">Mano de obra</div></div>
+          <div class="stat-box"><div class="num" id="stat-contactos">—</div><div class="label">Total</div></div>
+          <div class="stat-box"><div class="num" id="stat-subs">—</div><div class="label"><span class="label-icon">🔧</span>Subcontratos</div></div>
+          <div class="stat-box"><div class="num" id="stat-mano">—</div><div class="label"><span class="label-icon">👷</span>Mano de obra</div></div>
+          <div class="stat-box"><div class="num" id="stat-arriendo">—</div><div class="label"><span class="label-icon">🏗️</span>Arriendo</div></div>
+          <div class="stat-box"><div class="num" id="stat-proveedor">—</div><div class="label"><span class="label-icon">📦</span>Proveedores</div></div>
+          <div class="stat-box"><div class="num" id="stat-flete">—</div><div class="label"><span class="label-icon">🚛</span>Fletes</div></div>
         </div>
       </div>
     </div>
@@ -611,11 +621,15 @@
     <div class="toolbar">
       <input type="text" id="search" placeholder="Buscar por rubro, nombre, ciudad o quién lo recomendó..." class="search-input" />
       <button class="chip filter-tipo active" data-tipo="todos">Todos</button>
-      <button class="chip filter-tipo" data-tipo="Subcontrato">Subcontrato</button>
-      <button class="chip filter-tipo" data-tipo="Mano de obra">Mano de obra</button>
+      <button class="chip filter-tipo" data-tipo="Subcontrato">🔧 Subcontrato</button>
+      <button class="chip filter-tipo" data-tipo="Mano de obra">👷 Mano de obra</button>
+      <button class="chip filter-tipo" data-tipo="Arriendo">🏗️ Arriendo</button>
+      <button class="chip filter-tipo" data-tipo="Proveedor">📦 Proveedor</button>
+      <button class="chip filter-tipo" data-tipo="Flete">🚛 Flete</button>
       <button class="chip filter-region active" data-region="todas">Todas</button>
       <button class="chip filter-region" data-region="Los Ríos">Los Ríos</button>
       <button class="chip filter-region" data-region="Los Lagos">Los Lagos</button>
+      <button class="chip filter-region" data-region="otras">Otras regiones</button>
       <div class="view-switcher" style="margin-left:auto;">
         <button class="view-btn" id="btn-view-lista" onclick="switchView('lista')" title="Vista lista">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -641,7 +655,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v3.7 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v3.9 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -671,7 +685,13 @@
       <label>Nombre / Empresa *</label>
       <input type="text" id="f-nombre" required>
       <label>Tipo</label>
-      <select id="f-tipo"><option>Subcontrato</option><option>Mano de obra</option></select>
+      <select id="f-tipo" onchange="poblarListaRubros()">
+        <option value="Subcontrato">🔧 Subcontrato</option>
+        <option value="Mano de obra">👷 Mano de obra</option>
+        <option value="Arriendo">🏗️ Arriendo</option>
+        <option value="Proveedor">📦 Proveedor</option>
+        <option value="Flete">🚛 Flete</option>
+      </select>
       <label>Rubro</label>
       <input type="text" id="f-rubro" list="rubros-list" placeholder="Escribí o elegí de la lista..." autocomplete="off">
       <datalist id="rubros-list"></datalist>
@@ -686,10 +706,35 @@
       </label>
       <label>Email</label>
       <input type="email" id="f-email">
-      <label>Ciudad</label>
-      <input type="text" id="f-ciudad">
+      <label>Ciudades de cobertura</label>
+      <input type="text" id="f-ciudad" placeholder="Ej: Valdivia, Osorno, La Unión">
+      <div class="help-text">Si trabaja en varias ciudades, separá con comas.</div>
       <label>Región</label>
-      <select id="f-region"><option>Los Ríos</option><option>Los Lagos</option></select>
+      <select id="f-region">
+        <optgroup label="Sur (donde está la mayoría)">
+          <option>Los Ríos</option>
+          <option>Los Lagos</option>
+          <option>La Araucanía</option>
+          <option>Aysén</option>
+          <option>Magallanes</option>
+        </optgroup>
+        <optgroup label="Centro">
+          <option>Valparaíso</option>
+          <option>Metropolitana de Santiago</option>
+          <option>O'Higgins</option>
+          <option>Maule</option>
+          <option>Ñuble</option>
+          <option>Biobío</option>
+        </optgroup>
+        <optgroup label="Norte">
+          <option>Arica y Parinacota</option>
+          <option>Tarapacá</option>
+          <option>Antofagasta</option>
+          <option>Atacama</option>
+          <option>Coquimbo</option>
+        </optgroup>
+        <option>Otra / Sin especificar</option>
+      </select>
 
       <div class="section-title">Redes sociales (opcional)</div>
       <div class="help-text">Podés pegar el link completo o solo el @usuario.</div>
@@ -817,7 +862,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 3.7 · Mayo 2026
+        DIR-UACH/CC · Versión 3.9 · Mayo 2026
       </div>
     </div>
   </div>
@@ -831,6 +876,27 @@
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
     function iniciales(nombre) { return (nombre || '').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+
+    // === HELPERS DE TIPO ===
+    const TIPO_CONFIG = {
+      'Subcontrato':  { icono: '🔧', tagClass: 'tag-sub',       miniClass: 'subcontrato', miniLabel: 'SUBCONTR.' },
+      'Mano de obra': { icono: '👷', tagClass: 'tag-mano',      miniClass: 'mano',        miniLabel: 'M.OBRA'    },
+      'Arriendo':     { icono: '🏗️', tagClass: 'tag-arriendo',  miniClass: 'arriendo',    miniLabel: 'ARRIENDO'  },
+      'Proveedor':    { icono: '📦', tagClass: 'tag-proveedor', miniClass: 'proveedor',   miniLabel: 'PROVEEDOR' },
+      'Flete':        { icono: '🚛', tagClass: 'tag-flete',     miniClass: 'flete',       miniLabel: 'FLETE'     }
+    };
+    function getTipoConfig(tipo) {
+      return TIPO_CONFIG[tipo] || { icono: '', tagClass: 'tag-sub', miniClass: 'subcontrato', miniLabel: (tipo || '').toUpperCase() };
+    }
+
+    // Formatea la zona del contacto: maneja ciudades múltiples + región
+    function formatZona(c) {
+      const ciudad = String(c.ciudad || '').trim();
+      const region = String(c.region || '').trim();
+      if (!ciudad && !region) return '—';
+      if (ciudad && region) return ciudad + ' · ' + region;
+      return ciudad || region;
+    }
 
     function normalizeUrl(raw, network) {
       if (!raw) return '';
@@ -904,9 +970,15 @@
     function paintStats() {
       const subs = DATA.contactos.filter(c => c.tipo === 'Subcontrato').length;
       const mano = DATA.contactos.filter(c => c.tipo === 'Mano de obra').length;
+      const arriendo = DATA.contactos.filter(c => c.tipo === 'Arriendo').length;
+      const proveedor = DATA.contactos.filter(c => c.tipo === 'Proveedor').length;
+      const flete = DATA.contactos.filter(c => c.tipo === 'Flete').length;
       document.getElementById('stat-contactos').textContent = DATA.contactos.length;
       document.getElementById('stat-subs').textContent = subs;
       document.getElementById('stat-mano').textContent = mano;
+      document.getElementById('stat-arriendo').textContent = arriendo;
+      document.getElementById('stat-proveedor').textContent = proveedor;
+      document.getElementById('stat-flete').textContent = flete;
       document.getElementById('cnt-directorio').textContent = DATA.contactos.length;
     }
 
@@ -935,7 +1007,14 @@
     function getFilteredContactos() {
       return DATA.contactos.filter(c => {
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
-        if (state.region !== 'todas' && c.region !== state.region) return false;
+        if (state.region !== 'todas') {
+          if (state.region === 'otras') {
+            // "Otras" = todo lo que no es Los Ríos ni Los Lagos (incluye vacío/otra/Sin especificar)
+            if (c.region === 'Los Ríos' || c.region === 'Los Lagos') return false;
+          } else if (c.region !== state.region) {
+            return false;
+          }
+        }
         if (state.q) {
           const q = state.q.toLowerCase();
           const hay = [c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' ').toLowerCase();
@@ -959,8 +1038,9 @@
         </div>
       `;
       const rows = data.map(c => {
-        const tipoClass = c.tipo === 'Mano de obra' ? 'mano' : 'subcontrato';
-        const tipoLabel = c.tipo === 'Mano de obra' ? 'M.OBRA' : 'SUBCONTR.';
+        const tipoCfg = getTipoConfig(c.tipo);
+        const tipoClass = tipoCfg.miniClass;
+        const tipoLabel = tipoCfg.miniLabel;
         const recs = getRecomendacionesDe(c);
         const recCount = recs.length;
         const shown = recs.slice(0, 3);
@@ -969,7 +1049,7 @@
         const countTxt = recCount === 0 ? '<span class="count-text">—</span>' : `<span class="count-text">${recCount} ${recCount === 1 ? 'persona' : 'personas'}</span>`;
         return `
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
-            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoLabel}</span></div>
+            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoLabel}</span></div>
             <div class="col-rubro">${esc(c.rubro)}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
           </div>
@@ -1007,7 +1087,8 @@
         return;
       }
       grid.innerHTML = data.map(c => {
-        const tagClass = c.tipo === 'Mano de obra' ? 'tag-mano' : 'tag-sub';
+        const tipoCfg = getTipoConfig(c.tipo);
+        const tagClass = tipoCfg.tagClass;
         const numeroId = (c.id || '').toUpperCase();
         const wa = String(c.whatsapp || '').replace(/\D/g,'');
         const socials = socialIconsHtml(c);
@@ -1017,13 +1098,13 @@
         const extra = recCount - shown.length;
         return `
           <div class="card" onclick="openDetailModal('${esc(c.id)}')">
-            <span class="card-tag ${tagClass}">${esc(c.tipo)}</span>
+            <span class="card-tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
             <h3 class="serif">${esc(c.nombre)}</h3>
             <div class="rubro">${esc(c.rubro)}</div>
             <div class="socials">${socials}</div>
             <div class="info-row"><div class="label">Contacto</div><div class="value">${esc(c.contacto || '—')}</div></div>
             <div class="info-row"><div class="label">Fono</div><div class="value">${esc(c.fono || '—')}</div></div>
-            <div class="info-row"><div class="label">Zona</div><div class="value">${esc(c.ciudad || '')}, ${esc(c.region || '')}</div></div>
+            <div class="info-row"><div class="label">Zona</div><div class="value">${esc(formatZona(c))}</div></div>
             <div class="rating-bar">
               <div class="rec-summary">
                 <span class="rec-label">Recomienda${recCount === 1 ? '' : 'n'}</span>
@@ -1068,47 +1149,61 @@
     });
     document.getElementById('search').addEventListener('input', e => { state.q = e.target.value; renderContactos(); });
 
-    // === Lista de rubros estándar (fija en el código) ===
-    const RUBROS_ESTANDAR = [
-      // Obra gruesa
-      'Movimiento de tierras',
-      'Hormigones y radieres',
-      'Albañilería',
-      'Estructuras de madera',
-      'Estructuras de acero',
-      'Techumbres y cubiertas',
-      // Instalaciones
-      'Instalaciones eléctricas',
-      'Instalaciones sanitarias',
-      'Instalaciones de gas',
-      'Climatización y calefacción',
-      // Terminaciones
-      'Yeso cartón y tabiquería',
-      'Pinturas',
-      'Pavimentos y revestimientos',
-      'Aluminio y vidrios',
-      'Carpintería de terminaciones',
-      'Estucos y revestimientos',
-      // Servicios
-      'Aislaciones e impermeabilizaciones',
-      'Áridos y materiales',
-      'Arriendo de maquinaria',
-      'Topografía y replanteos'
-    ];
+    // === Lista de rubros estándar por TIPO ===
+    const RUBROS_POR_TIPO = {
+      'Subcontrato': [
+        'Movimiento de tierras', 'Hormigones', 'Albañilería',
+        'Instalaciones eléctricas', 'Instalaciones sanitarias',
+        'Climatización', 'Carpintería de obra', 'Cubiertas y techumbres',
+        'Pavimentos', 'Pinturas', 'Yeso y volcanita',
+        'Cerrajería metálica', 'Aluminio y vidrio',
+        'Demoliciones', 'Excavaciones'
+      ],
+      'Mano de obra': [
+        'Maestro albañil', 'Maestro carpintero', 'Maestro gasfíter',
+        'Maestro enfierrador', 'Maestro eléctrico', 'Maestro pintor',
+        'Cuadrilla', 'Jornal', 'Ayudante', 'Operador maquinaria'
+      ],
+      'Arriendo': [
+        'Mini-bobcat', 'Retroexcavadora', 'Excavadora', 'Grúa horquilla',
+        'Camión tolva', 'Andamios', 'Generador eléctrico', 'Compresor',
+        'Mezcladora hormigón', 'Pluma/Hiab', 'Vibrador hormigón',
+        'Placa compactadora', 'Soldadora', 'Herramientas eléctricas'
+      ],
+      'Proveedor': [
+        'Ferretería', 'Maderera', 'Hormigonera', 'Vidriería',
+        'Cerámicas y porcelanatos', 'Sanitarios y grifería',
+        'Pinturas y barnices', 'Electricidad y cables',
+        'Plomería y PVC', 'Fierro y perfiles', 'Áridos y arena',
+        'Mallas y tejidos', 'Acopio materiales', 'Aislantes térmicos'
+      ],
+      'Flete': [
+        'Flete urbano', 'Flete interprovincial', 'Camión 3/4',
+        'Camión rampa', 'Flete con pluma', 'Mudanza obra',
+        'Traslado maquinaria', 'Traslado escombros', 'Flete express'
+      ]
+    };
 
-    // Llena el datalist mezclando rubros estándar + los que ya hay cargados
+    // Llena el datalist según el tipo elegido + rubros del MISMO tipo ya cargados
     function poblarListaRubros() {
       const datalist = document.getElementById('rubros-list');
       if (!datalist) return;
 
-      const rubrosUsados = [...new Set(
+      const tipoSel = document.getElementById('f-tipo');
+      const tipoActual = tipoSel ? tipoSel.value : 'Subcontrato';
+
+      const rubrosBase = RUBROS_POR_TIPO[tipoActual] || [];
+
+      // Sumar rubros ya cargados que sean del MISMO tipo (mantiene consistencia)
+      const rubrosUsadosMismoTipo = [...new Set(
         DATA.contactos
+          .filter(c => c.tipo === tipoActual)
           .map(c => (c.rubro || '').trim())
           .filter(r => r.length > 0)
       )];
 
-      const todos = [...RUBROS_ESTANDAR];
-      rubrosUsados.forEach(r => {
+      const todos = [...rubrosBase];
+      rubrosUsadosMismoTipo.forEach(r => {
         const yaEsta = todos.some(t => t.toLowerCase() === r.toLowerCase());
         if (!yaEsta) todos.push(r);
       });
@@ -1325,16 +1420,17 @@
       if (!c) return;
       currentDetailContact = c;
       const recs = getRecomendacionesDe(c);
-      const tagClass = c.tipo === 'Mano de obra' ? 'tag-mano' : 'tag-sub';
+      const tipoCfg = getTipoConfig(c.tipo);
+      const tagClass = tipoCfg.tagClass;
       const socials = socialIconsHtml(c);
       const wa = String(c.whatsapp || c.fono || '').replace(/\D/g,'');
 
       const html = `
         <button class="modal-close" onclick="closeDetailModal()">×</button>
         <div class="detail-head">
-          <span class="tag ${tagClass}">${esc(c.tipo)}</span>
+          <span class="tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
           <h3 class="serif">${esc(c.nombre)}</h3>
-          <div class="rubro">${esc(c.rubro)} · ${esc(c.ciudad || '')}, ${esc(c.region || '')}</div>
+          <div class="rubro">${esc(c.rubro)} · ${esc(formatZona(c))}</div>
           ${socials ? `<div class="socials" style="margin-bottom: 16px;">${socials}</div>` : ''}
         </div>
 
