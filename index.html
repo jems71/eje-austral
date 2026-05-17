@@ -24,9 +24,6 @@
       --green: #25d366;
       --amber: #d97706;
       --red: #b91c1c;
-      --ig-1: #f09433; --ig-3: #dc2743; --ig-5: #bc1888;
-      --fb: #1877f2; --yt: #ff0000; --tt: #000;
-      --li: #0a66c2; --web: #475569;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 0; -webkit-font-smoothing: antialiased; }
@@ -268,18 +265,6 @@
     .tag-flete { background: #fff3e0; color: #bf5500; }
     .card h3 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; margin: 6px 0 4px; letter-spacing: -0.2px; line-height: 1.25; }
     .card .rubro { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
-
-    .socials { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
-    .socials:empty { display: none; }
-    .social-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; text-decoration: none; transition: transform 0.15s, box-shadow 0.15s; }
-    .social-icon:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
-    .social-icon svg { width: 14px; height: 14px; fill: currentColor; }
-    .social-ig { background: linear-gradient(45deg, var(--ig-1), var(--ig-3), var(--ig-5)); }
-    .social-fb { background: var(--fb); }
-    .social-yt { background: var(--yt); }
-    .social-tt { background: var(--tt); }
-    .social-li { background: var(--li); }
-    .social-web { background: var(--web); }
 
     .info-row { display: grid; grid-template-columns: 70px 1fr; gap: 8px; font-size: 13px; padding: 6px 0; line-height: 1.5; }
     .info-row .label { color: var(--text-muted); font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; padding-top: 2px; font-weight: 500; }
@@ -607,7 +592,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v4.1</div>
+      <div class="subtitle">DIR-UACH/CC · v5.0</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -648,7 +633,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v4.1 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.0 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -727,7 +712,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v4.1 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.0 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -807,15 +792,6 @@
         </optgroup>
         <option>Otra / Sin especificar</option>
       </select>
-
-      <div class="section-title">Redes sociales (opcional)</div>
-      <div class="help-text">Podés pegar el link completo o solo el @usuario.</div>
-      <label>Instagram</label><input type="text" id="f-instagram" placeholder="@usuario o link">
-      <label>Facebook</label><input type="text" id="f-facebook" placeholder="usuario o link">
-      <label>YouTube</label><input type="text" id="f-youtube" placeholder="@canal o link">
-      <label>TikTok</label><input type="text" id="f-tiktok" placeholder="@usuario o link">
-      <label>LinkedIn</label><input type="text" id="f-linkedin" placeholder="usuario o link">
-      <label>Sitio web</label><input type="text" id="f-web" placeholder="empresa.cl">
 
       <div class="section-title">Notas y referencia</div>
       <label>Notas / Reseña</label><textarea id="f-notas" rows="3"></textarea>
@@ -934,7 +910,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 4.1 · Mayo 2026
+        DIR-UACH/CC · Versión 5.0 · Mayo 2026
       </div>
     </div>
   </div>
@@ -968,49 +944,6 @@
       if (!ciudad && !region) return '—';
       if (ciudad && region) return ciudad + ' · ' + region;
       return ciudad || region;
-    }
-
-    function normalizeUrl(raw, network) {
-      if (!raw) return '';
-      let s = String(raw).trim();
-      if (!s) return '';
-      const clean = s.replace(/^@/, '').replace(/\s/g, '');
-      if (/^https?:\/\//i.test(clean)) return clean.replace(/\/$/, '');
-      if (/^(www\.)?(instagram|facebook|fb|youtube|youtu|tiktok|linkedin)\.com/i.test(clean)) return 'https://' + clean.replace(/\/$/, '');
-      const user = clean.split('/')[0];
-      switch (network) {
-        case 'instagram': return `https://instagram.com/${user}`;
-        case 'facebook': return `https://facebook.com/${user}`;
-        case 'youtube': return `https://youtube.com/@${user.replace(/^@/, '')}`;
-        case 'tiktok': return `https://tiktok.com/@${user.replace(/^@/, '')}`;
-        case 'linkedin': return `https://linkedin.com/in/${user}`;
-        case 'web': return /^https?:\/\//i.test(clean) ? clean : `https://${clean}`;
-        default: return clean;
-      }
-    }
-
-    const socialSVGs = {
-      instagram: '<svg viewBox="0 0 24 24"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16zM12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63a5.86 5.86 0 0 0-2.13 1.38A5.86 5.86 0 0 0 .63 4.14C.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.8.73 1.48 1.38 2.13.65.65 1.33 1.07 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56a5.86 5.86 0 0 0 2.13-1.38 5.86 5.86 0 0 0 1.38-2.13c.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91a5.86 5.86 0 0 0-1.38-2.13A5.86 5.86 0 0 0 19.86.63C19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84zm0 10.16A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>',
-      facebook: '<svg viewBox="0 0 24 24"><path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.7 4.53-4.7 1.31 0 2.69.24 2.69.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.27h3.33l-.53 3.5h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>',
-      youtube: '<svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1C24 15.9 24 12 24 12s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>',
-      tiktok: '<svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.66a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.09z"/></svg>',
-      linkedin: '<svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.95v5.66H9.35V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.36-1.85c3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>',
-      web: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
-    };
-
-    function socialIconsHtml(c) {
-      const networks = [
-        { key: 'instagram', class: 'social-ig', title: 'Instagram' },
-        { key: 'facebook', class: 'social-fb', title: 'Facebook' },
-        { key: 'youtube', class: 'social-yt', title: 'YouTube' },
-        { key: 'tiktok', class: 'social-tt', title: 'TikTok' },
-        { key: 'linkedin', class: 'social-li', title: 'LinkedIn' },
-        { key: 'web', class: 'social-web', title: 'Sitio web' }
-      ];
-      return networks
-        .filter(n => c[n.key] && String(c[n.key]).trim())
-        .map(n => `<a class="social-icon ${n.class}" href="${esc(c[n.key])}" target="_blank" rel="noopener" title="${n.title}" onclick="event.stopPropagation()">${socialSVGs[n.key]}</a>`)
-        .join('');
     }
 
     function showError(msg) {
@@ -1163,7 +1096,6 @@
         const tagClass = tipoCfg.tagClass;
         const numeroId = (c.id || '').toUpperCase();
         const wa = String(c.whatsapp || '').replace(/\D/g,'');
-        const socials = socialIconsHtml(c);
         const recs = getRecomendacionesDe(c);
         const recCount = recs.length;
         const shown = recs.slice(0, 3);
@@ -1173,7 +1105,6 @@
             <span class="card-tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
             <h3 class="serif">${esc(c.nombre)}</h3>
             <div class="rubro">${esc(c.rubro)}</div>
-            <div class="socials">${socials}</div>
             <div class="info-row"><div class="label">Contacto</div><div class="value">${esc(c.contacto || '—')}</div></div>
             <div class="info-row"><div class="label">Fono</div><div class="value">${esc(c.fono || '—')}</div></div>
             <div class="info-row"><div class="label">Zona</div><div class="value">${esc(formatZona(c))}</div></div>
@@ -1469,13 +1400,7 @@
         region: document.getElementById('f-region').value,
         ciudad: document.getElementById('f-ciudad').value.trim(),
         recomendadoPor: recom,
-        notas: document.getElementById('f-notas').value.trim(),
-        instagram: normalizeUrl(document.getElementById('f-instagram').value, 'instagram'),
-        facebook: normalizeUrl(document.getElementById('f-facebook').value, 'facebook'),
-        youtube: normalizeUrl(document.getElementById('f-youtube').value, 'youtube'),
-        tiktok: normalizeUrl(document.getElementById('f-tiktok').value, 'tiktok'),
-        linkedin: normalizeUrl(document.getElementById('f-linkedin').value, 'linkedin'),
-        web: normalizeUrl(document.getElementById('f-web').value, 'web')
+        notas: document.getElementById('f-notas').value.trim()
       };
       // Chequear duplicados
       const dups = findDuplicates(nuevo);
@@ -1494,7 +1419,6 @@
       const recs = getRecomendacionesDe(c);
       const tipoCfg = getTipoConfig(c.tipo);
       const tagClass = tipoCfg.tagClass;
-      const socials = socialIconsHtml(c);
       const wa = String(c.whatsapp || c.fono || '').replace(/\D/g,'');
 
       const html = `
@@ -1503,7 +1427,6 @@
           <span class="tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
           <h3 class="serif">${esc(c.nombre)}</h3>
           <div class="rubro">${esc(c.rubro)} · ${esc(formatZona(c))}</div>
-          ${socials ? `<div class="socials" style="margin-bottom: 16px;">${socials}</div>` : ''}
         </div>
 
         <div style="margin-bottom: 18px; font-size: 13px; line-height: 1.7;">
