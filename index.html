@@ -592,7 +592,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v5.2</div>
+      <div class="subtitle">DIR-UACH/CC · v5.3</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -633,7 +633,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v5.2 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.3 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -712,7 +712,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v5.2 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.3 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -790,6 +790,8 @@
       </select>
 
       <div class="section-title">Notas y referencia</div>
+      <label>Último proyecto</label>
+      <input type="text" id="f-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
       <label>Notas / Reseña</label><textarea id="f-notas" rows="3"></textarea>
       <label>Tu nombre (quién recomienda) *</label><input type="text" id="f-recom" required placeholder="Tu nombre completo">
       <div class="help-text">Es obligatorio. Sirve para que el grupo sepa quién aporta cada contacto.</div>
@@ -906,7 +908,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 5.2 · Mayo 2026
+        DIR-UACH/CC · Versión 5.3 · Mayo 2026
       </div>
     </div>
   </div>
@@ -1329,6 +1331,7 @@
         region: document.getElementById('f-region').value,
         ciudad: document.getElementById('f-ciudad').value.trim(),
         recomendadoPor: recom,
+        ultimoProyecto: document.getElementById('f-ultimo-proyecto').value.trim(),
         notas: document.getElementById('f-notas').value.trim()
       };
       // Chequear duplicados
