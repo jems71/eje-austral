@@ -592,7 +592,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v5.0</div>
+      <div class="subtitle">DIR-UACH/CC · v5.1</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -633,7 +633,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v5.0 · 2026</div>
+          <div class="version">DIR-UACH/CC · v5.1 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -712,7 +712,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v5.0 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v5.1 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -742,7 +742,7 @@
       <label>Nombre / Empresa *</label>
       <input type="text" id="f-nombre" required>
       <label>Tipo</label>
-      <select id="f-tipo" onchange="poblarListaRubros()">
+      <select id="f-tipo">
         <option value="Subcontrato">🔧 Subcontrato</option>
         <option value="Mano de obra">👷 Mano de obra</option>
         <option value="Arriendo">🏗️ Arriendo</option>
@@ -750,9 +750,7 @@
         <option value="Flete">🚛 Flete</option>
       </select>
       <label>Rubro</label>
-      <input type="text" id="f-rubro" list="rubros-list" placeholder="Escribí o elegí de la lista..." autocomplete="off">
-      <datalist id="rubros-list"></datalist>
-      <div class="help-text">Tipeá y elegí una opción, o escribí un rubro nuevo si no está.</div>
+      <input type="text" id="f-rubro" placeholder="Ej: Instalaciones eléctricas" autocomplete="off">
       <label>Persona de contacto</label>
       <input type="text" id="f-contacto" placeholder="Ej: Don Hernán Maldonado">
       <label>Teléfono *</label>
@@ -910,7 +908,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 5.0 · Mayo 2026
+        DIR-UACH/CC · Versión 5.1 · Mayo 2026
       </div>
     </div>
   </div>
@@ -1151,73 +1149,7 @@
       });
     });
     document.getElementById('search').addEventListener('input', e => { state.q = e.target.value; renderContactos(); });
-
-    // === Lista de rubros estándar por TIPO ===
-    const RUBROS_POR_TIPO = {
-      'Subcontrato': [
-        'Movimiento de tierras', 'Hormigones', 'Albañilería',
-        'Instalaciones eléctricas', 'Instalaciones sanitarias',
-        'Climatización', 'Carpintería de obra', 'Cubiertas y techumbres',
-        'Pavimentos', 'Pinturas', 'Yeso y volcanita',
-        'Cerrajería metálica', 'Aluminio y vidrio',
-        'Demoliciones', 'Excavaciones'
-      ],
-      'Mano de obra': [
-        'Maestro albañil', 'Maestro carpintero', 'Maestro gasfíter',
-        'Maestro enfierrador', 'Maestro eléctrico', 'Maestro pintor',
-        'Cuadrilla', 'Jornal', 'Ayudante', 'Operador maquinaria'
-      ],
-      'Arriendo': [
-        'Mini-bobcat', 'Retroexcavadora', 'Excavadora', 'Grúa horquilla',
-        'Camión tolva', 'Andamios', 'Generador eléctrico', 'Compresor',
-        'Mezcladora hormigón', 'Pluma/Hiab', 'Vibrador hormigón',
-        'Placa compactadora', 'Soldadora', 'Herramientas eléctricas'
-      ],
-      'Proveedor': [
-        'Ferretería', 'Maderera', 'Hormigonera', 'Vidriería',
-        'Cerámicas y porcelanatos', 'Sanitarios y grifería',
-        'Pinturas y barnices', 'Electricidad y cables',
-        'Plomería y PVC', 'Fierro y perfiles', 'Áridos y arena',
-        'Mallas y tejidos', 'Acopio materiales', 'Aislantes térmicos'
-      ],
-      'Flete': [
-        'Flete urbano', 'Flete interprovincial', 'Camión 3/4',
-        'Camión rampa', 'Flete con pluma', 'Mudanza obra',
-        'Traslado maquinaria', 'Traslado escombros', 'Flete express'
-      ]
-    };
-
-    // Llena el datalist según el tipo elegido + rubros del MISMO tipo ya cargados
-    function poblarListaRubros() {
-      const datalist = document.getElementById('rubros-list');
-      if (!datalist) return;
-
-      const tipoSel = document.getElementById('f-tipo');
-      const tipoActual = tipoSel ? tipoSel.value : 'Subcontrato';
-
-      const rubrosBase = RUBROS_POR_TIPO[tipoActual] || [];
-
-      // Sumar rubros ya cargados que sean del MISMO tipo (mantiene consistencia)
-      const rubrosUsadosMismoTipo = [...new Set(
-        DATA.contactos
-          .filter(c => c.tipo === tipoActual)
-          .map(c => (c.rubro || '').trim())
-          .filter(r => r.length > 0)
-      )];
-
-      const todos = [...rubrosBase];
-      rubrosUsadosMismoTipo.forEach(r => {
-        const yaEsta = todos.some(t => t.toLowerCase() === r.toLowerCase());
-        if (!yaEsta) todos.push(r);
-      });
-
-      todos.sort((a, b) => a.localeCompare(b, 'es'));
-
-      datalist.innerHTML = todos.map(r => `<option value="${esc(r)}">`).join('');
-    }
-
     function openAddModal() {
-      poblarListaRubros();
       // Resetear checkbox de WhatsApp a su valor por defecto (marcado)
       const cbWa = document.getElementById('f-tiene-whatsapp');
       if (cbWa) cbWa.checked = true;
