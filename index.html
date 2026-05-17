@@ -151,6 +151,42 @@
     .list-row .col-recom .avatar-mini:first-child { margin-left: 0; }
     .list-row .col-recom .count-text { color: var(--text-muted); margin-left: 4px; }
 
+    /* === MODAL DUPLICADOS === */
+    .dup-card {
+      background: #fffdf7; border: 1px solid var(--uach-gold);
+      border-radius: 6px; padding: 14px 16px; margin: 12px 0;
+    }
+    .dup-card .dup-name {
+      font-family: 'Fraunces', serif; font-size: 16px;
+      font-weight: 600; color: var(--text); margin-bottom: 4px;
+    }
+    .dup-card .dup-meta {
+      font-size: 12px; color: var(--text-muted); margin-bottom: 10px;
+    }
+    .dup-card .dup-meta strong { color: var(--text); }
+    .dup-card .dup-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .dup-card .dup-actions button {
+      padding: 6px 12px; font-size: 12px; border-radius: 4px;
+      border: 1px solid var(--uach-blue); background: var(--uach-blue);
+      color: #fff; cursor: pointer; font-weight: 500;
+    }
+    .dup-card .dup-actions button.secondary {
+      background: transparent; color: var(--uach-blue);
+    }
+    .dup-banner {
+      background: #fff4d6; border-left: 3px solid var(--uach-gold);
+      padding: 12px 14px; margin-bottom: 14px; border-radius: 4px;
+      font-size: 13px; line-height: 1.5; color: #6b5300;
+    }
+    .dup-banner.exact {
+      background: #ffe9e9; border-left-color: #c0392b; color: #8c2317;
+    }
+    .dup-banner .dup-icon {
+      display: inline-block; margin-right: 6px; font-size: 16px;
+    }
+
     /* Mobile: lista adaptada */
     @media (max-width: 720px) {
       .list-header { display: none; }
@@ -509,7 +545,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v3.6</div>
+      <div class="subtitle">DIR-UACH/CC · v3.7</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -532,7 +568,7 @@
       <span class="lock">🔒 ACCESO RESTRINGIDO</span>
       <span>Solo titulados de Construcción Civil e Ingeniería en Construcción · UACh</span>
     </div>
-    <span class="group-badge">GRUPO WHATSAPP</span>
+    <span class="group-badge">GRUPO WHATSAPP · 28 MIEMBROS</span>
   </div>
 
   <section class="hero">
@@ -550,7 +586,7 @@
       </div>
       <div class="hero-content">
         <div class="hero-text">
-          <div class="version">DIR-UACH/CC · v3.6 · 2026</div>
+          <div class="version">DIR-UACH/CC · v3.7 · 2026</div>
           <h2>Lo que el grupo va recopilando, <em>en un solo lugar.</em></h2>
           <p>Subcontratos, maestros y cuadrillas que los titulados hemos contratado en Los Ríos y Los Lagos. Cada contacto trae nombre, fono, ubicación y quién del grupo lo puso. Si te sirve, úsalo. Si trabajaste con alguien bueno, súbelo.</p>
         </div>
@@ -605,7 +641,7 @@
     <div class="footer-inner">
       <div class="footer-left">
         <div class="title">Eje Austral</div>
-        <div class="subtitle">DIR-UACH/CC · v3.6 · 2026</div>
+        <div class="subtitle">DIR-UACH/CC · v3.7 · 2026</div>
       </div>
       <div class="footer-right">
         <button class="footer-btn" onclick="openAboutModal()">
@@ -705,6 +741,20 @@
     </div>
   </div>
 
+  <!-- === MODAL: Duplicados detectados === -->
+  <div id="modal-dup" class="modal-bg hidden">
+    <div class="modal" style="max-width: 520px;">
+      <button class="modal-close" onclick="closeDupModal()">×</button>
+      <h3 class="serif" id="dup-title">⚠️ Posible duplicado</h3>
+      <div id="dup-banner-container"></div>
+      <div id="dup-list-container"></div>
+      <div class="modal-actions" style="margin-top: 16px;">
+        <button class="btn-secondary" onclick="closeDupModal()">Cancelar</button>
+        <button class="btn-primary" id="btn-force-add" onclick="forceAddContact()">Agregar como nuevo igual</button>
+      </div>
+    </div>
+  </div>
+
   <!-- === MODAL: Acerca === -->
   <div id="modal-about" class="modal-bg hidden">
     <div class="modal">
@@ -767,7 +817,7 @@
       </div>
 
       <div class="version-info">
-        DIR-UACH/CC · Versión 3.6 · Mayo 2026
+        DIR-UACH/CC · Versión 3.7 · Mayo 2026
       </div>
     </div>
   </div>
@@ -1077,13 +1127,168 @@
     }
     function closeAddModal() { document.getElementById('modal-add').classList.add('hidden'); }
 
-    async function addContact() {
+    // Variable global para retener el contacto pendiente de agregar (si fuerza el alta)
+    let pendingContact = null;
+
+    // Normalizar texto: minúsculas, sin tildes, sin espacios extras
+    function normText(s) {
+      return String(s || '')
+        .toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+    // Normalizar teléfono: solo dígitos
+    function normPhone(s) {
+      return String(s || '').replace(/\D/g, '');
+    }
+
+    function findDuplicates(nuevo) {
+      const nombreNorm = normText(nuevo.nombre);
+      const fonoNorm = normPhone(nuevo.fono);
+      const result = { exact: [], samePhone: [], similar: [] };
+      DATA.contactos.forEach(c => {
+        const cNombre = normText(c.nombre);
+        const cFono = normPhone(c.fono);
+        // 1. Match exacto de nombre
+        if (nombreNorm && cNombre === nombreNorm) {
+          result.exact.push(c);
+          return;
+        }
+        // 2. Mismo teléfono (si ambos tienen tel y coinciden los últimos 8+ dígitos)
+        if (fonoNorm && cFono && fonoNorm.length >= 8 && cFono.length >= 8) {
+          // Comparar últimos 8 dígitos (ignora +56, prefijos, etc)
+          if (fonoNorm.slice(-8) === cFono.slice(-8)) {
+            result.samePhone.push(c);
+            return;
+          }
+        }
+        // 3. Nombre similar (incluye o es incluido + mínimo 4 chars)
+        if (nombreNorm && cNombre && nombreNorm.length >= 4 && cNombre.length >= 4) {
+          if (cNombre.includes(nombreNorm) || nombreNorm.includes(cNombre)) {
+            result.similar.push(c);
+          }
+        }
+      });
+      return result;
+    }
+
+    function showDupModal(dups, nuevo) {
+      pendingContact = nuevo;
+      const hasExact = dups.exact.length > 0;
+      const hasPhone = dups.samePhone.length > 0;
+      const hasSimilar = dups.similar.length > 0;
+
+      // Título y banner según tipo
+      const title = document.getElementById('dup-title');
+      const banner = document.getElementById('dup-banner-container');
+      const list = document.getElementById('dup-list-container');
+
+      let bannerHtml = '';
+      let listItems = [];
+
+      if (hasExact) {
+        title.textContent = '⚠️ Este contacto ya existe';
+        bannerHtml = `<div class="dup-banner exact">
+          <span class="dup-icon">💡</span>
+          <strong>Ya hay un contacto con ese nombre exacto.</strong><br>
+          Si trabajaste con ellos, mejor sumá tu recomendación al existente — así el grupo ve la confianza acumulada.
+        </div>`;
+        listItems = dups.exact.map(c => ({ c, action: 'recommend' }));
+      } else if (hasPhone) {
+        title.textContent = '📞 Mismo teléfono detectado';
+        bannerHtml = `<div class="dup-banner">
+          <span class="dup-icon">🔍</span>
+          Encontré otro contacto con el mismo teléfono. ¿Es la misma persona registrada con otro nombre?
+        </div>`;
+        listItems = dups.samePhone.map(c => ({ c, action: 'view' }));
+      } else if (hasSimilar) {
+        title.textContent = '🔍 Contactos parecidos';
+        bannerHtml = `<div class="dup-banner">
+          <span class="dup-icon">📝</span>
+          Encontré contactos con nombres similares. Revisá si es el mismo antes de agregar:
+        </div>`;
+        listItems = dups.similar.map(c => ({ c, action: 'view' }));
+      }
+
+      banner.innerHTML = bannerHtml;
+
+      list.innerHTML = listItems.map(({ c, action }) => {
+        const actionBtn = action === 'recommend'
+          ? `<button onclick="goToRecommend('${esc(c.id)}')">💬 Ver y recomendarlo</button>`
+          : `<button onclick="goToView('${esc(c.id)}')">👁️ Ver contacto</button>`;
+        return `
+          <div class="dup-card">
+            <div class="dup-name">${esc(c.nombre)}</div>
+            <div class="dup-meta">
+              <strong>${esc(c.rubro || '')}</strong>
+              ${c.ciudad ? ' · ' + esc(c.ciudad) : ''}
+              ${c.region ? ', ' + esc(c.region) : ''}
+              ${c.fono ? '<br>📞 ' + esc(c.fono) : ''}
+            </div>
+            <div class="dup-actions">
+              ${actionBtn}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('modal-dup').classList.remove('hidden');
+    }
+
+    function closeDupModal() {
+      document.getElementById('modal-dup').classList.add('hidden');
+      pendingContact = null;
+      // Re-habilitar botón de submit del modal de agregar
       const btn = document.getElementById('btn-submit');
+      if (btn) { btn.disabled = false; btn.textContent = 'Publicar'; }
+    }
+
+    function goToView(contactoId) {
+      closeDupModal();
+      closeAddModal();
+      openDetailModal(contactoId);
+    }
+
+    function goToRecommend(contactoId) {
+      closeDupModal();
+      closeAddModal();
+      openDetailModal(contactoId);
+      // Luego del modal de detalle, abrir el de recomendar
+      setTimeout(() => openRecModal(contactoId), 300);
+    }
+
+    async function forceAddContact() {
+      if (!pendingContact) return;
+      document.getElementById('modal-dup').classList.add('hidden');
+      await doSubmitContact(pendingContact);
+      pendingContact = null;
+    }
+
+    async function doSubmitContact(nuevo) {
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true; btn.textContent = 'Publicando...';
+      try {
+        const r = await apiFetch('/api/agregar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevo) });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        closeAddModal();
+        document.querySelectorAll('#modal-add input, #modal-add textarea').forEach(i => i.value = '');
+        await loadData();
+        alert('Contacto publicado correctamente.');
+      } catch (e) {
+        console.error(e);
+        alert('Error al publicar: ' + e.message);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Publicar';
+      }
+    }
+
+    async function addContact() {
       const nombre = document.getElementById('f-nombre').value.trim();
       const recom = document.getElementById('f-recom').value.trim();
       if (!nombre) { alert('El nombre del contacto es obligatorio'); return; }
       if (!recom) { alert('Por favor escribí TU nombre (quién recomienda). Es obligatorio para que el grupo sepa quién aportó el contacto.'); document.getElementById('f-recom').focus(); return; }
-      btn.disabled = true; btn.textContent = 'Publicando...';
       const nuevo = {
         tipo: document.getElementById('f-tipo').value,
         rubro: document.getElementById('f-rubro').value.trim(),
@@ -1105,20 +1310,14 @@
         linkedin: normalizeUrl(document.getElementById('f-linkedin').value, 'linkedin'),
         web: normalizeUrl(document.getElementById('f-web').value, 'web')
       };
-      try {
-        const r = await apiFetch('/api/agregar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(nuevo) });
-        const out = await r.json();
-        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
-        closeAddModal();
-        document.querySelectorAll('#modal-add input, #modal-add textarea').forEach(i => i.value = '');
-        await loadData();
-        alert('Contacto publicado correctamente.');
-      } catch (e) {
-        console.error(e);
-        alert('Error al publicar: ' + e.message);
-      } finally {
-        btn.disabled = false; btn.textContent = 'Publicar';
+      // Chequear duplicados
+      const dups = findDuplicates(nuevo);
+      const hasAny = dups.exact.length > 0 || dups.samePhone.length > 0 || dups.similar.length > 0;
+      if (hasAny) {
+        showDupModal(dups, nuevo);
+        return;
       }
+      await doSubmitContact(nuevo);
     }
 
     function openDetailModal(contactoId) {
@@ -1328,6 +1527,10 @@
     window.closeAboutModal = closeAboutModal;
     window.doLogin = doLogin;
     window.switchView = switchView;
+    window.closeDupModal = closeDupModal;
+    window.forceAddContact = forceAddContact;
+    window.goToView = goToView;
+    window.goToRecommend = goToRecommend;
     function copy(text) { navigator.clipboard.writeText(text); }
     window.copy = copy;
 
