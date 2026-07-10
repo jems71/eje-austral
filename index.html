@@ -190,6 +190,8 @@
     .list-row .col-nombre .tipo-mini.arriendo { background: #e8f5e9; color: #1b5e20; }
     .list-row .col-nombre .tipo-mini.proveedor { background: #f3e5f5; color: #6a1b9a; }
     .list-row .col-nombre .tipo-mini.flete { background: #fff3e0; color: #bf5500; }
+    .list-row .col-nombre .tipo-mini.profesional { background: #e0f2fe; color: #075985; }
+    .list-row .col-nombre .tipo-mini.vendedor { background: #fce4ec; color: #ad1457; }
     .list-row .col-rubro { font-size: 13px; color: var(--text-muted); }
     .list-row .col-recom {
       display: flex; align-items: center; gap: 6px; font-size: 12px;
@@ -272,6 +274,7 @@
     .tag-proveedor { background: #f3e5f5; color: #6a1b9a; }
     .tag-flete { background: #fff3e0; color: #bf5500; }
     .tag-profesional { background: #e0f2fe; color: #075985; }
+    .tag-vendedor { background: #fce4ec; color: #ad1457; }
     .card h3 { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 600; margin: 6px 0 4px; letter-spacing: -0.2px; line-height: 1.25; }
     .card .rubro { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
 
@@ -665,6 +668,7 @@
           <div class="stat-box"><div class="num" id="stat-proveedor">—</div><div class="label"><span class="label-icon">📦</span>Proveedores</div></div>
           <div class="stat-box"><div class="num" id="stat-flete">—</div><div class="label"><span class="label-icon">🚛</span>Fletes</div></div>
           <div class="stat-box"><div class="num" id="stat-profesional">—</div><div class="label"><span class="label-icon">🎓</span>Profesionales</div></div>
+          <div class="stat-box"><div class="num" id="stat-vendedor">—</div><div class="label"><span class="label-icon">💼</span>Vendedores</div></div>
         </div>
       </div>
     </div>
@@ -703,6 +707,7 @@
           <button class="chip filter-tipo" data-tipo="Proveedor">📦 Proveedor</button>
           <button class="chip filter-tipo" data-tipo="Flete">🚛 Flete</button>
           <button class="chip filter-tipo" data-tipo="Profesional">🎓 Profesional</button>
+          <button class="chip filter-tipo" data-tipo="Vendedor">💼 Vendedor</button>
         </div>
         <button class="add-btn" onclick="openAddModal()">+ Agregar contacto</button>
       </div>
@@ -755,6 +760,7 @@
         <option value="Proveedor">📦 Proveedor</option>
         <option value="Flete">🚛 Flete</option>
         <option value="Profesional">🎓 Profesional</option>
+        <option value="Vendedor">💼 Vendedor</option>
       </select>
       <label id="lbl-nombre">Nombre / Empresa *</label>
       <input type="text" id="f-nombre" required>
@@ -924,7 +930,8 @@
       'Arriendo':     { icono: '🏗️', tagClass: 'tag-arriendo',     miniClass: 'arriendo',    miniLabel: 'ARRIENDO'   },
       'Proveedor':    { icono: '📦', tagClass: 'tag-proveedor',    miniClass: 'proveedor',   miniLabel: 'PROVEEDOR'  },
       'Flete':        { icono: '🚛', tagClass: 'tag-flete',        miniClass: 'flete',       miniLabel: 'FLETE'      },
-      'Profesional':  { icono: '🎓', tagClass: 'tag-profesional',  miniClass: 'profesional', miniLabel: 'PROFESIONAL'}
+      'Profesional':  { icono: '🎓', tagClass: 'tag-profesional',  miniClass: 'profesional', miniLabel: 'PROFESIONAL'},
+      'Vendedor':     { icono: '💼', tagClass: 'tag-vendedor',     miniClass: 'vendedor',    miniLabel: 'VENDEDOR'   }
     };
     function getTipoConfig(tipo) {
       return TIPO_CONFIG[tipo] || { icono: '', tagClass: 'tag-sub', miniClass: 'subcontrato', miniLabel: (tipo || '').toUpperCase() };
@@ -960,6 +967,11 @@
         nombre:    { label: 'Nombre / Consultora *',  ph: 'Ej: Consultora Vial Sur' },
         rubro:     { label: 'Profesión / Servicio',   ph: 'Ej: Estudios IMIV' },
         contacto:  { label: 'Persona de contacto',    ph: 'Ej: Ing. Patricia Soto' }
+      },
+      'Vendedor':     {
+        nombre:    { label: 'Nombre / Empresa *',     ph: 'Ej: Sodimac Osorno' },
+        rubro:     { label: 'Qué vende / representa', ph: 'Ej: Materiales de construcción' },
+        contacto:  { label: 'Persona de contacto',    ph: 'Ej: Don Marcelo Vidal' }
       }
     };
     function updateFormLabels() {
@@ -1017,6 +1029,7 @@
       const proveedor = DATA.contactos.filter(c => c.tipo === 'Proveedor').length;
       const flete = DATA.contactos.filter(c => c.tipo === 'Flete').length;
       const profesional = DATA.contactos.filter(c => c.tipo === 'Profesional').length;
+      const vendedor = DATA.contactos.filter(c => c.tipo === 'Vendedor').length;
       document.getElementById('stat-contactos').textContent = DATA.contactos.length;
       document.getElementById('stat-subs').textContent = subs;
       document.getElementById('stat-mano').textContent = mano;
@@ -1024,6 +1037,7 @@
       document.getElementById('stat-proveedor').textContent = proveedor;
       document.getElementById('stat-flete').textContent = flete;
       document.getElementById('stat-profesional').textContent = profesional;
+      document.getElementById('stat-vendedor').textContent = vendedor;
       document.getElementById('cnt-directorio').textContent = DATA.contactos.length;
     }
 
