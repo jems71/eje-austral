@@ -333,6 +333,12 @@
     .icon-btn svg { width: 16px; height: 16px; }
 
     .empty { text-align: center; padding: 60px 20px; color: var(--text-muted); font-size: 14px; }
+    .loading-spinner {
+      width: 28px; height: 28px; margin: 0 auto 14px;
+      border: 3px solid var(--border); border-top-color: var(--uach-blue);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
     .loading { text-align: center; padding: 80px 20px; color: var(--text-muted); }
     .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--uach-blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -1097,6 +1103,11 @@
     }
 
     async function loadData() {
+      const loadingHtml = '<div class="empty" style="grid-column: 1/-1;"><div class="loading-spinner"></div>Cargando directorio...</div>';
+      const grid = document.getElementById('grid-contactos');
+      const list = document.getElementById('list-contactos');
+      grid.innerHTML = loadingHtml;
+      list.innerHTML = loadingHtml.replace('grid-column: 1/-1;', '');
       try {
         const r = await apiFetch('/api/data');
         if (!r.ok) {
@@ -1159,8 +1170,8 @@
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
         if (state.zona !== 'todas' && !getZonaDeCiudad(c.ciudad).includes(state.zona)) return false;
         if (state.q) {
-          const q = state.q.toLowerCase();
-          const hay = [c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' ').toLowerCase();
+          const q = normText(state.q);
+          const hay = normText([c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' '));
           if (!hay.includes(q)) return false;
         }
         return true;
@@ -1280,6 +1291,9 @@
               </a>
               <button class="icon-btn" onclick="event.stopPropagation(); copy('${esc(c.fono || '')}')" title="Copiar fono">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+              <button class="icon-btn" onclick="event.stopPropagation(); compartirContacto('${esc(c.id)}')" title="Compartir ficha">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               </button>
             </div>
           </div>
@@ -1531,7 +1545,10 @@
           ${c.id ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">ID: ${esc(c.id.toUpperCase())}</div>` : ''}
         </div>
 
-        ${wa ? `<a href="https://wa.me/${wa}" target="_blank" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600; margin-bottom:20px;">💬 Contactar por WhatsApp</a>` : ''}
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+          ${wa ? `<a href="https://wa.me/${wa}" target="_blank" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
+          <button onclick="compartirContacto('${esc(c.id)}')" style="padding:10px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">↗ Compartir ficha</button>
+        </div>
 
         <div class="rec-detail-header">
           <div>
@@ -1714,6 +1731,27 @@
     window.goToView = goToView;
     window.goToRecommend = goToRecommend;
     function copy(text) { navigator.clipboard.writeText(text); }
+
+    function compartirContacto(contactoId) {
+      const c = DATA.contactos.find(x => x.id === contactoId);
+      if (!c) return;
+      const partes = [
+        `📇 ${c.nombre}`,
+        [c.tipo, c.rubro].filter(Boolean).join(' · '),
+        c.ciudad ? `📍 ${c.ciudad}` : '',
+        c.fono ? `📞 ${c.fono}` : '',
+        '',
+        'Vía Eje Austral — directorio UACh Construcción Civil'
+      ].filter(Boolean);
+      const texto = partes.join('\n');
+
+      if (navigator.share) {
+        navigator.share({ title: c.nombre, text: texto }).catch(() => {});
+      } else {
+        // Sin número de destino a propósito: así WhatsApp deja elegir a quién mandárselo.
+        window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+      }
+    }
     window.copy = copy;
 
     if (getToken()) {
