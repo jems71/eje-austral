@@ -1200,7 +1200,7 @@
         return `
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
             <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
-            <div class="col-rubro">${esc(c.rubro)}</div>
+            <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
           </div>
