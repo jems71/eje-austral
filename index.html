@@ -149,6 +149,11 @@
     .chip { padding: 8px 14px; border: 1px solid var(--border); background: var(--card); border-radius: 4px; font-size: 13px; cursor: pointer; font-family: inherit; color: var(--text); transition: all 0.15s; font-weight: 500; }
     .chip:hover { border-color: var(--uach-blue); }
     .chip.active { background: var(--uach-blue); color: #fff; border-color: var(--uach-blue); }
+    .chip-sm { padding: 5px 11px; border: 1px solid var(--border); background: var(--card); border-radius: 100px; font-size: 12px; cursor: pointer; font-family: inherit; color: var(--text-muted); transition: all 0.15s; font-weight: 500; }
+    .chip-sm:hover { border-color: var(--uach-gold); color: var(--text); }
+    .chip-sm.active { background: var(--uach-gold); color: var(--uach-blue-dark); border-color: var(--uach-gold); font-weight: 700; }
+    .toolbar-filter-row.toolbar-zona-row { margin-top: 2px; }
+    .toolbar-filter-row.toolbar-zona-row .filter-label { min-width: 56px; }
     .add-btn { padding: 10px 18px; background: var(--uach-blue); color: #fff; border: none; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; transition: background 0.15s; }
     .add-btn:hover { background: var(--uach-blue-dark); }
 
@@ -717,6 +722,16 @@
         </div>
         <button class="add-btn" onclick="openAddModal()">+ Agregar contacto</button>
       </div>
+      <div class="toolbar-row toolbar-filter-row toolbar-zona-row">
+        <span class="filter-label">ZONA</span>
+        <div class="filter-group">
+          <button class="chip-sm filter-zona active" data-zona="todas">Todas</button>
+          <button class="chip-sm filter-zona" data-zona="valdivia">Valdivia</button>
+          <button class="chip-sm filter-zona" data-zona="osorno">Osorno</button>
+          <button class="chip-sm filter-zona" data-zona="llanquihue">Llanquihue / Pto. Montt</button>
+          <button class="chip-sm filter-zona" data-zona="chiloe">Chiloé</button>
+        </div>
+      </div>
     </div>
     <div class="grid hidden" id="grid-contactos">
       <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando contactos...</div></div>
@@ -781,8 +796,9 @@
         <span style="text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--text);">Este número también tiene WhatsApp</span>
       </label>
       <label>Ciudades de cobertura</label>
-      <input type="text" id="f-ciudad" placeholder="Ej: Valdivia, Osorno, La Unión">
-      <div class="help-text">Si trabaja en varias ciudades, separá con comas.</div>
+      <input type="text" id="f-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, La Unión">
+      <datalist id="lista-comunas"></datalist>
+      <div class="help-text">Si trabaja en varias ciudades, separá con comas. Empezá a tipear para ver sugerencias.</div>
       <div class="section-title">Notas y referencia</div>
       <label>Último proyecto</label>
       <input type="text" id="f-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
@@ -901,7 +917,79 @@
     let DATA = { contactos: [], recomendaciones: [] };
     let savedView = 'lista';
     try { savedView = localStorage.getItem('eje_view') || 'lista'; } catch (e) {}
-    let state = { tipo: 'todos', q: '', view: savedView };
+    let state = { tipo: 'todos', zona: 'todas', q: '', view: savedView };
+
+    // Fuente única: comuna -> zona. Se usa tanto para matchear el filtro
+    // de zona (contra el texto libre "ciudad") como para poblar el <select>
+    // de ciudad en el formulario de "Agregar contacto".
+    const ZONAS_LABEL = { valdivia: 'Valdivia', osorno: 'Osorno', llanquihue: 'Llanquihue / Pto. Montt', chiloe: 'Chiloé' };
+    const COMUNAS = [
+      { nombre: 'Valdivia', zona: 'valdivia' },
+      { nombre: 'Paillaco', zona: 'valdivia' },
+      { nombre: 'Lanco', zona: 'valdivia' },
+      { nombre: 'Mafil', zona: 'valdivia' },
+      { nombre: 'Corral', zona: 'valdivia' },
+      { nombre: 'Panguipulli', zona: 'valdivia' },
+      { nombre: 'La Unión', zona: 'valdivia' },
+      { nombre: 'Río Bueno', zona: 'valdivia' },
+      { nombre: 'Los Lagos', zona: 'valdivia' },
+      { nombre: 'Osorno', zona: 'osorno' },
+      { nombre: 'Río Negro', zona: 'osorno' },
+      { nombre: 'Purranque', zona: 'osorno' },
+      { nombre: 'Puerto Octay', zona: 'osorno' },
+      { nombre: 'San Pablo', zona: 'osorno' },
+      { nombre: 'San Juan de la Costa', zona: 'osorno' },
+      { nombre: 'Puyehue', zona: 'osorno' },
+      { nombre: 'Entre Lagos', zona: 'osorno' },
+      { nombre: 'Puerto Montt', zona: 'llanquihue' },
+      { nombre: 'Puerto Varas', zona: 'llanquihue' },
+      { nombre: 'Frutillar', zona: 'llanquihue' },
+      { nombre: 'Llanquihue', zona: 'llanquihue' },
+      { nombre: 'Fresia', zona: 'llanquihue' },
+      { nombre: 'Los Muermos', zona: 'llanquihue' },
+      { nombre: 'Maullín', zona: 'llanquihue' },
+      { nombre: 'Calbuco', zona: 'llanquihue' },
+      { nombre: 'Castro', zona: 'chiloe' },
+      { nombre: 'Ancud', zona: 'chiloe' },
+      { nombre: 'Quellón', zona: 'chiloe' },
+      { nombre: 'Dalcahue', zona: 'chiloe' },
+      { nombre: 'Curaco de Vélez', zona: 'chiloe' },
+      { nombre: 'Quemchi', zona: 'chiloe' },
+      { nombre: 'Quinchao', zona: 'chiloe' },
+      { nombre: 'Chonchi', zona: 'chiloe' },
+      { nombre: 'Achao', zona: 'chiloe' }
+    ];
+
+    // Sinónimos/alias que sólo sirven para matchear datos viejos ya cargados
+    // en Airtable con otra grafía (no aparecen en el <select> del formulario).
+    const COMUNAS_ALIAS = [
+      { nombre: 'pto montt', zona: 'llanquihue' },
+      { nombre: 'pto. montt', zona: 'llanquihue' },
+      { nombre: 'pto varas', zona: 'llanquihue' }
+    ];
+
+    const ZONA_COMUNAS = [...COMUNAS, ...COMUNAS_ALIAS].reduce((acc, c) => {
+      (acc[c.zona] = acc[c.zona] || []).push(normText(c.nombre));
+      return acc;
+    }, {});
+
+    function getZonaDeCiudad(ciudadStr) {
+      const c = normText(ciudadStr);
+      if (!c) return [];
+      const zonas = [];
+      for (const [zona, comunas] of Object.entries(ZONA_COMUNAS)) {
+        if (comunas.some(nombre => c.includes(nombre))) zonas.push(zona);
+      }
+      return zonas;
+    }
+
+    function poblarDatalistCiudad() {
+      const dl = document.getElementById('lista-comunas');
+      if (!dl) return;
+      const nombres = COMUNAS.map(c => c.nombre).sort((a,b) => a.localeCompare(b));
+      dl.innerHTML = nombres.map(n => `<option value="${n}"></option>`).join('');
+    }
+    poblarDatalistCiudad();
     let currentDetailContact = null;
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -1069,6 +1157,7 @@
     function getFilteredContactos() {
       return DATA.contactos.filter(c => {
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
+        if (state.zona !== 'todas' && !getZonaDeCiudad(c.ciudad).includes(state.zona)) return false;
         if (state.q) {
           const q = state.q.toLowerCase();
           const hay = [c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' ').toLowerCase();
@@ -1206,11 +1295,24 @@
         renderContactos();
       });
     });
+    document.querySelectorAll('.filter-zona').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-zona').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.zona = btn.dataset.zona;
+        renderContactos();
+      });
+    });
+
     document.getElementById('search').addEventListener('input', e => {
       state.q = e.target.value;
-      if (state.q.trim() !== '' && state.tipo !== 'todos') {
+      if (state.q.trim() !== '' && (state.tipo !== 'todos' || state.zona !== 'todas')) {
         state.tipo = 'todos';
+        state.zona = 'todas';
         document.querySelectorAll('.filter-tipo').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-zona').forEach(b => b.classList.remove('active'));
+        const btnZonaTodas = document.querySelector('.filter-zona[data-zona="todas"]');
+        if (btnZonaTodas) btnZonaTodas.classList.add('active');
         const btnTodos = document.querySelector('.filter-tipo[data-tipo="todos"]');
         if (btnTodos) btnTodos.classList.add('active');
       }
