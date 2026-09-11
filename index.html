@@ -1672,10 +1672,33 @@
       setTimeout(() => document.getElementById('login-password').focus(), 100);
     }
 
+    function checkUrlActions() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const action = (params.get('action') || params.get('modal') || '').toLowerCase();
+        const hash = (window.location.hash || '').toLowerCase();
+
+        const shouldOpenAdd = action === 'nuevo' || action === 'agregar' || action === 'add' ||
+                              params.has('nuevo') || params.has('agregar') ||
+                              hash === '#nuevo' || hash === '#agregar' || hash === '#add';
+
+        if (shouldOpenAdd) {
+          openAddModal();
+          if (window.history && window.history.replaceState) {
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+          }
+        }
+      } catch (e) {
+        console.error('Error al procesar parámetros URL:', e);
+      }
+    }
+
     function showApp() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       loadData();
+      checkUrlActions();
     }
 
     async function doLogin() {
