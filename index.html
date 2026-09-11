@@ -862,6 +862,26 @@
     </div>
   </div>
 
+  <!-- === MODAL: Éxito / Publicado === -->
+  <div id="modal-success" class="modal-bg hidden">
+    <div class="modal" style="max-width: 440px; text-align: center; padding: 36px 28px;">
+      <div style="font-size: 48px; margin-bottom: 12px; line-height: 1;">🎉</div>
+      <h3 class="serif" style="font-size: 24px; color: var(--uach-blue); margin-bottom: 8px;">¡Aporte publicado!</h3>
+      <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
+        Tu contacto se ha registrado correctamente en el directorio. ¡Muchas gracias por colaborar con el grupo de titulados!
+      </p>
+
+      <div id="success-close-hint" class="hidden" style="background: #f0f4f8; border: 1px solid var(--border); padding: 10px 14px; border-radius: 6px; font-size: 12px; color: var(--text-muted); margin-bottom: 18px;">
+        ℹ️ Tu navegador no permite cerrar la pestaña automáticamente. Ya puedes cerrar esta ventana o regresar a WhatsApp.
+      </div>
+
+      <div class="modal-actions" style="flex-direction: column; gap: 10px;">
+        <button class="btn-primary" style="padding: 14px;" onclick="closeOrFinishApp()">🚪 Salir / Cerrar pestaña</button>
+        <button class="btn-secondary" style="padding: 12px;" onclick="closeSuccessModal()">📖 Ver el directorio completo</button>
+      </div>
+    </div>
+  </div>
+
   <!-- === MODAL: Acerca === -->
   <div id="modal-about" class="modal-bg hidden">
     <div class="modal">
@@ -1468,6 +1488,27 @@
       pendingContact = null;
     }
 
+    function openSuccessModal() {
+      const hint = document.getElementById('success-close-hint');
+      if (hint) hint.classList.add('hidden');
+      document.getElementById('modal-success').classList.remove('hidden');
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('modal-success').classList.add('hidden');
+    }
+
+    function closeOrFinishApp() {
+      try {
+        window.close();
+      } catch (e) {}
+
+      setTimeout(() => {
+        const hint = document.getElementById('success-close-hint');
+        if (hint) hint.classList.remove('hidden');
+      }, 200);
+    }
+
     async function doSubmitContact(nuevo) {
       const btn = document.getElementById('btn-submit');
       btn.disabled = true; btn.textContent = 'Publicando...';
@@ -1478,7 +1519,7 @@
         closeAddModal();
         document.querySelectorAll('#modal-add input, #modal-add textarea').forEach(i => i.value = '');
         await loadData();
-        alert('Contacto publicado correctamente.');
+        openSuccessModal();
       } catch (e) {
         console.error(e);
         alert('Error al publicar: ' + e.message);
@@ -1753,6 +1794,9 @@
     window.forceAddContact = forceAddContact;
     window.goToView = goToView;
     window.goToRecommend = goToRecommend;
+    window.openSuccessModal = openSuccessModal;
+    window.closeSuccessModal = closeSuccessModal;
+    window.closeOrFinishApp = closeOrFinishApp;
     function copy(text) { navigator.clipboard.writeText(text); }
 
     function compartirContacto(contactoId) {
