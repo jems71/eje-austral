@@ -694,6 +694,7 @@
   <div class="tabs-wrap">
     <div class="tabs">
       <div class="tab active" data-tab="directorio">Directorio <span class="count" id="cnt-directorio">0</span></div>
+      <div class="tab" data-tab="ofertas">Ofertas <span class="count" id="cnt-ofertas">0</span></div>
     </div>
   </div>
 
@@ -744,6 +745,18 @@
     </div>
     <div class="list-wrap" id="list-contactos">
       <div class="loading"><div class="spinner"></div><div>Cargando contactos...</div></div>
+    </div>
+  </section>
+
+  <section id="view-ofertas" class="hidden">
+    <div class="toolbar-wrap">
+      <div class="toolbar-row toolbar-filter-row">
+        <span class="filter-label" style="min-width:auto;">Ofertas de trabajo publicadas en el grupo · se eliminan solas a los 15 días</span>
+        <button class="add-btn hidden" id="btn-publicar-oferta" onclick="openOfertaModal()">+ Publicar oferta</button>
+      </div>
+    </div>
+    <div class="grid" id="grid-ofertas">
+      <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>
     </div>
   </section>
 
@@ -862,22 +875,17 @@
     </div>
   </div>
 
-  <!-- === MODAL: Éxito / Publicado === -->
-  <div id="modal-success" class="modal-bg hidden">
-    <div class="modal" style="max-width: 440px; text-align: center; padding: 36px 28px;">
-      <div style="font-size: 48px; margin-bottom: 12px; line-height: 1;">🎉</div>
-      <h3 class="serif" style="font-size: 24px; color: var(--uach-blue); margin-bottom: 8px;">¡Aporte publicado!</h3>
-      <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
-        Tu contacto se ha registrado correctamente en el directorio. ¡Muchas gracias por colaborar con el grupo de titulados!
-      </p>
-
-      <div id="success-close-hint" class="hidden" style="background: #f0f4f8; border: 1px solid var(--border); padding: 10px 14px; border-radius: 6px; font-size: 12px; color: var(--text-muted); margin-bottom: 18px;">
-        ℹ️ Tu navegador no permite cerrar la pestaña automáticamente. Ya puedes cerrar esta ventana o regresar a WhatsApp.
-      </div>
-
-      <div class="modal-actions" style="flex-direction: column; gap: 10px;">
-        <button class="btn-primary" style="padding: 14px;" onclick="closeOrFinishApp()">🚪 Salir / Cerrar pestaña</button>
-        <button class="btn-secondary" style="padding: 12px;" onclick="closeSuccessModal()">📖 Ver el directorio completo</button>
+  <!-- === MODAL: Publicar oferta === -->
+  <div id="modal-add-oferta" class="modal-bg hidden">
+    <div class="modal">
+      <button class="modal-close" onclick="closeOfertaModal()">×</button>
+      <h3 class="serif">Nueva oferta de trabajo</h3>
+      <p class="sub">Pega el texto tal como se publicó en el grupo.</p>
+      <label>Texto</label>
+      <textarea id="of-texto" rows="8" placeholder="Pega acá el mensaje completo..."></textarea>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeOfertaModal()">Cancelar</button>
+        <button class="btn-primary" id="btn-oferta-submit" onclick="publicarOferta()">Publicar</button>
       </div>
     </div>
   </div>
@@ -1488,27 +1496,6 @@
       pendingContact = null;
     }
 
-    function openSuccessModal() {
-      const hint = document.getElementById('success-close-hint');
-      if (hint) hint.classList.add('hidden');
-      document.getElementById('modal-success').classList.remove('hidden');
-    }
-
-    function closeSuccessModal() {
-      document.getElementById('modal-success').classList.add('hidden');
-    }
-
-    function closeOrFinishApp() {
-      try {
-        window.close();
-      } catch (e) {}
-
-      setTimeout(() => {
-        const hint = document.getElementById('success-close-hint');
-        if (hint) hint.classList.remove('hidden');
-      }, 200);
-    }
-
     async function doSubmitContact(nuevo) {
       const btn = document.getElementById('btn-submit');
       btn.disabled = true; btn.textContent = 'Publicando...';
@@ -1519,7 +1506,7 @@
         closeAddModal();
         document.querySelectorAll('#modal-add input, #modal-add textarea').forEach(i => i.value = '');
         await loadData();
-        openSuccessModal();
+        alert('Contacto publicado correctamente.');
       } catch (e) {
         console.error(e);
         alert('Error al publicar: ' + e.message);
@@ -1713,34 +1700,108 @@
       setTimeout(() => document.getElementById('login-password').focus(), 100);
     }
 
-    function checkUrlActions() {
-      try {
-        const params = new URLSearchParams(window.location.search);
-        const action = (params.get('action') || params.get('modal') || '').toLowerCase();
-        const hash = (window.location.hash || '').toLowerCase();
-
-        const shouldOpenAdd = action === 'nuevo' || action === 'agregar' || action === 'add' ||
-                              params.has('nuevo') || params.has('agregar') ||
-                              hash === '#nuevo' || hash === '#agregar' || hash === '#add';
-
-        if (shouldOpenAdd) {
-          openAddModal();
-          if (window.history && window.history.replaceState) {
-            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
-          }
-        }
-      } catch (e) {
-        console.error('Error al procesar parámetros URL:', e);
-      }
-    }
-
     function showApp() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       loadData();
-      checkUrlActions();
     }
+
+    // === TABS (Directorio / Ofertas) ===
+    document.querySelectorAll('.tab').forEach(tabEl => {
+      tabEl.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tabEl.classList.add('active');
+        const tab = tabEl.dataset.tab;
+        document.getElementById('view-directorio').classList.toggle('hidden', tab !== 'directorio');
+        document.getElementById('view-ofertas').classList.toggle('hidden', tab !== 'ofertas');
+        if (tab === 'ofertas' && !OFERTAS_CARGADAS) loadOfertas();
+      });
+    });
+
+    // === OFERTAS ===
+    let OFERTAS = [];
+    let OFERTAS_CARGADAS = false;
+
+    function esAdmin() {
+      return new URLSearchParams(window.location.search).get('admin') === '1';
+    }
+
+    function formatFechaOferta(iso) {
+      if (!iso) return '';
+      try {
+        const d = new Date(iso);
+        return d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Santiago' });
+      } catch (e) { return ''; }
+    }
+
+    async function loadOfertas() {
+      const grid = document.getElementById('grid-ofertas');
+      grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>';
+      try {
+        const r = await apiFetch('/api/ofertas');
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        OFERTAS = out.ofertas || [];
+        OFERTAS_CARGADAS = true;
+        document.getElementById('cnt-ofertas').textContent = OFERTAS.length;
+        renderOfertas();
+      } catch (e) {
+        console.error(e);
+        grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se pudieron cargar las ofertas.</div>';
+      }
+    }
+
+    function renderOfertas() {
+      const grid = document.getElementById('grid-ofertas');
+      const btn = document.getElementById('btn-publicar-oferta');
+      if (btn) btn.classList.toggle('hidden', !esAdmin());
+
+      if (OFERTAS.length === 0) {
+        grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No hay ofertas vigentes por ahora.</div>';
+        return;
+      }
+      grid.innerHTML = OFERTAS.map(o => `
+        <div class="card">
+          <div class="card-fecha">${esc(formatFechaOferta(o.fecha_publicacion))}</div>
+          <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: var(--text);">${esc(o.texto)}</div>
+          ${o.publicado_por ? `<div class="info-row" style="margin-top:12px;"><div class="label">Publica</div><div class="value">${esc(o.publicado_por)}</div></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function openOfertaModal() {
+      document.getElementById('of-texto').value = '';
+      document.getElementById('modal-add-oferta').classList.remove('hidden');
+    }
+    function closeOfertaModal() { document.getElementById('modal-add-oferta').classList.add('hidden'); }
+
+    async function publicarOferta() {
+      const texto = document.getElementById('of-texto').value.trim();
+      if (!texto) { alert('Pega el texto de la oferta'); return; }
+      const btn = document.getElementById('btn-oferta-submit');
+      btn.disabled = true; btn.textContent = 'Publicando...';
+      try {
+        const r = await apiFetch('/api/agregar-oferta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ texto, publicado_por: 'Juan Carlos García' })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        closeOfertaModal();
+        OFERTAS_CARGADAS = false;
+        await loadOfertas();
+      } catch (e) {
+        console.error(e);
+        alert('Error al publicar: ' + e.message);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Publicar';
+      }
+    }
+
+    window.openOfertaModal = openOfertaModal;
+    window.closeOfertaModal = closeOfertaModal;
+    window.publicarOferta = publicarOferta;
 
     async function doLogin() {
       const pwd = document.getElementById('login-password').value;
@@ -1794,9 +1855,6 @@
     window.forceAddContact = forceAddContact;
     window.goToView = goToView;
     window.goToRecommend = goToRecommend;
-    window.openSuccessModal = openSuccessModal;
-    window.closeSuccessModal = closeSuccessModal;
-    window.closeOrFinishApp = closeOrFinishApp;
     function copy(text) { navigator.clipboard.writeText(text); }
 
     function compartirContacto(contactoId) {
