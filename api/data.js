@@ -1,6 +1,10 @@
 // /api/data.js
 // Lee Contactos, Solicitudes, Alertas y Recomendaciones de Airtable.
 // Esta versión expone errores específicos en _errors para diagnóstico.
+//
+// NOTA: ESTADO_REVISION es un campo de control interno de Juan (lo edita
+// directo en Airtable) — NO filtra visibilidad. Todos los contactos se
+// publican, estén o no revisados.
 
 import crypto from 'crypto';
 
@@ -33,9 +37,10 @@ export default async function handler(req, res) {
   // Captura errores por tabla para que sean visibles
   const errors = {};
 
-  const fetchTable = async (tableName) => {
+  const fetchTable = async (tableName, filterFormula) => {
     try {
-      const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+      let url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+      if (filterFormula) url += `&filterByFormula=${encodeURIComponent(filterFormula)}`;
       const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
       if (!r.ok) {
         const txt = await r.text();
