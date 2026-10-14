@@ -1224,7 +1224,17 @@
       return list.sort((a,b) => (b.fecha || '').localeCompare(a.fecha || ''));
     }
 
-    function getEstadoBadge(estado) {
+    const TIPOS_CON_ESTADO = ['Subcontrato', 'Mano de obra', 'Profesional'];
+
+    function tieneEstado(tipo) {
+      return TIPOS_CON_ESTADO.includes(tipo);
+    }
+
+    function getEstadoBadge(c) {
+      if (!c || !tieneEstado(c.tipo)) {
+        return '<span style="color:var(--text-muted); opacity:0.35;">—</span>';
+      }
+      const estado = c.estado_disponibilidad;
       if (estado === 'Disponible') {
         return `<span class="badge-estado disponible"><span class="dot-estado"></span>Disponible</span>`;
       }
@@ -1246,7 +1256,9 @@
 
     function getFilteredContactos() {
       return DATA.contactos.filter(c => {
-        if (state.soloDisponibles && c.estado_disponibilidad !== 'Disponible') return false;
+        if (state.soloDisponibles) {
+          if (!tieneEstado(c.tipo) || c.estado_disponibilidad !== 'Disponible') return false;
+        }
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
         if (state.zona !== 'todas' && !getZonaDeCiudad(c.ciudad).includes(state.zona)) return false;
         if (state.q) {
@@ -1289,7 +1301,7 @@
         const fechaHtml = fechaFmt
           ? `<div class="col-fecha"><span class="fecha-dot"></span>${esc(fechaFmt)}</div>`
           : `<div class="col-fecha" style="opacity:0.35;">—</div>`;
-        const estadoBadge = getEstadoBadge(c.estado_disponibilidad);
+        const estadoBadge = getEstadoBadge(c);
         return `
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
             <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
@@ -1346,7 +1358,7 @@
         const fechaBadge = fechaFmt
           ? `<div class="card-fecha">${ICON_CALENDAR} ${esc(fechaFmt)}</div>`
           : '';
-        const estadoBadge = getEstadoBadge(c.estado_disponibilidad);
+        const estadoBadge = tieneEstado(c.tipo) ? getEstadoBadge(c) : '';
         return `
           <div class="card" onclick="openDetailModal('${esc(c.id)}')">
             <span class="card-tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
@@ -1613,10 +1625,9 @@
       const tipoCfg = getTipoConfig(c.tipo);
       const tagClass = tipoCfg.tagClass;
       const wa = String(c.whatsapp || c.fono || '').replace(/\D/g,'');
-      const fechaFmt = formatFecha(c.fecha_ingreso);
-      const estadoBadge = getEstadoBadge(c.estado_disponibilidad);
+      const estadoBadge = tieneEstado(c.tipo) ? getEstadoBadge(c) : '';
       const fechaEstadoFmt = formatFecha(c.fecha_ultima_actualizacion_estado);
-      const estadoDetalleHtml = `
+      const estadoDetalleHtml = tieneEstado(c.tipo) ? `
         <div style="background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin: 12px 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
           <div>
             <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Disponibilidad</div>
@@ -1624,7 +1635,7 @@
           </div>
           <div>${estadoBadge}</div>
         </div>
-      `;
+      ` : '';
 
       const html = `
         <button class="modal-close" onclick="closeDetailModal()">×</button>

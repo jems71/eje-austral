@@ -66,9 +66,13 @@ if (!DRY) {
   console.log('DRY RUN: no se escribió nada en Airtable (el CSV de abajo tiene tokens de prueba que NO son los definitivos).');
 }
 
+const TIPOS_PARA_ENVIAR = ['Subcontrato', 'Mano de obra', 'Profesional'];
+const contactosParaEnviar = records.filter(r => TIPOS_PARA_ENVIAR.includes(r.fields.tipo));
+console.log(`Filtrados para envío (${TIPOS_PARA_ENVIAR.join(', ')}): ${contactosParaEnviar.length} de ${records.length}`);
+
 const esc = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
 const filas = ['tipo,nombre,rubro,ciudad,whatsapp,link,wa_me'];
-for (const r of records) {
+for (const r of contactosParaEnviar) {
   const token = r.fields.token_acceso || nuevos.get(r.id);
   const link = `${BASE_URL.replace(/\/$/, '')}/ficha/${token}`;
   const num = waNumber(r.fields.whatsapp || r.fields.fono);
