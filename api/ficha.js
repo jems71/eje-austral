@@ -14,8 +14,13 @@ function airtableHeaders() {
   };
 }
 
+function getBaseId() {
+  const raw = process.env.AIRTABLE_BASE_ID || '';
+  return raw.match(/app[A-Za-z0-9]+/)?.[0] || raw.trim();
+}
+
 async function findByToken(token) {
-  const BASE_ID = process.env.AIRTABLE_BASE_ID;
+  const BASE_ID = getBaseId();
   const formula = encodeURIComponent(`{token_acceso}='${token}'`);
   const url = `https://api.airtable.com/v0/${BASE_ID}/Contactos?filterByFormula=${formula}&maxRecords=1`;
   const r = await fetch(url, { headers: airtableHeaders() });
@@ -31,7 +36,7 @@ export default async function handler(req, res) {
   if (!process.env.AIRTABLE_TOKEN || !process.env.AIRTABLE_BASE_ID) {
     return res.status(500).json({ error: 'Faltan variables de entorno' });
   }
-  const BASE_ID = process.env.AIRTABLE_BASE_ID;
+  const BASE_ID = getBaseId();
 
   res.setHeader('Cache-Control', 'private, no-store');
 
