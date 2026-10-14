@@ -1,8 +1,5 @@
 {
-  "crons": [
-    {
-      "path": "/api/limpiar-ofertas",
-      "schedule": "0 6 * * *"
-    }
+  "rewrites": [
+    { "source": "/ficha/:token", "destination": "/ficha.html?t=:token" }
   ]
 }
