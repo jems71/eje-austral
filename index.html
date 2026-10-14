@@ -174,13 +174,13 @@
 
     .list-wrap { max-width: 1200px; margin: 0 auto; padding: 8px 20px 40px; }
     .list-header {
-      display: grid; grid-template-columns: 2fr 1.5fr 1fr 120px;
+      display: grid; grid-template-columns: 2fr 130px 1.5fr 1fr 110px;
       gap: 16px; padding: 12px 16px; font-size: 11px;
       font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
       color: var(--text-muted); border-bottom: 2px solid var(--border);
     }
     .list-row {
-      display: grid; grid-template-columns: 2fr 1.5fr 1fr 120px;
+      display: grid; grid-template-columns: 2fr 130px 1.5fr 1fr 110px;
       gap: 16px; padding: 14px 16px; align-items: center;
       border-bottom: 1px solid var(--border); cursor: pointer;
       transition: background 0.15s ease;
@@ -203,6 +203,7 @@
     .list-row .col-nombre .tipo-mini.flete { background: #fff3e0; color: #bf5500; }
     .list-row .col-nombre .tipo-mini.profesional { background: #e0f2fe; color: #075985; }
     .list-row .col-nombre .tipo-mini.vendedor { background: #fce4ec; color: #ad1457; }
+    .list-row .col-estado { display: flex; align-items: center; }
     .list-row .col-rubro { font-size: 13px; color: var(--text-muted); }
     .list-row .col-recom {
       display: flex; align-items: center; gap: 6px; font-size: 12px;
@@ -232,8 +233,9 @@
       .list-header { display: none; }
       .list-row {
         grid-template-columns: 1fr;
-        gap: 4px; padding: 14px 16px;
+        gap: 6px; padding: 14px 16px;
       }
+      .list-row .col-estado { margin: 2px 0; }
       .list-row .col-rubro { font-size: 12px; }
       .list-row .col-recom { margin-top: 4px; }
       .list-row .col-fecha { margin-top: 2px; }
@@ -312,10 +314,12 @@
     .badge-estado.disponible { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
     .badge-estado.ocupado { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
     .badge-estado.fuera { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+    .badge-estado.pendiente { background: #f8f9fa; color: #6c757d; border: 1px solid #dee2e6; }
     .badge-estado .dot-estado { width: 6px; height: 6px; border-radius: 50%; }
     .badge-estado.disponible .dot-estado { background: #16a34a; }
     .badge-estado.ocupado .dot-estado { background: #d97706; }
     .badge-estado.fuera .dot-estado { background: #9ca3af; }
+    .badge-estado.pendiente .dot-estado { background: #adb5bd; }
 
     .chip-disponible {
       padding: 5px 12px; border: 1px solid #16a34a; background: var(--card);
@@ -1221,7 +1225,6 @@
     }
 
     function getEstadoBadge(estado) {
-      if (!estado) return '';
       if (estado === 'Disponible') {
         return `<span class="badge-estado disponible"><span class="dot-estado"></span>Disponible</span>`;
       }
@@ -1231,7 +1234,7 @@
       if (estado === 'Ya no trabaja en el rubro') {
         return `<span class="badge-estado fuera"><span class="dot-estado"></span>Fuera de rubro</span>`;
       }
-      return '';
+      return `<span class="badge-estado pendiente"><span class="dot-estado"></span>Por confirmar</span>`;
     }
 
     function toggleSoloDisponibles() {
@@ -1256,7 +1259,7 @@
     }
 
     // =====================================================
-    // VISTA LISTA — ahora incluye columna de fecha y estado
+    // VISTA LISTA — ahora incluye columna de Estado
     // =====================================================
     function renderLista(data) {
       const wrap = document.getElementById('list-contactos');
@@ -1267,6 +1270,7 @@
       const header = `
         <div class="list-header">
           <div>Nombre</div>
+          <div>Estado</div>
           <div>Rubro</div>
           <div>Recomiendan</div>
           <div>Ingresado</div>
@@ -1288,7 +1292,8 @@
         const estadoBadge = getEstadoBadge(c.estado_disponibilidad);
         return `
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
-            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span>${estadoBadge ? `<div style="margin-top:3px;">${estadoBadge}</div>` : ''}</div>
+            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
+            <div class="col-estado">${estadoBadge}</div>
             <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
@@ -1611,15 +1616,15 @@
       const fechaFmt = formatFecha(c.fecha_ingreso);
       const estadoBadge = getEstadoBadge(c.estado_disponibilidad);
       const fechaEstadoFmt = formatFecha(c.fecha_ultima_actualizacion_estado);
-      const estadoDetalleHtml = estadoBadge ? `
+      const estadoDetalleHtml = `
         <div style="background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin: 12px 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
           <div>
             <div style="font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Disponibilidad</div>
-            ${fechaEstadoFmt ? `<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Confirmado el ${esc(fechaEstadoFmt)}</div>` : ''}
+            ${fechaEstadoFmt ? `<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Confirmado el ${esc(fechaEstadoFmt)}</div>` : `<div style="font-size:11px; color:var(--text-muted); margin-top:2px; font-style:italic;">Pendiente de confirmación por el contacto</div>`}
           </div>
           <div>${estadoBadge}</div>
         </div>
-      ` : '';
+      `;
 
       const html = `
         <button class="modal-close" onclick="closeDetailModal()">×</button>
