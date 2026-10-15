@@ -137,7 +137,12 @@
     COMUNAS.forEach(c => { const o = document.createElement('option'); o.value = c; $('comunas').appendChild(o); });
 
     // Token: /ficha/TOKEN (reescritura de vercel.json) o ?t=TOKEN
-    const token = (new URLSearchParams(location.search).get('t') || '').trim();
+    function obtenerToken() {
+      const pathMatch = location.pathname.match(/\/ficha\/([^\/?#]+)/i);
+      if (pathMatch && pathMatch[1]) return decodeURIComponent(pathMatch[1]).trim();
+      return (new URLSearchParams(location.search).get('t') || '').trim();
+    }
+    const token = obtenerToken();
 
     function mostrarInvalido() {
       $('loading').classList.add('hidden');
