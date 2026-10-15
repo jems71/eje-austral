@@ -81,8 +81,7 @@ for (const r of contactosParaEnviar) {
   const ciudad = r.fields.ciudad || '';
   const nombre = (r.fields.nombre || '').trim();
 
-  const saludo = nombre ? `Hola ${nombre}` : 'Hola';
-  const msg = `${saludo}, te saludamos de la Red de Constructores Civiles UACh (Eje Austral).\n\nTenemos tu contacto registrado en nuestro directorio de servicios y subcontratos de la zona sur. Los constructores y jefes de obra de la red consultamos esta lista para cotizar y asignar faenas.\n\nPara que podamos llamarte cuando salgan proyectos que coincidan con tu especialidad, por favor indícanos si estás Disponible u Ocupado en tu ficha:\n👉 ${link}`;
+  const msg = `${saludo}, te saludamos de la Red de Constructores Civiles UACh (Eje Austral).\n\nTenemos tu contacto registrado en nuestro directorio de servicios y subcontratos de la zona sur. Los constructores civiles e ingenieros constructores de la red consultamos esta lista para cotizar y asignar faenas.\n\nPara que podamos llamarte cuando salgan proyectos que coincidan con tu especialidad, por favor indícanos si estás Disponible u Ocupado en tu ficha:\n👉 ${link}`;
   const wa = num ? `https://wa.me/${num}?text=${encodeURIComponent(msg)}` : '';
 
   filas.push([
