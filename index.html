@@ -89,6 +89,160 @@
     .stat-box .num { font-family: 'Fraunces', serif; font-size: 36px; font-weight: 600; line-height: 1; color: #fff; }
     .stat-box .label { font-size: 10px; letter-spacing: 1.5px; opacity: 0.7; margin-top: 6px; text-transform: uppercase; }
 
+    /* === BANNER ENCUENTRO EXALUMNOS === */
+    .banner-encuentro {
+      position: relative;
+      background: linear-gradient(135deg, rgba(8, 28, 58, 0.94) 0%, rgba(10, 36, 71, 0.88) 50%, rgba(12, 45, 88, 0.72) 100%),
+                  url('/assets/banner-encuentro-2026.jpg') right center / cover no-repeat;
+      border: 1px solid rgba(201, 169, 97, 0.45);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+    .banner-encuentro:hover {
+      border-color: rgba(201, 169, 97, 0.7);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+    .banner-close {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: rgba(255, 255, 255, 0.12);
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      opacity: 0.7;
+      transition: all 0.15s;
+    }
+    .banner-close:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .banner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(201, 169, 97, 0.2);
+      border: 1px solid rgba(201, 169, 97, 0.45);
+      color: #ffd885;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .banner-badge .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: #ffd885;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #ffd885;
+    }
+    .banner-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .banner-info {
+      flex: 1;
+      min-width: 280px;
+      max-width: 780px;
+    }
+    .banner-title {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: #fff;
+      margin: 0 0 10px 0;
+      letter-spacing: -0.3px;
+      line-height: 1.25;
+    }
+    .banner-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .banner-pill {
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 4px 11px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .banner-pill.highlight {
+      background: rgba(43, 190, 240, 0.15);
+      color: #5ce1e6;
+      border-color: rgba(43, 190, 240, 0.35);
+    }
+    .banner-desc {
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0 0 12px 0;
+    }
+    .banner-footer-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 3px solid #ffd885;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #f7e7c4;
+      font-style: italic;
+    }
+    .banner-action {
+      flex-shrink: 0;
+      margin-bottom: 2px;
+    }
+    .banner-btn-view {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      color: var(--uach-blue-dark);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+      transition: all 0.2s ease;
+    }
+    .banner-btn-view:hover {
+      background: #ffd885;
+      color: #05162b;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    }
+    @media (max-width: 640px) {
+      .banner-encuentro { padding: 18px 16px; }
+      .banner-title { font-size: 20px; }
+      .banner-btn-view { width: 100%; justify-content: center; }
+      .banner-action { width: 100%; }
+    }
+
     .tabs-wrap { background: var(--bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30; }
     .tabs { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; gap: 0; overflow-x: auto; scrollbar-width: none; }
     .tabs::-webkit-scrollbar { display: none; }
@@ -699,6 +853,39 @@
           <div class="avatar">TU</div>
         </div>
       </div>
+
+      <!-- === BANNER: 1er Encuentro de Exalumnos FCI UACh === -->
+      <div id="banner-encuentro" class="banner-encuentro">
+        <button class="banner-close" onclick="cerrarBannerEncuentro()" title="Ocultar anuncio">×</button>
+        <div class="banner-badge">
+          <span class="badge-dot"></span>
+          <span>ANUNCIO OFICIAL · 92 AÑOS FCI UACh</span>
+        </div>
+        <div class="banner-body">
+          <div class="banner-info">
+            <h3 class="banner-title">1<sup>er</sup> Encuentro de Exalumnos · Campus Miraflores</h3>
+            <div class="banner-pills">
+              <span class="banner-pill">📅 Sábado 5 de Diciembre</span>
+              <span class="banner-pill">📍 Valdivia · Campus Miraflores</span>
+              <span class="banner-pill highlight">🎉 92 Años de la Facultad</span>
+            </div>
+            <p class="banner-desc">
+              Una oportunidad para reencontrarse, compartir experiencias, fortalecer los vínculos con nuestra Escuela y generar nuevas redes de colaboración entre distintas promociones.
+            </p>
+            <div class="banner-footer-note">
+              <span class="info-icon">ℹ️</span>
+              <span>Durante el transcurso del mes se entregará mayor información sobre este encuentro.</span>
+            </div>
+          </div>
+          <div class="banner-action">
+            <button class="banner-btn-view" onclick="verAficheCompleto()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              Ver afiche completo
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="hero-content">
         <div class="hero-text">
           <div class="version">DIR-UACH/CC · v5.9 · 2026</div>
@@ -902,6 +1089,21 @@
       <div class="modal-actions" style="margin-top: 16px;">
         <button class="btn-secondary" onclick="closeDupModal()">Cancelar</button>
         <button class="btn-primary" id="btn-force-add" onclick="forceAddContact()">Agregar como nuevo igual</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === MODAL: Afiche Completo === -->
+  <div id="modal-afiche" class="modal-bg hidden" onclick="cerrarAficheModal(event)">
+    <div class="modal" style="max-width: 900px; padding: 20px; text-align: center; background: #07192f; border: 1px solid rgba(201,169,97,0.45); box-shadow: 0 12px 48px rgba(0,0,0,0.6);">
+      <button class="modal-close" onclick="document.getElementById('modal-afiche').classList.add('hidden')">×</button>
+      <h3 class="serif" style="color: #fff; margin-bottom: 12px; font-size: 20px;">1<sup>er</sup> Encuentro de Exalumnos · Facultad de Ciencias de la Ingeniería UACh</h3>
+      <img src="/assets/banner-encuentro-2026.jpg" alt="Afiche 1er Encuentro de Exalumnos FCI UACh" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);">
+      <div style="margin-top: 16px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <a href="/assets/banner-encuentro-2026.jpg" download="Encuentro-Exalumnos-FCI-UACh.jpg" style="display:inline-flex; align-items:center; gap:8px; padding: 10px 18px; background: var(--uach-gold); color: var(--uach-blue-dark); text-decoration:none; font-weight:700; border-radius:6px; font-size:13px;">
+          ⬇ Descargar afiche
+        </a>
+        <button onclick="document.getElementById('modal-afiche').classList.add('hidden')" class="btn-secondary" style="font-size:13px; padding:10px 18px;">Cerrar</button>
       </div>
     </div>
   </div>
@@ -1985,6 +2187,22 @@
       }
     }
     window.copy = copy;
+
+    function verAficheCompleto() {
+      document.getElementById('modal-afiche').classList.remove('hidden');
+    }
+    function cerrarAficheModal(e) {
+      if (e.target.id === 'modal-afiche') {
+        document.getElementById('modal-afiche').classList.add('hidden');
+      }
+    }
+    function cerrarBannerEncuentro() {
+      const b = document.getElementById('banner-encuentro');
+      if (b) b.classList.add('hidden');
+    }
+    window.verAficheCompleto = verAficheCompleto;
+    window.cerrarAficheModal = cerrarAficheModal;
+    window.cerrarBannerEncuentro = cerrarBannerEncuentro;
 
     if (getToken()) {
       showApp();
