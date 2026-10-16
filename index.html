@@ -1587,15 +1587,32 @@
     }
 
     async function addContact() {
-      const nombre = document.getElementById('f-nombre').value.trim();
+      let nombre = document.getElementById('f-nombre').value.trim();
+      const contacto = document.getElementById('f-contacto').value.trim();
       const recom = document.getElementById('f-recom').value.trim();
-      if (!nombre) { alert('El nombre del contacto es obligatorio'); return; }
-      if (!recom) { alert('Por favor escribí TU nombre (quién recomienda). Es obligatorio para que el grupo sepa quién aportó el contacto.'); document.getElementById('f-recom').focus(); return; }
+      const lblNombre = (document.getElementById('lbl-nombre')?.textContent || 'Nombre').replace('*', '').trim();
+
+      // Si no puso empresa/dueño pero sí puso persona de contacto, usarla como nombre
+      if (!nombre && contacto) {
+        nombre = contacto;
+        document.getElementById('f-nombre').value = contacto;
+      }
+
+      if (!nombre) {
+        alert(`Por favor completa el campo: ${lblNombre}`);
+        document.getElementById('f-nombre').focus();
+        return;
+      }
+      if (!recom) {
+        alert('Por favor escribe TU nombre (quién recomienda). Es obligatorio para que el grupo sepa quién aportó el contacto.');
+        document.getElementById('f-recom').focus();
+        return;
+      }
       const nuevo = {
         tipo: document.getElementById('f-tipo').value,
         rubro: document.getElementById('f-rubro').value.trim(),
         nombre: nombre,
-        contacto: document.getElementById('f-contacto').value.trim(),
+        contacto: contacto,
         fono: document.getElementById('f-fono').value.trim(),
         whatsapp: document.getElementById('f-tiene-whatsapp').checked
           ? document.getElementById('f-fono').value.replace(/\D/g,'')
@@ -1618,7 +1635,7 @@
     // MODAL DETALLE — ahora incluye fecha de ingreso
     // =====================================================
     function openDetailModal(contactoId) {
-      const c = DATA.contactos.find(x => x.id === contactoId);
+      const c = DATA.contactos.find(x => x.id === contactoId || x._id === contactoId);
       if (!c) return;
       currentDetailContact = c;
       const recs = getRecomendacionesDe(c);
@@ -1627,6 +1644,7 @@
       const wa = String(c.whatsapp || c.fono || '').replace(/\D/g,'');
       const estadoBadge = tieneEstado(c.tipo) ? getEstadoBadge(c) : '';
       const fechaEstadoFmt = formatFecha(c.fecha_ultima_actualizacion_estado);
+      const fechaFmt = formatFecha(c.fecha_ingreso);
       const estadoDetalleHtml = tieneEstado(c.tipo) ? `
         <div style="background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:10px 14px; margin: 12px 0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
           <div>
