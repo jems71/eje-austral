@@ -39,16 +39,25 @@ export default async function handler(req, res) {
 
   const fetchTable = async (tableName, filterFormula) => {
     try {
-      let url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
-      if (filterFormula) url += `&filterByFormula=${encodeURIComponent(filterFormula)}`;
-      const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
-      if (!r.ok) {
-        const txt = await r.text();
-        errors[tableName] = `${r.status}: ${txt.slice(0, 200)}`;
-        return [];
-      }
-      const json = await r.json();
-      return (json.records || []).map(rec => ({ _id: rec.id, ...rec.fields }));
+      let records = [];
+      let offset = null;
+      do {
+        let url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(tableName)}?pageSize=100`;
+        if (filterFormula) url += `&filterByFormula=${encodeURIComponent(filterFormula)}`;
+        if (offset) url += `&offset=${encodeURIComponent(offset)}`;
+
+        const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+        if (!r.ok) {
+          const txt = await r.text();
+          errors[tableName] = `${r.status}: ${txt.slice(0, 200)}`;
+          return records.map(rec => ({ _id: rec.id, ...rec.fields }));
+        }
+        const json = await r.json();
+        records = records.concat(json.records || []);
+        offset = json.offset || null;
+      } while (offset);
+
+      return records.map(rec => ({ _id: rec.id, ...rec.fields }));
     } catch (err) {
       errors[tableName] = String(err.message || err);
       return [];
