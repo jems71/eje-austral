@@ -1176,6 +1176,12 @@
         DATA = await r.json();
         DATA.contactos = DATA.contactos || [];
         DATA.recomendaciones = DATA.recomendaciones || [];
+        if (DATA.ofertas) {
+          OFERTAS = DATA.ofertas;
+          OFERTAS_CARGADAS = true;
+          document.getElementById('cnt-ofertas').textContent = OFERTAS.length;
+          renderOfertas();
+        }
         paintStats();
         renderContactos();
         switchView(state.view);

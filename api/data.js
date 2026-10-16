@@ -64,26 +64,53 @@ export default async function handler(req, res) {
     }
   };
 
-  const [contactos, solicitudes, alertas, recomendaciones] = await Promise.all([
+  const DIAS_VIGENCIA = 15;
+  const limiteOfertas = Date.now() - DIAS_VIGENCIA * 24 * 60 * 60 * 1000;
+
+  const fetchOfertas = async () => {
+    try {
+      const url = `https://api.airtable.com/v0/${BASE_ID}/Ofertas?sort[0][field]=fecha_publicacion&sort[0][direction]=desc`;
+      const r = await fetch(url, { headers: { Authorization: `Bearer ${TOKEN}` } });
+      if (!r.ok) {
+        const txt = await r.text();
+        errors['Ofertas'] = `${r.status}: ${txt.slice(0, 200)}`;
+        return [];
+      }
+      const data = await r.json();
+      return (data.records || [])
+        .filter(rec => {
+          const f = rec.fields?.fecha_publicacion;
+          return f && new Date(f).getTime() >= limiteOfertas;
+        })
+        .map(rec => ({
+          id: rec.id,
+          texto: rec.fields.texto || '',
+          fecha_publicacion: rec.fields.fecha_publicacion,
+          publicado_por: rec.fields.publicado_por || ''
+        }));
+    } catch (err) {
+      errors['Ofertas'] = String(err.message || err);
+      return [];
+    }
+  };
+
+  const [contactos, recomendaciones, ofertas] = await Promise.all([
     fetchTable('Contactos'),
-    fetchTable('Solicitudes'),
-    fetchTable('Alertas'),
     fetchTable('Recomendaciones'),
+    fetchOfertas()
   ]);
 
   res.setHeader('Cache-Control', 'private, no-store');
 
   return res.status(200).json({
     contactos,
-    solicitudes,
-    alertas,
     recomendaciones,
+    ofertas,
     _errors: Object.keys(errors).length > 0 ? errors : undefined,
     _counts: {
       contactos: contactos.length,
-      solicitudes: solicitudes.length,
-      alertas: alertas.length,
-      recomendaciones: recomendaciones.length
+      recomendaciones: recomendaciones.length,
+      ofertas: ofertas.length
     }
   });
 }
