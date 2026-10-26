@@ -1354,12 +1354,7 @@
         DATA = await r.json();
         DATA.contactos = DATA.contactos || [];
         DATA.recomendaciones = DATA.recomendaciones || [];
-        if (DATA.ofertas) {
-          OFERTAS = DATA.ofertas;
-          OFERTAS_CARGADAS = true;
-          document.getElementById('cnt-ofertas').textContent = OFERTAS.length;
-          renderOfertas();
-        }
+        // (Las ofertas se cargan solo con loadOfertas() vía /api/ofertas.)
         paintStats();
         renderContactos();
         switchView(state.view);
@@ -1987,8 +1982,9 @@
     function showApp() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
-      loadData();
-      loadOfertas();
+      // Primero el directorio y después las ofertas: en paralelo, Airtable
+      // puede rechazar la segunda llamada por límite de requests por segundo.
+      loadData().then(() => loadOfertas());
     }
 
     // === TABS (Directorio / Ofertas) ===
@@ -2019,9 +2015,11 @@
       } catch (e) { return ''; }
     }
 
-    async function loadOfertas() {
+    async function loadOfertas(intento = 1) {
       const grid = document.getElementById('grid-ofertas');
-      grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>';
+      if (intento === 1) {
+        grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>';
+      }
       try {
         const r = await apiFetch('/api/ofertas');
         const out = await r.json();
@@ -2032,6 +2030,11 @@
         renderOfertas();
       } catch (e) {
         console.error(e);
+        if (e.message === 'Sesión inválida') return;
+        if (intento < 3) {
+          setTimeout(() => loadOfertas(intento + 1), 1200 * intento);
+          return;
+        }
         grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se pudieron cargar las ofertas.</div>';
       }
     }
