@@ -22,13 +22,13 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         fields: {
-          // ID de la columna "Empresa" (ya lo tenemos)
+          // ID de la columna "Empresa" 
           "fldQJQrlaOtve2OAW": empresa || "Empresa Desconocida", 
           
-          // ID de la columna "ID_Empresa" (REEMPLAZA ESTO)
+          // ID de la columna "ID_Empresa" 
           "fld6sR8bmBZVTq5Ei": id_empresa || "N/A",     
           
-          // ID de la columna "Fecha_Clic" (REEMPLAZA ESTO)
+          // ID de la columna "Fecha_Clic" 
           "fldacH2zo0gZNICgX": fecha || new Date().toISOString() 
         }
       })
