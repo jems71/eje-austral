@@ -21,17 +21,13 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        fields: {
-          // ID de la columna "Empresa" 
-          "fldQJQrlaOtve2OAW": empresa || "Empresa Desconocida", 
-          
-          // ID de la columna "ID_Empresa" 
-          "fld6sR8bmBZVTq5Ei": id_empresa || "N/A",     
-          
-          // ID de la columna "Fecha_Clic" 
-          "fldacH2zo0gZNICgX": fecha || new Date().toISOString() 
-        }
-      })
+        body: JSON.stringify({
+  fields: {
+    "Empresa": empresa || "Empresa Desconocida",
+    "ID_Empresa": id_empresa || "N/A",
+    "Fecha_Clic": fecha || new Date().toISOString()
+  }
+})
     });
 
     // 5. Obtenemos la respuesta de Airtable
