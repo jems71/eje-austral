@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     }
     
     return res.status(200).json({ success: true });
-  } catch (error) {
-    return res.status(500).json({ error: 'Error guardando' });
+   } catch (error) {
+    console.error("Fallo completo:", error.message);
+    return res.status(500).json({ error: error.message });
   }
-}
