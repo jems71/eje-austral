@@ -16,12 +16,15 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        fields: {
-          "Empresa": empresa || "Desconocida",
-          "ID_Empresa": id_empresa || "N/A",
-          "Fecha_Clic": fecha || new Date().toISOString()
-        }
-      })
+  fields: {
+    "fldQJQrlaOtve2OAW": empresa || "Desconocida",          // ID del campo Empresa
+    "fld6sR8bmBZVTq5Ei": id_empresa || "N/A",     // Reemplaza esto con el ID de ID_Empresa
+    "fldacH2zo0gZNICgX": fecha || new Date().toISOString() // Reemplaza esto con el ID de Fecha_Clic
+  }
+})
+
+
+
     });
 
     if (!response.ok) {
