@@ -27,8 +27,8 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'No autorizado. Inicia sesión.' });
   }
 
-  const TOKEN = process.env.AIRTABLE_TOKEN;
-  const BASE_ID = process.env.AIRTABLE_BASE_ID;
+  const TOKEN = (process.env.AIRTABLE_TOKEN || '').trim();
+  const BASE_ID = (process.env.AIRTABLE_BASE_ID || '').match(/app[A-Za-z0-9]+/)?.[0] || 'appAI7XSQjwnEJjYj';
 
   if (!TOKEN || !BASE_ID) {
     return res.status(500).json({ error: 'Faltan variables de entorno' });
