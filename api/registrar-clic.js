@@ -1,13 +1,28 @@
-function cleanBaseId(raw) {
-  if (!raw) return 'appAI7XSQjwnEJjYj';
-  const m = raw.match(/app[A-Za-z0-9]+/);
-  return m ? m[0] : raw.trim();
-}
+function getAirtableTarget() {
+  const rawBase = (process.env.AIRTABLE_BASE_ID || '').trim();
+  const rawTable = (process.env.AIRTABLE_TABLE || '').trim();
 
-function cleanTableId(raw) {
-  if (!raw) return 'tblGakI9RcxKziGET';
-  const m = raw.match(/tbl[A-Za-z0-9]+/);
-  return m ? m[0] : raw.trim();
+  // 1. Extraer o normalizar el Base ID (debe ser siempre appXXXXXXXXXXXXXX)
+  let baseId = 'appAI7XSQjwnEJjYj';
+  const matchApp = (rawBase + ' ' + rawTable).match(/app[A-Za-z0-9]+/i);
+  if (matchApp) {
+    baseId = 'app' + matchApp[0].replace(/^app/i, '');
+  } else {
+    // Si viene sin el prefijo "app", ej: "AI7XSQjwnEJjYj"
+    const firstPart = rawBase.split('/')[0].trim();
+    if (firstPart.length >= 10) {
+      baseId = firstPart.startsWith('app') ? firstPart : 'app' + firstPart;
+    }
+  }
+
+  // 2. Extraer o normalizar el Table ID (debe ser tblGakI9RcxKziGET)
+  let tableId = 'tblGakI9RcxKziGET';
+  const matchTbl = (rawBase + ' ' + rawTable).match(/tbl[A-Za-z0-9]+/i);
+  if (matchTbl) {
+    tableId = matchTbl[0];
+  }
+
+  return { baseId, tableId };
 }
 
 export default async function handler(req, res) {
@@ -22,19 +37,18 @@ export default async function handler(req, res) {
 
   // 3. Traemos y sanitizamos las credenciales
   const AIRTABLE_TOKEN = (process.env.AIRTABLE_TOKEN || '').trim();
-  const BASE_ID = cleanBaseId(process.env.AIRTABLE_BASE_ID);
-  const TABLE_NAME = cleanTableId(process.env.AIRTABLE_TABLE);
+  const { baseId, tableId } = getAirtableTarget();
 
   if (!AIRTABLE_TOKEN) {
     console.error("❌ Falta variable de entorno AIRTABLE_TOKEN");
     return res.status(500).json({ error: 'Falta AIRTABLE_TOKEN en Vercel.' });
   }
 
-  console.log(`📡 Llamando a Airtable: Base ID = "${BASE_ID}", Tabla = "${TABLE_NAME}"`);
+  const url = `https://api.airtable.com/v0/${baseId}/${tableId}`;
+  console.log(`📡 Llamando a Airtable URL: "${url}"`);
 
   try {
     // 4. Petición a Airtable con la estructura fields correcta y typecast
-    const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`;
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -66,8 +80,8 @@ export default async function handler(req, res) {
         error: 'Airtable rechazó el registro',
         status: response.status,
         urlConsultada: url,
-        baseId: BASE_ID,
-        tableName: TABLE_NAME,
+        baseId: baseId,
+        tableId: tableId,
         detail: data
       });
     }
