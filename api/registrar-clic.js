@@ -1,14 +1,19 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
+  // 1. Solo permitimos peticiones POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido. Usa POST.' });
+  }
 
+  // 2. Recibimos los datos que envía el botón desde el HTML
   const { empresa, id_empresa, fecha } = req.body;
 
-  // Usamos tus variables de Vercel
+  // 3. Traemos las variables de entorno configuradas en Vercel
   const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
   const BASE_ID = process.env.AIRTABLE_BASE_ID;
-  const TABLE_NAME = process.env.AIRTABLE_TABLE; 
+  const TABLE_NAME = process.env.AIRTABLE_TABLE; // Asegúrate de que en Vercel esta variable tenga el valor: tblGakI9RcxKziGET
 
   try {
+    // 4. Hacemos la petición a Airtable usando los IDs de los campos (fld...)
     const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
       method: 'POST',
       headers: {
@@ -16,25 +21,35 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-  fields: {
-    "fldQJQrlaOtve2OAW": empresa || "Desconocida",          // ID del campo Empresa
-    "fld6sR8bmBZVTq5Ei": id_empresa || "N/A",     // Reemplaza esto con el ID de ID_Empresa
-    "fldacH2zo0gZNICgX": fecha || new Date().toISOString() // Reemplaza esto con el ID de Fecha_Clic
-  }
-})
-
-
-
+        fields: {
+          // ID de la columna "Empresa" (ya lo tenemos)
+          "fldQJQrlaOtve2OAW": empresa || "Empresa Desconocida", 
+          
+          // ID de la columna "ID_Empresa" (REEMPLAZA ESTO)
+          "fld6sR8bmBZVTq5Ei": id_empresa || "N/A",     
+          
+          // ID de la columna "Fecha_Clic" (REEMPLAZA ESTO)
+          "fldacH2zo0gZNICgX": fecha || new Date().toISOString() 
+        }
+      })
     });
 
+    // 5. Obtenemos la respuesta de Airtable
+    const data = await response.json();
+
+    // 6. Si Airtable rechaza la petición, mostramos el error en los logs
     if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error Airtable:", errorData);
-        throw new Error('Error en Airtable');
+      console.error("❌ Error de Airtable:", data);
+      return res.status(response.status).json(data);
     }
-    
-    return res.status(200).json({ success: true });
-   } catch (error) {
-    console.error("Fallo completo:", error.message);
+
+    // 7. Si todo sale bien, devolvemos éxito
+    console.log("✅ Clic registrado con éxito en Airtable");
+    return res.status(200).json({ success: true, data });
+
+  } catch (error) {
+    // 8. Si hay un error de red o de servidor, lo mostramos
+    console.error("❌ Error del servidor:", error.message);
     return res.status(500).json({ error: error.message });
   }
+}
