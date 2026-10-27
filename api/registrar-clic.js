@@ -9,18 +9,21 @@ export default async function handler(req, res) {
   const { empresa, id_empresa, fecha } = body;
 
   // 3. Traemos las variables de entorno configuradas en Vercel
-  const AIRTABLE_TOKEN = process.env.AIRTABLE_TOKEN;
-  const BASE_ID = process.env.AIRTABLE_BASE_ID;
-  const TABLE_NAME = process.env.AIRTABLE_TABLE || 'tblGakI9RcxKziGET';
+  const AIRTABLE_TOKEN = (process.env.AIRTABLE_TOKEN || '').trim();
+  const BASE_ID = (process.env.AIRTABLE_BASE_ID || '').trim();
+  const TABLE_NAME = (process.env.AIRTABLE_TABLE || 'tblGakI9RcxKziGET').trim();
 
   if (!AIRTABLE_TOKEN || !BASE_ID) {
     console.error("❌ Faltan variables de entorno AIRTABLE_TOKEN o AIRTABLE_BASE_ID");
     return res.status(500).json({ error: 'Faltan variables de entorno en el servidor.' });
   }
 
+  console.log(`📡 Consultando Airtable -> Base: "${BASE_ID}", Tabla: "${TABLE_NAME}"`);
+
   try {
     // 4. Petición a Airtable con la estructura fields correcta
-    const response = await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
+    const url = `https://api.airtable.com/v0/${BASE_ID}/${encodeURIComponent(TABLE_NAME)}`;
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${AIRTABLE_TOKEN}`,
@@ -46,10 +49,12 @@ export default async function handler(req, res) {
 
     // 5. Si Airtable rechaza la petición, mostramos el error detallado
     if (!response.ok) {
-      console.error("❌ Error de Airtable:", response.status, data);
+      console.error(`❌ Error de Airtable ${response.status}:`, data, `(URL: https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME})`);
       return res.status(response.status).json({
         error: 'Airtable rechazó el registro',
         status: response.status,
+        baseId: BASE_ID,
+        tableName: TABLE_NAME,
         detail: data
       });
     }
