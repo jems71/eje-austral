@@ -1995,10 +1995,11 @@
 
       // Envía los datos a Vercel
       fetch('/api/registrar-clic', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(datos)
-      })
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(datos),
+  keepalive: true // <--- AGREGA ESTO
+})
       .then(() => {
         window.open(urlWhatsApp, '_blank'); // Abre WhatsApp
       })
