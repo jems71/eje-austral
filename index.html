@@ -1989,19 +1989,22 @@
     }
   </script>
 
-  <!-- MANTENCIÓN: para reabrir el directorio, cambiar MANTENCION_ACTIVA a false (abajo).
-       Para entrar tú mientras está activa, abre el sitio con ?mantencion=off -->
+    <!-- MANTENCIÓN: para reabrir el directorio, cambiar MANTENCION_ACTIVA a false (abajo).
+       Para entrar tú mientras está activa, abre el sitio con ?admin_mantencion=TU_CLAVE_SECRETA -->
   <script>
     // Poner en false cuando el directorio vuelva a funcionar
     const MANTENCION_ACTIVA = true;
+    // Cambia esto por una clave secreta que solo tú conozcas
+    const CLAVE_BYPASS = 'eje2026secreto';
     (function () {
-      const omitir = new URLSearchParams(location.search).get('mantencion') === 'off';
+      const params = new URLSearchParams(location.search);
+      const bypass = params.get('admin_mantencion') === CLAVE_BYPASS;
       const pantalla = document.getElementById('mantencion-screen');
-      if (!MANTENCION_ACTIVA || omitir) {
+      if (!MANTENCION_ACTIVA || bypass) {
         if (pantalla) pantalla.remove();
         return;
       }
-      // Mientras esté activa: sin scroll y sin llamadas a /api/ (así tampoco se gasta cupo de Airtable)
+      // Mientras esté activa: sin scroll y sin llamadas a /api/
       document.documentElement.style.overflow = 'hidden';
       const fetchOriginal = window.fetch.bind(window);
       window.fetch = function (url, opts) {
