@@ -41,9 +41,9 @@
     (function () {
       const params = new URLSearchParams(location.search);
       const bypass = params.get('admin_mantencion') === CLAVE_BYPASS;
-      
+
+      // Si el administrador entra con su clave, limpiamos el letrero y salimos
       if (!MANTENCION_ACTIVA || bypass) {
-        // Si no hay mantención, eliminamos el letrero del DOM en cuanto el navegador lo lea
         document.addEventListener('DOMContentLoaded', () => {
           const pantalla = document.getElementById('mantencion-screen');
           if (pantalla) pantalla.remove();
@@ -51,8 +51,18 @@
         return;
       }
 
-      // Si la mantención está activa: bloqueamos el scroll y la API de inmediato
+      // === MANTENCIÓN ACTIVA ===
+
+      // 1. Borramos el token guardado para cerrar la sesión a la fuerza
+      try { 
+        localStorage.removeItem('eje_austral_token_v1'); 
+      } catch(e) {}
+
+      // 2. Bloqueamos el scroll
       document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+
+      // 3. Interceptamos las llamadas a la API para que no pueda cargar datos
       const fetchOriginal = window.fetch.bind(window);
       window.fetch = function (url, opts) {
         const u = typeof url === 'string' ? url : (url && url.url) || '';
@@ -61,11 +71,20 @@
         }
         return fetchOriginal(url, opts);
       };
-      
-      // Borramos el token para que nadie pueda saltarse la mantención con una sesión vieja
-      try { localStorage.removeItem('eje_austral_token_v1'); } catch(e) {}
+
+      // 4. Nos aseguramos de que la app y el login estén invisibles apenas se cree el DOM
+      document.addEventListener('DOMContentLoaded', () => {
+        const app = document.getElementById('app');
+        const login = document.getElementById('login-screen');
+        if (app) app.classList.add('hidden');
+        if (login) login.classList.add('hidden');
+      });
     })();
   </script>
+
+
+
+    
 </head>
 
 
