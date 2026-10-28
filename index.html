@@ -32,6 +32,51 @@
       --amber: #d97706;
       --red: #b91c1c;
     }
+
+  <script>
+    // Poner en false cuando el directorio vuelva a funcionar
+    const MANTENCION_ACTIVA = true;
+    const CLAVE_BYPASS = 'eje2026secreto';
+
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const bypass = params.get('admin_mantencion') === CLAVE_BYPASS;
+      
+      if (!MANTENCION_ACTIVA || bypass) {
+        // Si no hay mantención, eliminamos el letrero del DOM en cuanto el navegador lo lea
+        document.addEventListener('DOMContentLoaded', () => {
+          const pantalla = document.getElementById('mantencion-screen');
+          if (pantalla) pantalla.remove();
+        });
+        return;
+      }
+
+      // Si la mantención está activa: bloqueamos el scroll y la API de inmediato
+      document.documentElement.style.overflow = 'hidden';
+      const fetchOriginal = window.fetch.bind(window);
+      window.fetch = function (url, opts) {
+        const u = typeof url === 'string' ? url : (url && url.url) || '';
+        if (u.indexOf('/api/') !== -1) {
+          return Promise.resolve(new Response(JSON.stringify({ error: 'Directorio en mejoramiento' }), { status: 503, headers: { 'Content-Type': 'application/json' } }));
+        }
+        return fetchOriginal(url, opts);
+      };
+      
+      // Borramos el token para que nadie pueda saltarse la mantención con una sesión vieja
+      try { localStorage.removeItem('eje_austral_token_v1'); } catch(e) {}
+    })();
+  </script>
+</head>
+
+
+
+
+
+
+
+
+
+    
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 0; -webkit-font-smoothing: antialiased; }
     .serif { font-family: 'Fraunces', serif; }
@@ -687,7 +732,7 @@
 
 
   <!-- === LOGIN SCREEN === -->
-  <div id="login-screen" class="login-screen">
+  <div id="login-screen" class="login-screen hidden">
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
@@ -1989,32 +2034,6 @@
     }
   </script>
 
-    <!-- MANTENCIÓN: para reabrir el directorio, cambiar MANTENCION_ACTIVA a false (abajo).
-       Para entrar tú mientras está activa, abre el sitio con ?admin_mantencion=TU_CLAVE_SECRETA -->
-  <script>
-    // Poner en false cuando el directorio vuelva a funcionar
-    const MANTENCION_ACTIVA = true;
-    // Cambia esto por una clave secreta que solo tú conozcas
-    const CLAVE_BYPASS = 'eje2026secreto';
-    (function () {
-      const params = new URLSearchParams(location.search);
-      const bypass = params.get('admin_mantencion') === CLAVE_BYPASS;
-      const pantalla = document.getElementById('mantencion-screen');
-      if (!MANTENCION_ACTIVA || bypass) {
-        if (pantalla) pantalla.remove();
-        return;
-      }
-      // Mientras esté activa: sin scroll y sin llamadas a /api/
-      document.documentElement.style.overflow = 'hidden';
-      const fetchOriginal = window.fetch.bind(window);
-      window.fetch = function (url, opts) {
-        const u = typeof url === 'string' ? url : (url && url.url) || '';
-        if (u.indexOf('/api/') !== -1) {
-          return Promise.resolve(new Response(JSON.stringify({ error: 'Directorio en mejoramiento' }), { status: 503, headers: { 'Content-Type': 'application/json' } }));
-        }
-        return fetchOriginal(url, opts);
-      };
-    })();
-  </script>
+    
 </body>
 </html>
