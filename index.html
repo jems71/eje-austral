@@ -684,25 +684,6 @@
       <p class="m-pie">Eje Austral · Directorio UACh</p>
     </div>
   </div>
-  <script>
-    // Poner en false cuando el directorio vuelva a funcionar
-    const MANTENCION_ACTIVA = true;
-    (function () {
-      const omitir = new URLSearchParams(location.search).get('mantencion') === 'off';
-      const pantalla = document.getElementById('mantencion-screen');
-      if (!MANTENCION_ACTIVA || omitir) { pantalla.remove(); return; }
-      // Mientras esté activa: sin scroll y sin llamadas a /api/ (así tampoco se gasta cupo de Airtable)
-      document.documentElement.style.overflow = 'hidden';
-      const fetchOriginal = window.fetch.bind(window);
-      window.fetch = function (url, opts) {
-        const u = typeof url === 'string' ? url : (url && url.url) || '';
-        if (u.indexOf('/api/') !== -1) {
-          return Promise.resolve(new Response(JSON.stringify({ error: 'Directorio en mejoramiento' }), { status: 503, headers: { 'Content-Type': 'application/json' } }));
-        }
-        return fetchOriginal(url, opts);
-      };
-    })();
-  </script>
 
 
   <!-- === LOGIN SCREEN === -->
@@ -2006,6 +1987,31 @@
     } else {
       showLoginScreen();
     }
+  </script>
+
+  <!-- MANTENCIÓN: para reabrir el directorio, cambiar MANTENCION_ACTIVA a false (abajo).
+       Para entrar tú mientras está activa, abre el sitio con ?mantencion=off -->
+  <script>
+    // Poner en false cuando el directorio vuelva a funcionar
+    const MANTENCION_ACTIVA = true;
+    (function () {
+      const omitir = new URLSearchParams(location.search).get('mantencion') === 'off';
+      const pantalla = document.getElementById('mantencion-screen');
+      if (!MANTENCION_ACTIVA || omitir) {
+        if (pantalla) pantalla.remove();
+        return;
+      }
+      // Mientras esté activa: sin scroll y sin llamadas a /api/ (así tampoco se gasta cupo de Airtable)
+      document.documentElement.style.overflow = 'hidden';
+      const fetchOriginal = window.fetch.bind(window);
+      window.fetch = function (url, opts) {
+        const u = typeof url === 'string' ? url : (url && url.url) || '';
+        if (u.indexOf('/api/') !== -1) {
+          return Promise.resolve(new Response(JSON.stringify({ error: 'Directorio en mejoramiento' }), { status: 503, headers: { 'Content-Type': 'application/json' } }));
+        }
+        return fetchOriginal(url, opts);
+      };
+    })();
   </script>
 </body>
 </html>
