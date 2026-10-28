@@ -662,9 +662,48 @@
       margin-top: 8px; margin-bottom: 4px;
     }
     .detail-fecha-pill svg { width: 11px; height: 11px; opacity: 0.55; }
+  
+    /* === PANTALLA DE MANTENCIÓN (bloquea el acceso) === */
+    .mantencion-screen { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, var(--uach-blue) 0%, var(--uach-blue-dark) 100%); display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
+    .mantencion-card { background: var(--card); border-radius: 8px; max-width: 460px; width: 100%; padding: 36px 30px; text-align: center; border-top: 4px solid var(--uach-gold); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+    .mantencion-card .m-icono { font-size: 44px; line-height: 1; margin-bottom: 14px; }
+    .mantencion-card h2 { font-family: 'Fraunces', serif; font-size: 26px; color: var(--uach-blue); margin-bottom: 12px; }
+    .mantencion-card p { font-size: 14.5px; line-height: 1.55; color: var(--text); margin-bottom: 10px; }
+    .mantencion-card .m-pie { font-size: 12px; color: var(--text-muted); margin-top: 18px; margin-bottom: 0; }
   </style>
 </head>
 <body>
+  <!-- MANTENCIÓN: para reabrir el directorio, cambiar MANTENCION_ACTIVA a false (abajo).
+       Para entrar tú mientras está activa, abre el sitio con ?mantencion=off -->
+  <div id="mantencion-screen" class="mantencion-screen" role="alert">
+    <div class="mantencion-card">
+      <div class="m-icono">🛠️</div>
+      <h2>Estamos mejorando el directorio</h2>
+      <p>Estamos trabajando en mejoras y pronto tendremos novedades para el grupo.</p>
+      <p><strong>Tus contactos están a salvo.</strong> Vuelve a pasar en unos días.</p>
+      <p class="m-pie">Eje Austral · Directorio UACh</p>
+    </div>
+  </div>
+  <script>
+    // Poner en false cuando el directorio vuelva a funcionar
+    const MANTENCION_ACTIVA = true;
+    (function () {
+      const omitir = new URLSearchParams(location.search).get('mantencion') === 'off';
+      const pantalla = document.getElementById('mantencion-screen');
+      if (!MANTENCION_ACTIVA || omitir) { pantalla.remove(); return; }
+      // Mientras esté activa: sin scroll y sin llamadas a /api/ (así tampoco se gasta cupo de Airtable)
+      document.documentElement.style.overflow = 'hidden';
+      const fetchOriginal = window.fetch.bind(window);
+      window.fetch = function (url, opts) {
+        const u = typeof url === 'string' ? url : (url && url.url) || '';
+        if (u.indexOf('/api/') !== -1) {
+          return Promise.resolve(new Response(JSON.stringify({ error: 'Directorio en mejoramiento' }), { status: 503, headers: { 'Content-Type': 'application/json' } }));
+        }
+        return fetchOriginal(url, opts);
+      };
+    })();
+  </script>
+
 
   <!-- === LOGIN SCREEN === -->
   <div id="login-screen" class="login-screen">
