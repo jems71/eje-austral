@@ -1,7 +1,24 @@
 
-export async function onRequestGet({ request, env }) {
-  const auth = request.headers.get("Authorization") || "";
+function crearToken(password) {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  ).then(async key => {
+    const firma = await crypto.subtle.sign(
+      "HMAC",
+      key,
+      new TextEncoder().encode("grupo-uach-session")
+    );
+    return Array.from(new Uint8Array(firma))
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+  });
+}
 
+export async function onRequestGet({ request, env }) {
   if (!env.APP_PASSWORD || !env.DB) {
     return Response.json(
       { error: "Falta configurar APP_PASSWORD o la conexión D1" },
@@ -9,61 +26,51 @@ export async function onRequestGet({ request, env }) {
     );
   }
 
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(env.APP_PASSWORD),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-
-  const firma = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode("grupo-uach-session")
-  );
-
-  const tokenEsperado = Array.from(new Uint8Array(firma))
-    .map(byte => byte.toString(16).padStart(2, "0"))
-    .join("");
+  const auth = request.headers.get("Authorization") || "";
+  const tokenEsperado = await crearToken(env.APP_PASSWORD);
 
   if (auth !== `Bearer ${tokenEsperado}`) {
-    return Response.json(
-      { error: "No autorizado" },
-      { status: 401 }
-    );
+    return Response.json({ error: "No autorizado" }, { status: 401 });
   }
 
   try {
-    const contactos = await env.DB.prepare(`
-      SELECT * FROM contactos
-      WHERE estado_publicacion = 'publicado'
-        AND consentimiento_publicacion = 1
-    `).all();
+    const [contactosResult, recomendacionesResult] = await Promise.all([
+      env.DB.prepare(`
+        SELECT *
+        FROM contactos
+        WHERE estado_publicacion = 'publicado'
+          AND consentimiento_publicacion = 1
+      `).all(),
 
-    const recomendaciones = await env.DB.prepare(
-      "SELECT * FROM recomendaciones"
-    ).all();
+      env.DB.prepare(`
+        SELECT id, autor, contacto_id, comentario, proyecto, fecha
+        FROM recomendaciones
+      `).all()
+    ]);
 
-    const ofertas = await env.DB.prepare(`
-      SELECT * FROM ofertas
-      WHERE estado = 'publicada'
-      ORDER BY id DESC
-    `).all();
+    const contactos = contactosResult.results.map(c => ({
+      ...c,
+      recomendadoPor: c.recomendado_por || "",
+      ultimoProyecto: c.ultimo_proyecto || "",
+      fecha_ingreso: c.fecha_ingreso || ""
+    }));
+
+    const recomendaciones = recomendacionesResult.results.map(r => ({
+      ...r,
+      contactoId: r.contacto_id
+    }));
 
     return Response.json({
-      contactos: contactos.results,
-      recomendaciones: recomendaciones.results,
-      ofertas: ofertas.results,
+      contactos,
+      recomendaciones,
       _errors: [],
       _counts: {
-        contactos: contactos.results.length,
-        recomendaciones: recomendaciones.results.length,
-        ofertas: ofertas.results.length
+        contactos: contactos.length,
+        recomendaciones: recomendaciones.length
       }
     });
   } catch (error) {
+    console.error("Error consultando D1:", error);
     return Response.json(
       { error: "Error al consultar la base de datos" },
       { status: 500 }
