@@ -31,9 +31,22 @@ export async function onRequestPost({ request, env }) {
       await env.DB.prepare("ALTER TABLE contactos ADD COLUMN total_clics INTEGER DEFAULT 0").run();
     } catch(e) {}
 
+    // Fecha y hora oficial de Chile (America/Santiago)
     const ahora = new Date();
-    const fecha = ahora.toISOString().slice(0, 10);
-    const hora = ahora.toTimeString().slice(0, 8);
+    const formatoChile = new Intl.DateTimeFormat('es-CL', {
+      timeZone: 'America/Santiago',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    }).formatToParts(ahora);
+
+    const getPart = type => (formatoChile.find(p => p.type === type)?.value || '');
+    const fecha = `${getPart('year')}-${getPart('month')}-${getPart('day')}`;
+    const hora = `${getPart('hour')}:${getPart('minute')}:${getPart('second')}`;
 
     // Actualización atómica en contactos y registro del evento
     await Promise.all([

@@ -949,11 +949,12 @@
               <th style="padding: 12px 16px;">Profesional / Empresa</th>
               <th style="padding: 12px 16px;">Rubro</th>
               <th style="padding: 12px 16px;">Ciudad</th>
-              <th style="padding: 12px 16px; text-align: center; width: 160px;">Clics WhatsApp</th>
+              <th style="padding: 12px 16px; text-align: center; width: 130px;">Clics WhatsApp</th>
+              <th style="padding: 12px 16px; text-align: center; width: 190px;">Último Clic (Fecha y Hora)</th>
             </tr>
           </thead>
           <tbody id="stats-ranking-tbody">
-            <tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando estadísticas...</td></tr>
+            <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando estadísticas...</td></tr>
           </tbody>
         </table>
       </div>
@@ -2343,7 +2344,7 @@
         renderEstadisticas();
       } catch(e) {
         console.error(e);
-        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #ef4444;">Error cargando estadísticas: ' + esc(e.message) + '</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: #ef4444;">Error cargando estadísticas: ' + esc(e.message) + '</td></tr>';
       }
     }
 
@@ -2382,7 +2383,7 @@
       });
 
       if (filtrados.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: var(--text-muted);">No se encontraron profesionales con ese criterio.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: var(--text-muted);">No se encontraron profesionales con ese criterio.</td></tr>';
         return;
       }
 
@@ -2404,6 +2405,9 @@
               <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 13px; ${badgeBg}">
                 💬 ${c.total_clics}
               </span>
+            </td>
+            <td style="padding: 12px 16px; text-align: center; font-size: 12px; color: var(--text-muted); font-family: monospace;">
+              ${c.ultimo_clic ? '🕒 ' + esc(c.ultimo_clic) : '—'}
             </td>
           </tr>
         `;
@@ -2437,9 +2441,9 @@
         alert('No hay datos para exportar aún.');
         return;
       }
-      let csv = 'Posicion;Nombre;Rubro;Ciudad;Tipo;Total_Clics_WhatsApp\n';
+      let csv = 'Posicion;Nombre;Rubro;Ciudad;Tipo;Total_Clics_WhatsApp;Ultimo_Clic_Fecha_Hora\n';
       STATS_DATA.ranking.forEach(c => {
-        csv += `"${c.posicion}";"${c.nombre.replace(/"/g, '""')}";"${c.rubro.replace(/"/g, '""')}";"${c.ciudad.replace(/"/g, '""')}";"${c.tipo}";${c.total_clics}\n`;
+        csv += `"${c.posicion}";"${c.nombre.replace(/"/g, '""')}";"${c.rubro.replace(/"/g, '""')}";"${c.ciudad.replace(/"/g, '""')}";"${c.tipo}";${c.total_clics};"${c.ultimo_clic || ''}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

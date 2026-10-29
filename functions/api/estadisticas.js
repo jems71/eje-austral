@@ -60,9 +60,16 @@ export async function onRequestGet({ request, env }) {
       env.DB.prepare("SELECT COALESCE(total, 0) as hoy FROM registro_visitas WHERE fecha = ?").bind(hoy).first(),
       env.DB.prepare("SELECT COALESCE(SUM(total_clics), 0) as total FROM contactos").first(),
       env.DB.prepare(`
-        SELECT id, nombre, rubro, ciudad, tipo, COALESCE(total_clics, 0) as total_clics
-        FROM contactos
-        ORDER BY total_clics DESC, nombre ASC
+        SELECT c.id, c.nombre, c.rubro, c.ciudad, c.tipo, COALESCE(c.total_clics, 0) as total_clics,
+               (
+                 SELECT r.fecha || ' ' || r.hora 
+                 FROM registro_clics_contacto r 
+                 WHERE r.contacto_id = c.id 
+                 ORDER BY r.id DESC 
+                 LIMIT 1
+               ) as ultimo_clic
+        FROM contactos c
+        ORDER BY c.total_clics DESC, c.nombre ASC
       `).all(),
       env.DB.prepare(`
         SELECT r.id, r.contacto_id, r.fecha, r.hora, c.nombre, c.rubro
@@ -80,7 +87,8 @@ export async function onRequestGet({ request, env }) {
       rubro: c.rubro || 'General',
       ciudad: c.ciudad || 'No especificada',
       tipo: c.tipo || 'Profesional',
-      total_clics: Number(c.total_clics) || 0
+      total_clics: Number(c.total_clics) || 0,
+      ultimo_clic: c.ultimo_clic || null
     }));
 
     const topContactado = ranking.find(c => c.total_clics > 0) || null;
