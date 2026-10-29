@@ -1,7 +1,9 @@
-
 name = "eje-austral"
 compatibility_date = "2026-10-27"
 pages_build_output_dir = "."
+
+[vars]
+APP_PASSWORD = "miraflores"
 
 [[d1_databases]]
 binding = "DB"

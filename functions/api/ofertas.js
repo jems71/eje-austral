@@ -36,15 +36,16 @@ function parseFecha(fecha) {
 }
 
 export async function onRequestGet({ request, env }) {
-  if (!env.APP_PASSWORD || !env.DB) {
+  const appPassword = env.APP_PASSWORD || "miraflores";
+  if (!env.DB) {
     return Response.json(
-      { error: "Falta configurar APP_PASSWORD o la conexión D1" },
+      { error: "Falta configurar la conexión D1" },
       { status: 500 }
     );
   }
 
   const auth = request.headers.get("Authorization") || "";
-  const tokenEsperado = await crearToken(env.APP_PASSWORD);
+  const tokenEsperado = await crearToken(appPassword);
 
   if (auth !== `Bearer ${tokenEsperado}`) {
     return Response.json(
