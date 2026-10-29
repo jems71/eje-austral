@@ -1,4 +1,3 @@
-
 function crearToken(password) {
   return crypto.subtle.importKey(
     "raw",
@@ -34,45 +33,58 @@ export async function onRequestGet({ request, env }) {
   }
 
   try {
-    const [contactosResult, recomendacionesResult] = await Promise.all([
+    const [contactosResult, recomendacionesResult, ofertasResult] = await Promise.all([
       env.DB.prepare(`
         SELECT *
         FROM contactos
-        WHERE estado_publicacion = 'publicado'
-          AND consentimiento_publicacion = 1
+        WHERE (estado_publicacion IS NULL OR estado_publicacion = 'publicado')
+          AND (consentimiento_publicacion IS NULL OR consentimiento_publicacion = 1)
+        ORDER BY nombre ASC
       `).all(),
 
       env.DB.prepare(`
         SELECT id, autor, contacto_id, comentario, proyecto, fecha
         FROM recomendaciones
+      `).all(),
+
+      env.DB.prepare(`
+        SELECT id, texto, publicado_por, fecha_publicacion, estado
+        FROM ofertas
+        WHERE (estado IS NULL OR estado = 'publicada')
+        ORDER BY fecha_publicacion DESC
       `).all()
     ]);
 
     const contactos = contactosResult.results.map(c => ({
       ...c,
-      recomendadoPor: c.recomendado_por || "",
-      ultimoProyecto: c.ultimo_proyecto || "",
-      fecha_ingreso: c.fecha_ingreso || ""
+      recomendadoPor: c.recomendadoPor || c.recomendado_por || "",
+      ultimoProyecto: c.ultimoProyecto || c.ultimo_proyecto || "",
+      fecha_ingreso: c.fecha_ingreso || "",
+      estado_disponibilidad: c.estado_disponibilidad || "Disponible"
     }));
 
     const recomendaciones = recomendacionesResult.results.map(r => ({
       ...r,
-      contactoId: r.contacto_id
+      contactoId: r.contacto_id || r.contactoId
     }));
+
+    const ofertas = ofertasResult.results || [];
 
     return Response.json({
       contactos,
       recomendaciones,
+      ofertas,
       _errors: [],
       _counts: {
         contactos: contactos.length,
-        recomendaciones: recomendaciones.length
+        recomendaciones: recomendaciones.length,
+        ofertas: ofertas.length
       }
     });
   } catch (error) {
     console.error("Error consultando D1:", error);
     return Response.json(
-      { error: "Error al consultar la base de datos" },
+      { error: "Error al consultar la base de datos", detail: error.message },
       { status: 500 }
     );
   }

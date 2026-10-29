@@ -1,4 +1,3 @@
-
 async function crearToken(password) {
   const encoder = new TextEncoder();
 
@@ -21,35 +20,19 @@ async function crearToken(password) {
     .join("");
 }
 
-function fechaValida(fecha) {
+function parseFecha(fecha) {
   if (!fecha) return null;
+  const d = new Date(fecha);
+  if (!isNaN(d.getTime())) return d;
 
-  // Formato almacenado: DD/MM/YYYY HH:mm
   const match = String(fecha).match(
     /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?$/
   );
-
   if (!match) return null;
 
   const [, dia, mes, anio, hora = "00", minuto = "00"] = match;
-
-  const date = new Date(
-    Number(anio),
-    Number(mes) - 1,
-    Number(dia),
-    Number(hora),
-    Number(minuto)
-  );
-
-  if (
-    date.getFullYear() !== Number(anio) ||
-    date.getMonth() !== Number(mes) - 1 ||
-    date.getDate() !== Number(dia)
-  ) {
-    return null;
-  }
-
-  return date;
+  const custom = new Date(Number(anio), Number(mes) - 1, Number(dia), Number(hora), Number(minuto));
+  return isNaN(custom.getTime()) ? null : custom;
 }
 
 export async function onRequestGet({ request, env }) {
@@ -74,20 +57,22 @@ export async function onRequestGet({ request, env }) {
     const resultado = await env.DB.prepare(`
       SELECT id, texto, fecha_publicacion, publicado_por, estado
       FROM ofertas
-      WHERE estado = 'publicada'
+      WHERE (estado IS NULL OR estado = 'publicada')
+      ORDER BY fecha_publicacion DESC
     `).all();
 
     const ahora = new Date();
     const limite = new Date(ahora.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-    const ofertas = resultado.results
+    const ofertas = (resultado.results || [])
       .filter(oferta => {
-        const fecha = fechaValida(oferta.fecha_publicacion);
+        const fecha = parseFecha(oferta.fecha_publicacion);
         return fecha && fecha >= limite && fecha <= ahora;
       })
       .sort((a, b) => {
-        return fechaValida(b.fecha_publicacion) -
-               fechaValida(a.fecha_publicacion);
+        const fb = parseFecha(b.fecha_publicacion) || 0;
+        const fa = parseFecha(a.fecha_publicacion) || 0;
+        return fb - fa;
       });
 
     return Response.json({ ok: true, ofertas });
@@ -95,7 +80,7 @@ export async function onRequestGet({ request, env }) {
     console.error("Error consultando ofertas:", error);
 
     return Response.json(
-      { error: "Error al consultar las ofertas" },
+      { error: "Error al consultar las ofertas", detail: error.message },
       { status: 500 }
     );
   }
