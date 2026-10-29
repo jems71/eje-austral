@@ -1,5 +1,9 @@
 {
-  "rewrites": [
-    { "source": "/ficha/:token", "destination": "/ficha.html?t=:token" }
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://eje-austral.jems.cl/$1",
+      "permanent": false
+    }
   ]
 }

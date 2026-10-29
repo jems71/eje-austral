@@ -675,7 +675,11 @@
   <!-- SCRIPT DE MANTENCIÓN (BLOQUEANTE) -->
   <script>
     // Poner en false cuando el directorio vuelva a funcionar
-    const MANTENCION_ACTIVA = true;
+    // Redirigir visitas antiguas de Vercel al nuevo dominio
+    if (location.hostname.includes('vercel.app')) {
+      location.replace('https://eje-austral.jems.cl' + location.pathname + location.search);
+    }
+    const MANTENCION_ACTIVA = false;
     const CLAVE_BYPASS = 'eje2026secreto';
 
     (function () {
@@ -1850,7 +1854,20 @@
     let OFERTAS_CARGADAS = false;
 
     function esAdmin() {
-      return new URLSearchParams(window.location.search).get('admin') === '1';
+      const urlAdmin = new URLSearchParams(window.location.search).get('admin');
+      if (urlAdmin === '1') {
+        try { localStorage.setItem('eje_austral_admin_mode', '1'); } catch(e) {}
+        return true;
+      }
+      if (urlAdmin === '0') {
+        try { localStorage.removeItem('eje_austral_admin_mode'); } catch(e) {}
+        return false;
+      }
+      try {
+        return localStorage.getItem('eje_austral_admin_mode') === '1';
+      } catch(e) {
+        return false;
+      }
     }
 
     function formatFechaOferta(iso) {
@@ -1888,8 +1905,11 @@
         return;
       }
       grid.innerHTML = OFERTAS.map(o => `
-        <div class="card">
-          <div class="card-fecha">${esc(formatFechaOferta(o.fecha_publicacion))}</div>
+        <div class="card" style="position:relative;">
+          <div class="card-fecha" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>${esc(formatFechaOferta(o.fecha_publicacion))}</span>
+            ${esAdmin() ? `<button onclick="eliminarOferta('${esc(o.id)}')" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; font-weight:600; display:inline-flex; align-items:center; gap:4px;">🗑️ Borrar</button>` : ''}
+          </div>
           <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: var(--text);">${esc(o.texto)}</div>
           ${o.publicado_por ? `<div class="info-row" style="margin-top:12px;"><div class="label">Publica</div><div class="value">${esc(o.publicado_por)}</div></div>` : ''}
         </div>
@@ -1926,8 +1946,28 @@
       }
     }
 
+    async function eliminarOferta(id) {
+      if (!confirm('¿Estás seguro de que deseas eliminar esta oferta laboral? Esta acción no se puede deshacer.')) return;
+      try {
+        const r = await apiFetch('/api/eliminar-oferta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        OFERTAS = OFERTAS.filter(o => o.id !== id);
+        document.getElementById('cnt-ofertas').textContent = OFERTAS.length;
+        renderOfertas();
+      } catch (e) {
+        console.error(e);
+        alert('Error al eliminar oferta: ' + e.message);
+      }
+    }
+
     window.openOfertaModal = openOfertaModal;
     window.closeOfertaModal = closeOfertaModal;
+    window.eliminarOferta = eliminarOferta;
     window.publicarOferta = publicarOferta;
 
     async function doLogin() {
