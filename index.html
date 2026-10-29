@@ -2606,7 +2606,22 @@
       const nombre = c.nombre || 'colega';
       const rubro = c.rubro || 'servicios de construcción';
 
-      const texto = `Estimado/a ${nombre}, le saludamos desde la red de profesionales de la construcción Eje Austral (Titulados UACh).\n\nLe escribimos porque profesionales de nuestra red técnica han recomendado sus servicios de ${rubro} para proyectos y obras en la zona sur.\n\nPara saber si se encuentra con disponibilidad para nuevos trabajos, con faenas en curso, o si prefiere no recibir solicitudes, le invitamos a indicar su estado actual en su ficha personal (le tomará solo 10 segundos):\n🔗 ${linkFicha}\n\n💡 Consejo: Guarde este mensaje o este enlace en sus favoritos; podrá volver a entrar cuando quiera más adelante para cambiar su estado si queda libre o toma nuevas obras.\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad de inmediato.\n\n¡Muchas gracias y mucho éxito!`;
+      function limpiarNombreRecom(rec) {
+        if (!rec) return '';
+        let s = String(rec).trim();
+        s = s.replace(/^[~-]+\s*/, '');
+        s = s.replace(/[^\w\s\(\)\+\.\-áéíóúÁÉÍÓÚñÑ]/gu, '');
+        s = s.replace(/\s+/g, ' ').trim();
+        if (['nn', 'sin recom', 'nada', ''].includes(s.toLowerCase())) return '';
+        return s;
+      }
+
+      const recomLimpio = limpiarNombreRecom(c.recomendado_por);
+      const quienRecom = recomLimpio 
+        ? `nuestro colega titulado UACh ${recomLimpio}`
+        : 'profesionales titulados de nuestra red técnica UACh';
+
+      const texto = `Estimado/a ${nombre}, le saluda Juan Carlos García, Constructor Civil de la Universidad Austral de Chile (UACh) y coordinador de la red técnica Eje Austral.\n\nLe escribo porque ${quienRecom} recomendó su trabajo en ${rubro} para proyectos y obras en la zona sur.\n\nPara que los colegas de la red puedan contactarle directamente cuando necesiten sus servicios, le invitamos a indicar su estado actual en su tarjeta personal (toma 10 segundos):\n🔗 ${linkFicha}\n\n📌 ¿Cómo funciona?\nEste enlace es su tarjeta digital permanente en nuestra red. Guárdela en sus favoritos o no borre este chat: cada vez que termine una faena o quede libre, vuelva a entrar a su enlace para ponerse "Disponible".\n\n🛡️ Seguridad y Confianza:\nEste enlace NO le pedirá contraseñas, pagos ni datos bancarios; es 100% gratuito. Ante cualquier duda o para verificar este mensaje, puede consultarle a quien lo recomendó o llamarme directamente a mí a este mismo WhatsApp (+56 9 6255 3313).\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad.\n\n¡Muchas gracias y mucho éxito en sus faenas!`;
 
       const url = `https://wa.me/${fono}?text=${encodeURIComponent(texto)}`;
       window.open(url, '_blank');

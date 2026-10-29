@@ -46,7 +46,7 @@ export async function onRequestGet({ request, env }) {
     } catch(e) {}
 
     const res = await env.DB.prepare(`
-      SELECT id, nombre, tipo, rubro, ciudad, fono, whatsapp, token_acceso,
+      SELECT id, nombre, tipo, rubro, ciudad, fono, whatsapp, recomendado_por, token_acceso,
              CASE 
                WHEN fecha_ultima_actualizacion_estado IS NULL THEN 'Por confirmar'
                ELSE COALESCE(estado_disponibilidad, 'Por confirmar')

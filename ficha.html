@@ -222,7 +222,17 @@
         if (sel && sel.value === 'No deseo figurar en el directorio') {
           msg.textContent = 'Tus preferencias han sido guardadas. Has sido retirado del buscador del directorio respetando tu privacidad.';
         } else {
-          msg.textContent = 'Listo, se guardaron tus cambios en el directorio.';
+          msg.innerHTML = `
+            <div>✅ <strong>¡Listo! Se guardaron tus cambios en el directorio.</strong></div>
+            <div style="margin-top: 8px; font-size: 12.5px; line-height: 1.45; color: var(--text);">
+              📌 <strong>Guarda este enlace:</strong> Cuando termines una faena o necesites nuevos trabajos, entra de nuevo a este mismo link para ponerte disponible y que los constructores de la red te llamen.
+            </div>
+            <div style="margin-top: 12px;">
+              <button type="button" onclick="compartirMiFicha()" style="background: var(--green); color: #fff; border: none; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                📲 Guardar enlace en mi WhatsApp
+              </button>
+            </div>
+          `;
         }
       } catch (e) {
         msg.classList.add('err');
@@ -320,6 +330,12 @@
     window.sumarRubroFicha = sumarRubroFicha;
     window.agregarSugerenciaRubro = agregarSugerenciaRubro;
     window.quitarRubroFicha = quitarRubroFicha;
+    function compartirMiFicha() {
+      const link = window.location.href;
+      const texto = `Mi Tarjeta Profesional en Eje Austral (Titulados UACh): ${link}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+    }
+    window.compartirMiFicha = compartirMiFicha;
 
     cargar();
   </script>
