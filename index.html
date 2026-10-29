@@ -870,6 +870,7 @@
           <button class="chip-sm filter-zona" data-zona="osorno">Osorno</button>
           <button class="chip-sm filter-zona" data-zona="llanquihue">Llanquihue / Pto. Montt</button>
           <button class="chip-sm filter-zona" data-zona="chiloe">Chiloé</button>
+          <button class="chip-sm filter-zona hidden" id="chip-zona-sin-asignar" data-zona="sin-zona" style="border-color: #f59e0b; color: #b45309; font-weight: 600;">⚠️ Sin zona (<span id="cnt-sin-zona">0</span>)</button>
         </div>
       </div>
     </div>
@@ -1116,6 +1117,71 @@
   <!-- === MODAL: Detalle === -->
   <div id="modal-detail" class="modal-bg hidden">
     <div class="modal large" id="detail-content"></div>
+  </div>
+
+  <!-- === MODAL: Edición de Contacto (Solo Admin) === -->
+  <div id="modal-admin-edit" class="modal-bg hidden" style="z-index: 110;" onclick="if (event.target === this) closeAdminEditModal()">
+    <div class="modal" style="max-width: 520px;">
+      <button class="modal-close" onclick="closeAdminEditModal()">×</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span style="font-size: 20px;">✏️</span>
+        <h3 class="serif" style="margin: 0; color: var(--uach-blue);">Editar Ficha (Admin)</h3>
+      </div>
+      <p class="sub" style="margin-bottom: 16px;">Modifica la zona de cobertura, rubro u otros datos de este contacto.</p>
+
+      <input type="hidden" id="admin-edit-id">
+
+      <label>Nombre / Empresa *</label>
+      <input type="text" id="admin-edit-nombre" required>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label>Tipo</label>
+          <select id="admin-edit-tipo">
+            <option value="Subcontrato">🔧 Subcontrato</option>
+            <option value="Mano de obra">👷 Mano de obra</option>
+            <option value="Arriendo">🏗️ Arriendo</option>
+            <option value="Proveedor">📦 Proveedor</option>
+            <option value="Flete">🚛 Flete</option>
+            <option value="Profesional">🎓 Profesional</option>
+            <option value="Vendedor">💼 Vendedor</option>
+          </select>
+        </div>
+        <div>
+          <label>Persona de contacto</label>
+          <input type="text" id="admin-edit-contacto" placeholder="Nombre contacto">
+        </div>
+      </div>
+
+      <label>Rubro</label>
+      <input type="text" id="admin-edit-rubro" placeholder="Ej: Electricidad, Pintura, Áridos">
+
+      <label style="color: var(--uach-blue); font-weight: 700;">📍 Ciudad / Zona de Cobertura</label>
+      <input type="text" id="admin-edit-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, Temuco, Puerto Montt, Todo Chile">
+      <div class="help-text">Si atiende varias ciudades o zonas, podés escribir p. ej. "Valdivia, Osorno" o "Todo Chile".</div>
+
+      <label>Último proyecto (opcional)</label>
+      <input type="text" id="admin-edit-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+        <div>
+          <label>Teléfono</label>
+          <input type="tel" id="admin-edit-fono" placeholder="+56 9 ...">
+        </div>
+        <div>
+          <label>WhatsApp</label>
+          <input type="tel" id="admin-edit-whatsapp" placeholder="+56 9 ...">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 22px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px;">
+        <button type="button" id="btn-delete-admin-edit" onclick="eliminarContactoAdmin()" style="background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 10px 14px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">🗑️ Eliminar</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-secondary" onclick="closeAdminEditModal()" style="padding: 10px 16px; border-radius: 4px;">Cancelar</button>
+          <button type="button" class="btn-primary" id="btn-save-admin-edit" onclick="guardarEdicionAdmin()" style="padding: 10px 18px; border-radius: 4px;">💾 Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- === MODAL: Recomendar === -->
@@ -1486,7 +1552,11 @@
     function getFilteredContactos() {
       return DATA.contactos.filter(c => {
         if (state.tipo !== 'todos' && c.tipo !== state.tipo) return false;
-        if (state.zona !== 'todas' && !getZonaDeCiudad(c.ciudad).includes(state.zona)) return false;
+        if (state.zona === 'sin-zona') {
+          if (c.ciudad && c.ciudad.trim()) return false;
+        } else if (state.zona !== 'todas' && !getZonaDeCiudad(c.ciudad).includes(state.zona)) {
+          return false;
+        }
         if (state.q) {
           const q = normText(state.q);
           const hay = normText([c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' '));
@@ -1534,6 +1604,7 @@
             <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
+            ${esAdmin() ? `<div style="display:flex; align-items:center; margin-left:8px;" onclick="event.stopPropagation(); abrirModalAdminEditar('${esc(c.id)}');"><button title="Editar contacto (Admin)" style="background:transparent; border:1px solid var(--border); border-radius:4px; padding:4px 8px; cursor:pointer; color:var(--uach-blue); font-size:12px;">✏️</button></div>` : ''}
           </div>
         `;
       }).join('');
@@ -1584,6 +1655,15 @@
     }
 
     function renderContactos() {
+      if (esAdmin()) {
+        const chipSinZona = document.getElementById('chip-zona-sin-asignar');
+        const cntSinZona = document.getElementById('cnt-sin-zona');
+        if (chipSinZona) {
+          const sinZonaCount = DATA.contactos.filter(c => !c.ciudad || !c.ciudad.trim()).length;
+          chipSinZona.classList.remove('hidden');
+          if (cntSinZona) cntSinZona.textContent = sinZonaCount;
+        }
+      }
       const grid = document.getElementById('grid-contactos');
       const data = getFilteredContactos();
       renderLista(data);
@@ -1638,6 +1718,7 @@
               <button class="icon-btn" onclick="event.stopPropagation(); compartirContacto('${esc(c.id)}')" title="Compartir ficha">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               </button>
+              ${esAdmin() ? `<button class="icon-btn" onclick="event.stopPropagation(); abrirModalAdminEditar('${esc(c.id)}')" title="Editar contacto (Admin)" style="color:var(--uach-blue); border-color:var(--uach-blue);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>` : ''}
             </div>
           </div>
         `;
@@ -1906,6 +1987,7 @@
         <div style="margin-bottom: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
           ${wa ? `<a href="https://wa.me/${wa}" target="_blank" onclick="registrarClicContacto('${esc(c.id)}')" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
           <button onclick="compartirContacto('${esc(c.id)}')" style="padding:10px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">↗ Compartir ficha</button>
+          ${esAdmin() ? `<button onclick="abrirModalAdminEditar('${esc(c.id)}')" style="padding:10px 16px; background:var(--uach-blue); color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">✏️ Editar Ficha (Admin)</button>` : ''}
         </div>
 
 
@@ -2038,6 +2120,8 @@
       if (esAdmin()) {
         const tabStats = document.getElementById('tab-stats');
         if (tabStats) tabStats.classList.remove('hidden');
+        const chipSinZona = document.getElementById('chip-zona-sin-asignar');
+        if (chipSinZona) chipSinZona.classList.remove('hidden');
       }
       loadData();
       loadOfertas(); // carga las ofertas al entrar para que el contador del tab sea real
@@ -2263,6 +2347,171 @@
       }
     }
     window.sumarRubroAContacto = sumarRubroAContacto;
+
+    function abrirModalAdminEditar(id) {
+      if (!esAdmin()) {
+        alert('Función reservada exclusivamente para el administrador.');
+        return;
+      }
+      const c = (DATA.contactos && DATA.contactos.find(x => x.id === id)) 
+             || (typeof DESPACHO_LISTA !== 'undefined' && DESPACHO_LISTA.find(x => x.id === id));
+      if (!c) {
+        alert('No se encontró el contacto.');
+        return;
+      }
+
+      document.getElementById('admin-edit-id').value = c.id;
+      document.getElementById('admin-edit-nombre').value = c.nombre || '';
+      document.getElementById('admin-edit-tipo').value = c.tipo || 'Subcontrato';
+      document.getElementById('admin-edit-rubro').value = c.rubro || '';
+      document.getElementById('admin-edit-ciudad').value = c.ciudad || '';
+      document.getElementById('admin-edit-contacto').value = c.contacto || '';
+      document.getElementById('admin-edit-fono').value = c.fono || '';
+      document.getElementById('admin-edit-whatsapp').value = c.whatsapp || c.fono || '';
+      document.getElementById('admin-edit-ultimo-proyecto').value = c.ultimoProyecto || c.ultimo_proyecto || '';
+
+      document.getElementById('modal-admin-edit').classList.remove('hidden');
+    }
+
+    function closeAdminEditModal() {
+      document.getElementById('modal-admin-edit').classList.add('hidden');
+    }
+
+    async function guardarEdicionAdmin() {
+      const id = document.getElementById('admin-edit-id').value;
+      const nombre = document.getElementById('admin-edit-nombre').value.trim();
+      const tipo = document.getElementById('admin-edit-tipo').value;
+      const rubro = document.getElementById('admin-edit-rubro').value.trim();
+      const ciudad = document.getElementById('admin-edit-ciudad').value.trim();
+      const contacto = document.getElementById('admin-edit-contacto').value.trim();
+      const fono = document.getElementById('admin-edit-fono').value.trim();
+      const whatsapp = document.getElementById('admin-edit-whatsapp').value.trim();
+      const ultimoProyecto = document.getElementById('admin-edit-ultimo-proyecto').value.trim();
+
+      if (!id || !nombre) {
+        alert('El nombre es obligatorio.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-admin-edit');
+      btn.disabled = true;
+      btn.textContent = 'Guardando...';
+
+      try {
+        const res = await apiFetch('/api/admin-editar-contacto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id,
+            nombre,
+            tipo,
+            rubro,
+            ciudad,
+            contacto,
+            fono,
+            whatsapp,
+            ultimoProyecto
+          })
+        });
+        const out = await res.json();
+        if (!res.ok || !out.ok) {
+          throw new Error(out.error || `HTTP ${res.status}`);
+        }
+
+        // Actualizar en DATA local
+        const idx = DATA.contactos.findIndex(x => x.id === id);
+        if (idx !== -1) {
+          DATA.contactos[idx] = {
+            ...DATA.contactos[idx],
+            nombre,
+            tipo,
+            rubro,
+            ciudad,
+            contacto,
+            fono,
+            whatsapp,
+            ultimoProyecto,
+            ultimo_proyecto: ultimoProyecto
+          };
+        }
+
+        // Si está en DESPACHO_LISTA, actualizar también
+        if (typeof DESPACHO_LISTA !== 'undefined') {
+          const idxD = DESPACHO_LISTA.findIndex(x => x.id === id);
+          if (idxD !== -1) {
+            DESPACHO_LISTA[idxD] = {
+              ...DESPACHO_LISTA[idxD],
+              nombre,
+              tipo,
+              rubro,
+              ciudad,
+              contacto,
+              fono,
+              whatsapp,
+              ultimoProyecto,
+              ultimo_proyecto: ultimoProyecto
+            };
+            filtrarTablaDespacho();
+          }
+        }
+
+        closeAdminEditModal();
+        renderContactos();
+        // Si el modal de detalle estaba abierto para este contacto, refrescarlo
+        const modalDetalle = document.getElementById('modal-detail');
+        if (modalDetalle && !modalDetalle.classList.contains('hidden') && currentDetailContact?.id === id) {
+          openDetailModal(id);
+        }
+        alert('✅ Ficha actualizada correctamente.');
+      } catch(e) {
+        console.error(e);
+        alert('Error al guardar cambios: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '💾 Guardar Cambios';
+      }
+    }
+
+    async function eliminarContactoAdmin() {
+      const id = document.getElementById('admin-edit-id').value;
+      const nombre = document.getElementById('admin-edit-nombre').value;
+      if (!id) return;
+      if (!confirm(`¿Estás seguro de eliminar permanentemente a "${nombre}" del directorio? Esta acción no se puede deshacer.`)) return;
+
+      const btn = document.getElementById('btn-delete-admin-edit');
+      if (btn) { btn.disabled = true; btn.textContent = 'Eliminando...'; }
+
+      try {
+        const res = await apiFetch('/api/eliminar-contacto', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const out = await res.json();
+        if (!res.ok || !out.ok) throw new Error(out.error || `HTTP ${res.status}`);
+
+        DATA.contactos = DATA.contactos.filter(x => x.id !== id);
+        if (typeof DESPACHO_LISTA !== 'undefined') {
+          DESPACHO_LISTA = DESPACHO_LISTA.filter(x => x.id !== id);
+          actualizarContadoresDespacho();
+          filtrarTablaDespacho();
+        }
+        closeAdminEditModal();
+        closeDetailModal();
+        renderContactos();
+        alert(`Se eliminó a "${nombre}" del directorio.`);
+      } catch(e) {
+        console.error(e);
+        alert('Error al eliminar: ' + e.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '🗑️ Eliminar'; }
+      }
+    }
+
+    window.abrirModalAdminEditar = abrirModalAdminEditar;
+    window.closeAdminEditModal = closeAdminEditModal;
+    window.guardarEdicionAdmin = guardarEdicionAdmin;
+    window.eliminarContactoAdmin = eliminarContactoAdmin;
 
     window.goToView = goToView;
     window.goToRecommend = goToRecommend;
@@ -2584,9 +2833,14 @@
             <td style="padding: 12px 14px;">${badgeEstado}</td>
             <td style="padding: 12px 14px; text-align: center;">${badgeEnvio}</td>
             <td style="padding: 12px 14px; text-align: center;">
-              <button onclick="enviarWhatsAppFicha('${esc(c.id)}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--green); color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 12.5px; cursor: pointer; text-decoration: none;">
-                📲 Enviar WhatsApp
-              </button>
+              <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: center;">
+                <button onclick="enviarWhatsAppFicha('${esc(c.id)}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--green); color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 12.5px; cursor: pointer; text-decoration: none;">
+                  📲 Enviar WhatsApp
+                </button>
+                <button onclick="abrirModalAdminEditar('${esc(c.id)}')" title="Editar contacto" style="display: inline-flex; align-items: center; justify-content: center; padding: 7px 10px; background: var(--card); color: var(--uach-blue); border: 1.5px solid var(--border); border-radius: 6px; font-weight: 600; font-size: 12.5px; cursor: pointer;">
+                  ✏️
+                </button>
+              </div>
             </td>
           </tr>
         `;
