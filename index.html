@@ -278,6 +278,16 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 22px; position: relative; transition: all 0.2s; cursor: pointer; }
     .card:hover { border-color: var(--uach-blue); box-shadow: 0 8px 24px -10px rgba(10,36,71,0.15); transform: translateY(-1px); }
     .card-id { font-family: 'Fraunces', serif; font-size: 13px; color: var(--text-muted); letter-spacing: 1px; font-weight: 500; }
+    .badge-estado { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 10px; line-height: 1.3; }
+    .badge-disp { background: #eaf7ef; color: #1a9e5c; border: 1px solid #c2ebcf; }
+    .badge-ocup { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-fuera { background: #f3f4f6; color: #6b7280; border: 1px solid #e5e7eb; }
+    .badge-conf { background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; }
+    .dot-status { width: 6px; height: 6px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .dot-green { background: #1a9e5c; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-gray { background: #9ca3af; }
+    .dot-orange { background: #ea580c; }
     .card-tag { position: absolute; top: 20px; right: 20px; font-size: 9px; letter-spacing: 1.5px; padding: 4px 8px; border-radius: 3px; font-weight: 700; text-transform: uppercase; }
     .tag-sub { background: #e6efff; color: #1d4d99; }
     .tag-mano { background: #fff4d6; color: #8c6900; }
@@ -1516,7 +1526,7 @@
           : `<div class="col-fecha" style="opacity:0.35;">—</div>`;
         return `
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
-            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
+            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span> ${getEstadoBadge(c.estado_disponibilidad, c.tipo)}</div>
             <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
@@ -1549,6 +1559,25 @@
     // =====================================================
     // VISTA TARJETAS — ahora incluye badge de fecha
     // =====================================================
+    
+    function getEstadoBadge(estado, tipo) {
+      const st = (estado || '').trim();
+      const esTecnico = ['Subcontrato', 'Mano de obra', 'Profesional'].includes(tipo);
+
+      if (st === 'Disponible') {
+        return '<span class="badge-estado badge-disp"><span class="dot-status dot-green"></span>Disponible</span>';
+      } else if (st === 'Ocupado') {
+        return '<span class="badge-estado badge-ocup"><span class="dot-status dot-yellow"></span>Ocupado</span>';
+      } else if (st === 'Ya no trabaja en el rubro' || st === 'Fuera rubro') {
+        return '<span class="badge-estado badge-fuera"><span class="dot-status dot-gray"></span>Fuera de rubro</span>';
+      } else if (st === 'Por confirmar' || (esTecnico && (!st || st === ''))) {
+        return '<span class="badge-estado badge-conf"><span class="dot-status dot-orange"></span>Por confirmar</span>';
+      } else if (st) {
+        return `<span class="badge-estado badge-disp"><span class="dot-status dot-green"></span>${esc(st)}</span>`;
+      }
+      return '';
+    }
+
     function renderContactos() {
       const grid = document.getElementById('grid-contactos');
       const data = getFilteredContactos();
@@ -1574,7 +1603,10 @@
             <span class="card-tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
             <h3 class="serif">${esc(c.nombre)}</h3>
             <div class="rubro">${esc(c.rubro)}</div>
-            ${fechaBadge}
+            <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+              ${getEstadoBadge(c.estado_disponibilidad, c.tipo)}
+              ${fechaBadge}
+            </div>
             <div class="info-row"><div class="label">Contacto</div><div class="value">${esc(c.contacto || '—')}</div></div>
             <div class="info-row"><div class="label">Fono</div><div class="value">${esc(c.fono || '—')}</div></div>
             <div class="info-row"><div class="label">Zona</div><div class="value">${esc(formatZona(c))}</div></div>
@@ -1729,6 +1761,17 @@
         const actionBtn = action === 'recommend'
           ? `<button onclick="goToRecommend('${esc(c.id)}')">💬 Ver y recomendarlo</button>`
           : `<button onclick="goToView('${esc(c.id)}')">👁️ Ver contacto</button>`;
+
+        const cRubros = (c.rubro || '').toLowerCase().split(/[,/•;]+/).map(s => s.trim());
+        const nuevoRubroTrim = (nuevo.rubro || '').trim();
+        const esNuevoRubro = nuevoRubroTrim && !cRubros.includes(nuevoRubroTrim.toLowerCase());
+
+        const sumarRubroBtn = esNuevoRubro
+          ? `<button onclick="sumarRubroAContacto('${esc(c.id)}', '${esc(nuevoRubroTrim)}')" style="background:var(--green); color:#fff; border:none; padding:7px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; margin-top:6px; display:inline-flex; align-items:center; gap:5px;">
+              ➕ Sumar rubro "${esc(nuevoRubroTrim)}" a este contacto
+            </button>`
+          : '';
+
         return `
           <div class="dup-card">
             <div class="dup-name">${esc(c.nombre)}</div>
@@ -1737,8 +1780,9 @@
               ${c.ciudad ? ' · ' + esc(c.ciudad) : ''}
               ${c.fono ? '<br>📞 ' + esc(c.fono) : ''}
             </div>
-            <div class="dup-actions">
-              ${actionBtn}
+            <div class="dup-actions" style="display:flex; flex-direction:column; gap:6px;">
+              <div>${actionBtn}</div>
+              ${sumarRubroBtn}
             </div>
           </div>
         `;
@@ -1840,7 +1884,10 @@
           <span class="tag ${tagClass}">${tipoCfg.icono} ${esc(c.tipo)}</span>
           <h3 class="serif">${esc(c.nombre)}</h3>
           <div class="rubro">${esc(c.rubro)} · ${esc(formatZona(c))}</div>
-          ${fechaFmt ? `<div class="detail-fecha-pill">${ICON_CALENDAR} Ingresado al directorio: ${esc(fechaFmt)}</div>` : ''}
+          <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
+            ${getEstadoBadge(c.estado_disponibilidad, c.tipo)}
+            ${fechaFmt ? `<div class="detail-fecha-pill">${ICON_CALENDAR} Ingresado: ${esc(fechaFmt)}</div>` : ''}
+          </div>
         </div>
 
         <div style="margin-bottom: 18px; font-size: 13px; line-height: 1.7; margin-top: 14px;">
@@ -1996,6 +2043,7 @@
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         tabEl.classList.add('active');
         const tab = tabEl.dataset.tab;
+        if (tab === 'estadisticas' && !esAdmin()) return;
         document.getElementById('view-directorio').classList.toggle('hidden', tab !== 'directorio');
         document.getElementById('view-ofertas').classList.toggle('hidden', tab !== 'ofertas');
         const viewStats = document.getElementById('view-estadisticas');
@@ -2176,6 +2224,40 @@
     window.switchView = switchView;
     window.closeDupModal = closeDupModal;
     window.forceAddContact = forceAddContact;
+
+    async function sumarRubroAContacto(contactoId, nuevoRubro) {
+      const c = DATA.contactos.find(x => x.id === contactoId);
+      const nombre = c ? c.nombre : 'este contacto';
+      if (!confirm(`¿Deseas agregar el nuevo rubro "${nuevoRubro}" a ${nombre}?`)) return;
+
+      try {
+        const autor = (pendingContact?.recomendado_por || '').trim();
+        const notas = (pendingContact?.notas || '').trim();
+        const r = await apiFetch('/api/agregar-rubro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: contactoId,
+            rubro: nuevoRubro,
+            recomendado_por: autor,
+            notas: notas
+          })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+
+        closeDupModal();
+        closeAddModal();
+        await loadData();
+        alert(`¡Listo! Se agregó el rubro "${nuevoRubro}" a ${nombre}. Ahora figura con: ${out.rubro}`);
+        openDetailModal(contactoId);
+      } catch (e) {
+        console.error(e);
+        alert('Error al agregar rubro: ' + e.message);
+      }
+    }
+    window.sumarRubroAContacto = sumarRubroAContacto;
+
     window.goToView = goToView;
     window.goToRecommend = goToRecommend;
     function copy(text) { navigator.clipboard.writeText(text); }
@@ -2404,7 +2486,7 @@
       const tbody = document.getElementById('despacho-tbody');
       if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando contactos...</td></tr>';
       try {
-        const r = await fetch('/api/despacho-fichas');
+        const r = await apiFetch('/api/despacho-fichas');
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
         DESPACHO_LISTA = out.contactos || [];
@@ -2522,7 +2604,7 @@
 
       // Marcar como enviado en la base de datos
       try {
-        await fetch('/api/marcar-envio-ficha', {
+        await apiFetch('/api/marcar-envio-ficha', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: c.id })

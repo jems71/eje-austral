@@ -120,8 +120,15 @@
         </div>
 
         <div class="field">
-          <label class="lbl" for="f-rubro">Especialidad</label>
-          <input type="text" id="f-rubro" placeholder="Ej: Instalaciones eléctricas" />
+          <label class="lbl" for="f-rubro">Rubro y Especialidades</label>
+          <input type="text" id="f-rubro" placeholder="Ej: Pintura, Yeso, Terminaciones" />
+          <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 5px; line-height: 1.4;">
+            Puedes editar tus rubros o agregar especialidades adicionales separadas por coma.
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 6px;">
+            <input type="text" id="f-otro-rubro" placeholder="+ Escribir otro rubro aquí..." onkeydown="if(event.key==='Enter'){event.preventDefault();sumarRubroFicha();}" style="font-size: 13.5px; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; flex: 1; background: #fff;" />
+            <button type="button" onclick="sumarRubroFicha()" style="background: var(--uach-blue); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">➕ Sumar</button>
+          </div>
         </div>
 
         <button class="btn" id="btn-guardar">Guardar cambios</button>
@@ -208,6 +215,25 @@
     }
 
     $('btn-guardar').addEventListener('click', guardar);
+    
+    function sumarRubroFicha() {
+      const inputOtro = $('f-otro-rubro');
+      const val = (inputOtro.value || '').trim();
+      if (!val) return;
+      const inputPrincipal = $('f-rubro');
+      const actual = (inputPrincipal.value || '').trim();
+      if (actual) {
+        const partes = actual.split(/[,/•;]+/).map(s => s.trim().toLowerCase());
+        if (!partes.includes(val.toLowerCase())) {
+          inputPrincipal.value = actual + ', ' + val;
+        }
+      } else {
+        inputPrincipal.value = val;
+      }
+      inputOtro.value = '';
+    }
+    window.sumarRubroFicha = sumarRubroFicha;
+
     cargar();
   </script>
 </body>

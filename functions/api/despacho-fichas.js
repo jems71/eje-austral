@@ -1,8 +1,35 @@
 // functions/api/despacho-fichas.js — Cloudflare Pages Function con D1
-export async function onRequestGet({ env }) {
+async function crearToken(password) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const firma = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode("grupo-uach-session")
+  );
+  return Array.from(new Uint8Array(firma))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+export async function onRequestGet({ request, env }) {
   try {
     if (!env.DB) {
       return Response.json({ error: "Base de datos D1 no vinculada" }, { status: 500 });
+    }
+
+    const appPassword = env.APP_PASSWORD || "miraflores";
+    const auth = request.headers.get("Authorization") || "";
+    const tokenEsperado = await crearToken(appPassword);
+
+    if (auth !== `Bearer ${tokenEsperado}`) {
+      return Response.json({ error: "No autorizado" }, { status: 401 });
     }
 
     try {
@@ -11,7 +38,7 @@ export async function onRequestGet({ env }) {
 
     const res = await env.DB.prepare(`
       SELECT id, nombre, tipo, rubro, ciudad, fono, whatsapp, token_acceso,
-             COALESCE(estado_disponibilidad, 'Disponible') as estado_disponibilidad,
+             COALESCE(estado_disponibilidad, 'Por confirmar') as estado_disponibilidad,
              COALESCE(estado_publicacion, 'publicado') as estado_publicacion,
              COALESCE(link_enviado, 0) as link_enviado,
              fecha_envio_link,

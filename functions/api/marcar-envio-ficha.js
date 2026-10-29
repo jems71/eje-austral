@@ -1,8 +1,35 @@
 // functions/api/marcar-envio-ficha.js — Cloudflare Pages Function con D1
+async function crearToken(password) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const firma = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode("grupo-uach-session")
+  );
+  return Array.from(new Uint8Array(firma))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 export async function onRequestPost({ request, env }) {
   try {
     if (!env.DB) {
       return Response.json({ error: "Base de datos D1 no vinculada" }, { status: 500 });
+    }
+
+    const appPassword = env.APP_PASSWORD || "miraflores";
+    const auth = request.headers.get("Authorization") || "";
+    const tokenEsperado = await crearToken(appPassword);
+
+    if (auth !== `Bearer ${tokenEsperado}`) {
+      return Response.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const body = await request.json().catch(() => ({}));

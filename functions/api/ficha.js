@@ -4,6 +4,7 @@ const ESTADOS_VALIDOS = [
   'Disponible',
   'Ocupado',
   'Ya no trabaja en el rubro',
+  'Por confirmar',
   'No deseo figurar en el directorio'
 ];
 const TOKEN_RE = /^[A-Za-z0-9-]{8,64}$/;

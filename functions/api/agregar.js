@@ -51,7 +51,7 @@ export async function onRequestPost({ request, env }) {
         id, tipo, rubro, nombre, contacto, fono, whatsapp, email, region, ciudad,
         recomendado_por, rating, reviews, ultimo_proyecto, notas, token_acceso,
         estado_disponibilidad, fecha_ingreso, estado_publicacion, consentimiento_publicacion
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Disponible', date('now'), 'publicado', 1)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Por confirmar', date('now'), 'publicado', 1)
     `).bind(
       id,
       body.tipo || '',

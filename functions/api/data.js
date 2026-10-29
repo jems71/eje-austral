@@ -61,7 +61,7 @@ export async function onRequestGet({ request, env }) {
       recomendadoPor: c.recomendadoPor || c.recomendado_por || "",
       ultimoProyecto: c.ultimoProyecto || c.ultimo_proyecto || "",
       fecha_ingreso: c.fecha_ingreso || "",
-      estado_disponibilidad: c.estado_disponibilidad || "Disponible"
+      estado_disponibilidad: c.estado_disponibilidad || (['Subcontrato', 'Mano de obra', 'Profesional'].includes(c.tipo) ? 'Por confirmar' : 'Disponible')
     }));
 
     const recomendaciones = recomendacionesResult.results.map(r => ({
