@@ -1565,21 +1565,22 @@
     // =====================================================
     
     function getEstadoBadge(estado, tipo) {
-      const st = (estado || '').trim();
       const esTecnico = ['Subcontrato', 'Mano de obra', 'Profesional'].includes(tipo);
+      // Proveedores, Arriendos, Vendedores y Fletes no tienen disponibilidad laboral personal
+      if (!esTecnico) {
+        return '<span style="color: var(--text-muted); font-size: 13px;">—</span>';
+      }
 
+      const st = (estado || '').trim();
       if (st === 'Disponible') {
         return '<span class="badge-estado badge-disp"><span class="dot-status dot-green"></span>Disponible</span>';
       } else if (st === 'Ocupado') {
         return '<span class="badge-estado badge-ocup"><span class="dot-status dot-yellow"></span>Ocupado</span>';
       } else if (st === 'Ya no trabaja en el rubro' || st === 'Fuera rubro') {
         return '<span class="badge-estado badge-fuera"><span class="dot-status dot-gray"></span>Fuera de rubro</span>';
-      } else if (st === 'Por confirmar' || (esTecnico && (!st || st === ''))) {
+      } else {
         return '<span class="badge-estado badge-conf"><span class="dot-status dot-orange"></span>Por confirmar</span>';
-      } else if (st) {
-        return `<span class="badge-estado badge-disp"><span class="dot-status dot-green"></span>${esc(st)}</span>`;
       }
-      return '';
     }
 
     function renderContactos() {
@@ -1608,7 +1609,7 @@
             <h3 class="serif">${esc(c.nombre)}</h3>
             <div class="rubro">${esc(c.rubro)}</div>
             <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
-              ${getEstadoBadge(c.estado_disponibilidad, c.tipo)}
+              ${['Subcontrato', 'Mano de obra', 'Profesional'].includes(c.tipo) ? getEstadoBadge(c.estado_disponibilidad, c.tipo) : ''}
               ${fechaBadge}
             </div>
             <div class="info-row"><div class="label">Contacto</div><div class="value">${esc(c.contacto || '—')}</div></div>
@@ -1889,7 +1890,7 @@
           <h3 class="serif">${esc(c.nombre)}</h3>
           <div class="rubro">${esc(c.rubro)} · ${esc(formatZona(c))}</div>
           <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
-            ${getEstadoBadge(c.estado_disponibilidad, c.tipo)}
+            ${['Subcontrato', 'Mano de obra', 'Profesional'].includes(c.tipo) ? getEstadoBadge(c.estado_disponibilidad, c.tipo) : ''}
             ${fechaFmt ? `<div class="detail-fecha-pill">${ICON_CALENDAR} Ingresado: ${esc(fechaFmt)}</div>` : ''}
           </div>
         </div>
@@ -1906,12 +1907,7 @@
           ${wa ? `<a href="https://wa.me/${wa}" target="_blank" onclick="registrarClicContacto('${esc(c.id)}')" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
           <button onclick="compartirContacto('${esc(c.id)}')" style="padding:10px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">↗ Compartir ficha</button>
         </div>
-        ${c.token_acceso ? `
-          <div style="margin-bottom: 18px; padding: 10px 14px; background: var(--bg); border: 1.5px dashed var(--border); border-radius: 8px; font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-            <span>¿Eres <strong>${esc(c.nombre)}</strong>?</span>
-            <a href="/ficha.html?t=${esc(c.token_acceso)}" target="_blank" style="color: var(--uach-blue); font-weight: 700; text-decoration: underline;">✏️ Actualizar mi estado o rubros</a>
-          </div>
-        ` : ''}
+
 
         <div class="rec-detail-header">
           <div>

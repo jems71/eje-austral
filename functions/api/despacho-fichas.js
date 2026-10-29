@@ -36,9 +36,21 @@ export async function onRequestGet({ request, env }) {
       await env.DB.prepare("ALTER TABLE contactos ADD COLUMN fecha_envio_link TEXT").run();
     } catch(e) {}
 
+    try {
+      await env.DB.prepare(`
+        UPDATE contactos 
+        SET estado_disponibilidad = 'Por confirmar' 
+        WHERE tipo IN ('Subcontrato', 'Mano de obra', 'Profesional') 
+          AND fecha_ultima_actualizacion_estado IS NULL
+      `).run();
+    } catch(e) {}
+
     const res = await env.DB.prepare(`
       SELECT id, nombre, tipo, rubro, ciudad, fono, whatsapp, token_acceso,
-             COALESCE(estado_disponibilidad, 'Por confirmar') as estado_disponibilidad,
+             CASE 
+               WHEN fecha_ultima_actualizacion_estado IS NULL THEN 'Por confirmar'
+               ELSE COALESCE(estado_disponibilidad, 'Por confirmar')
+             END as estado_disponibilidad,
              COALESCE(estado_publicacion, 'publicado') as estado_publicacion,
              COALESCE(link_enviado, 0) as link_enviado,
              fecha_envio_link,
