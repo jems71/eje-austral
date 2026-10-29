@@ -877,6 +877,7 @@
         </div>
       </div>
     </div>
+    <div id="container-recordatorio-rec"></div>
     <div class="grid hidden" id="grid-contactos">
       <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando contactos...</div></div>
     </div>
@@ -1508,12 +1509,116 @@
         renderContactos();
         switchView(state.view);
         verificarEnlaceRecomendarDirecto();
+        evaluarRecordatoriosPendientes();
       } catch (e) {
         console.error(e);
         showError('No se pudo cargar los datos. Detalle: ' + e.message);
         document.getElementById('grid-contactos').innerHTML = '<div class="empty" style="grid-column: 1/-1;">Sin datos.</div>';
       }
     }
+
+    const LS_CONSULTAS_KEY = 'eje_austral_consultas_recientes_v1';
+    const DIAS_RECORDATORIO = 5; // Días mínimos tras consultar para sugerir la recomendación
+
+    function guardarConsultaParaRecordatorio(contactoId) {
+      if (!contactoId) return;
+      try {
+        const raw = localStorage.getItem(LS_CONSULTAS_KEY);
+        let lista = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(lista)) lista = [];
+
+        const ahora = Date.now();
+        const existente = lista.find(x => x.id === contactoId);
+        if (existente) {
+          existente.ts = ahora;
+          if (existente.estado !== 'completado') existente.estado = 'pendiente';
+        } else {
+          lista.unshift({ id: contactoId, ts: ahora, estado: 'pendiente' });
+        }
+        lista = lista.slice(0, 15);
+        localStorage.setItem(LS_CONSULTAS_KEY, JSON.stringify(lista));
+      } catch(e) {}
+    }
+
+    function evaluarRecordatoriosPendientes() {
+      const container = document.getElementById('container-recordatorio-rec');
+      if (!container) return;
+
+      try {
+        const raw = localStorage.getItem(LS_CONSULTAS_KEY);
+        if (!raw) { container.innerHTML = ''; return; }
+        const lista = JSON.parse(raw);
+        if (!Array.isArray(lista) || lista.length === 0) { container.innerHTML = ''; return; }
+
+        const ahora = Date.now();
+        const urlParams = new URLSearchParams(window.location.search);
+        // Modo prueba: si viene ?test_rec=1 o ?test_recordatorio=1, muestra el recordatorio de inmediato
+        const modoPrueba = urlParams.has('test_rec') || urlParams.has('test_recordatorio');
+
+        const pendiente = lista.find(item => {
+          if (item.estado !== 'pendiente') return false;
+          const dias = (ahora - item.ts) / (1000 * 60 * 60 * 24);
+          return modoPrueba || dias >= DIAS_RECORDATORIO;
+        });
+
+        if (!pendiente) { container.innerHTML = ''; return; }
+
+        const c = DATA.contactos.find(x => x.id === pendiente.id);
+        if (!c) { container.innerHTML = ''; return; }
+
+        container.innerHTML = `
+          <div class="card" style="margin-bottom: 20px; border-left: 4px solid var(--gold); background: #fffbeb; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(217,119,6,0.08);">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 260px; flex: 1;">
+              <span style="font-size: 26px;">👷</span>
+              <div>
+                <div style="font-weight: 700; font-size: 14.5px; color: #92400e;">
+                  Hace unos días consultaste a <strong>${esc(c.nombre)}</strong>${c.rubro ? ` (${esc(c.rubro)})` : ''}
+                </div>
+                <div style="font-size: 13px; color: #78350f; margin-top: 3px; line-height: 1.4;">
+                  ¿Llegaron a trabajar juntos en obra? Sumar tu recomendación ayuda a que otros colegas del grupo conozcan tu experiencia.
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              <button onclick="responderRecordatorioRec('${esc(c.id)}', true)" style="background: var(--uach-blue); color: #fff; border: none; padding: 9px 16px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: inherit;">
+                ⭐ Dejar recomendación
+              </button>
+              <button onclick="responderRecordatorioRec('${esc(c.id)}', false)" style="background: transparent; border: 1px solid #d97706; color: #b45309; padding: 9px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;">
+                No se concretó / Omitir
+              </button>
+            </div>
+          </div>
+        `;
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function responderRecordatorioRec(contactoId, aceptar) {
+      const container = document.getElementById('container-recordatorio-rec');
+      if (container) container.innerHTML = '';
+
+      try {
+        const raw = localStorage.getItem(LS_CONSULTAS_KEY);
+        if (raw) {
+          const lista = JSON.parse(raw);
+          const item = lista.find(x => x.id === contactoId);
+          if (item) {
+            item.estado = aceptar ? 'completado' : 'descartado';
+            localStorage.setItem(LS_CONSULTAS_KEY, JSON.stringify(lista));
+          }
+        }
+      } catch(e) {}
+
+      if (aceptar) {
+        const c = DATA.contactos.find(x => x.id === contactoId);
+        if (c) openRecModal(c.id, c.nombre);
+      }
+    }
+
+    window.responderRecordatorioRec = responderRecordatorioRec;
+    window.guardarConsultaParaRecordatorio = guardarConsultaParaRecordatorio;
+    window.evaluarRecordatoriosPendientes = evaluarRecordatoriosPendientes;
 
     function verificarEnlaceRecomendarDirecto() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -2601,6 +2706,9 @@
 
     function registrarClicContacto(contactoId) {
       if (!contactoId) return;
+      try {
+        guardarConsultaParaRecordatorio(contactoId);
+      } catch(e) {}
       try {
         if (navigator.sendBeacon) {
           navigator.sendBeacon('/api/registrar-clic-contacto', JSON.stringify({ contactoId }));
