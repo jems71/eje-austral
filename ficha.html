@@ -91,15 +91,19 @@
           <div class="estado-opts">
             <label class="estado-opt">
               <input type="radio" name="estado" value="Disponible" />
-              <span class="dot disponible"></span><span class="txt">Disponible</span>
+              <span class="dot disponible"></span><span class="txt">Disponible (Libre para nuevos proyectos)</span>
             </label>
             <label class="estado-opt">
               <input type="radio" name="estado" value="Ocupado" />
-              <span class="dot ocupado"></span><span class="txt">Ocupado</span>
+              <span class="dot ocupado"></span><span class="txt">Ocupado (Con faenas en curso actualmente)</span>
             </label>
             <label class="estado-opt">
               <input type="radio" name="estado" value="Ya no trabaja en el rubro" />
-              <span class="dot fuera"></span><span class="txt">Ya no trabajo en este rubro</span>
+              <span class="dot fuera"></span><span class="txt">Ya no trabajo en el rubro de construcción</span>
+            </label>
+            <label class="estado-opt" style="border-color: #fca5a5;">
+              <input type="radio" name="estado" value="No deseo figurar en el directorio" />
+              <span class="dot" style="background:#ef4444;"></span><span class="txt" style="color:#b91c1c;">No deseo figurar en el directorio (Ocultarme)</span>
             </label>
           </div>
         </div>
@@ -190,7 +194,11 @@
         });
         if (!r.ok) throw new Error();
         msg.classList.add('ok');
-        msg.textContent = 'Listo, se guardaron tus cambios.';
+        if (sel && sel.value === 'No deseo figurar en el directorio') {
+          msg.textContent = 'Tus preferencias han sido guardadas. Has sido retirado del buscador del directorio respetando tu privacidad.';
+        } else {
+          msg.textContent = 'Listo, se guardaron tus cambios en el directorio.';
+        }
       } catch (e) {
         msg.classList.add('err');
         msg.textContent = 'No se pudo guardar. Intenta de nuevo.';

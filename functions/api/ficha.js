@@ -1,6 +1,11 @@
 // functions/api/ficha.js — Cloudflare Pages Function con D1
 const EDITABLE_FIELDS = ['estado_disponibilidad', 'whatsapp', 'ciudad', 'rubro'];
-const ESTADOS_VALIDOS = ['Disponible', 'Ocupado', 'Ya no trabaja en el rubro'];
+const ESTADOS_VALIDOS = [
+  'Disponible',
+  'Ocupado',
+  'Ya no trabaja en el rubro',
+  'No deseo figurar en el directorio'
+];
 const TOKEN_RE = /^[A-Za-z0-9-]{8,64}$/;
 
 export async function onRequestGet({ request, env }) {
@@ -29,6 +34,7 @@ export async function onRequestGet({ request, env }) {
       whatsapp: record.whatsapp || record.fono || '',
       fono: record.fono || '',
       estado_disponibilidad: record.estado_disponibilidad || 'Disponible',
+      estado_publicacion: record.estado_publicacion || 'publicado',
       fecha_ultima_actualizacion_estado: record.fecha_ultima_actualizacion_estado || null
     };
 
@@ -70,6 +76,14 @@ async function handleUpdate({ request, env }) {
       }
       updates.push("estado_disponibilidad = ?");
       values.push(st);
+
+      if (st === 'No deseo figurar en el directorio') {
+        updates.push("estado_publicacion = 'bloqueado'");
+        updates.push("consentimiento_publicacion = 0");
+      } else {
+        updates.push("estado_publicacion = 'publicado'");
+        updates.push("consentimiento_publicacion = 1");
+      }
     }
 
     if (body.whatsapp !== undefined && body.whatsapp !== null) {

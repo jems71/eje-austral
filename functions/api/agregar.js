@@ -10,6 +10,31 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ error: 'El campo "nombre" es obligatorio' }, { status: 400 });
     }
 
+    // Verificar si el contacto solicitó previamente estar bloqueado del directorio
+    const fonoDigits = String(body.fono || '').replace(/\D/g, '');
+    const waDigits = String(body.whatsapp || '').replace(/\D/g, '');
+
+    if (fonoDigits.length >= 8 || waDigits.length >= 8) {
+      const bloq = await env.DB.prepare(`
+        SELECT nombre FROM contactos 
+        WHERE estado_publicacion = 'bloqueado' 
+          AND (
+            (? != '' AND (fono LIKE '%' || ? || '%' OR whatsapp LIKE '%' || ? || '%'))
+            OR (? != '' AND (fono LIKE '%' || ? || '%' OR whatsapp LIKE '%' || ? || '%'))
+          )
+        LIMIT 1
+      `).bind(
+        fonoDigits, fonoDigits, fonoDigits,
+        waDigits, waDigits, waDigits
+      ).first();
+
+      if (bloq) {
+        return Response.json({
+          error: `Este profesional (${bloq.nombre}) solicitó expresamente no figurar en el directorio y se encuentra bloqueado por privacidad.`
+        }, { status: 400 });
+      }
+    }
+
     const id = body.id || ('c-' + Date.now().toString().slice(-6));
     const token = body.token_acceso || crypto.randomUUID();
 

@@ -882,12 +882,20 @@
     </div>
   </section>
 
-  <!-- === VISTA: ESTADÍSTICAS (SOLO ADMINISTRADOR) === -->
+  <!-- === VISTA: ADMINISTRADOR (ESTADÍSTICAS Y DESPACHO) === -->
   <section id="view-estadisticas" class="hidden">
-    <div style="margin-bottom: 24px;">
-      <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 8px 0; font-size: 24px;">📊 Panel de Estadísticas y Rendimiento</h2>
-      <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Métricas exclusivas de administrador: visitas a la web y contactos de WhatsApp generados por cada profesional.</p>
+    <!-- Subtabs del panel admin -->
+    <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 12px; flex-wrap: wrap;">
+      <button id="subtab-btn-stats" onclick="cambiarSubTabAdmin('stats')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; background: var(--uach-blue); color: #fff; font-family: inherit; transition: background .15s;">📊 Rendimiento y Clics</button>
+      <button id="subtab-btn-despacho" onclick="cambiarSubTabAdmin('despacho')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: background .15s;">📲 Despacho WhatsApp (<span id="cnt-despacho-total">54</span>)</button>
     </div>
+
+    <!-- SUB-CONTENIDO 1: RENDIMIENTO Y CLICS -->
+    <div id="admin-sec-stats">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 8px 0; font-size: 24px;">📊 Panel de Estadísticas y Rendimiento</h2>
+        <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Métricas exclusivas de administrador: visitas a la web y contactos de WhatsApp generados por cada profesional.</p>
+      </div>
 
     <!-- 3 KPI Cards -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
@@ -948,6 +956,77 @@
         <div style="color: var(--text-muted);">Sin actividad reciente registrada.</div>
       </div>
     </div>
+    </div> <!-- /admin-sec-stats -->
+
+    <!-- SUB-CONTENIDO 2: DESPACHO DE FICHAS WHATSAPP -->
+    <div id="admin-sec-despacho" class="hidden">
+      <div style="margin-bottom: 24px;">
+        <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 8px 0; font-size: 24px;">📲 Despacho y Actualización de Fichas</h2>
+        <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Envía la tarjeta de actualización por WhatsApp de forma segura e individual a Subcontratos, Mano de Obra y Profesionales.</p>
+      </div>
+
+      <!-- Resumen de envíos -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div class="card" style="padding: 16px; border-left: 4px solid var(--uach-blue);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total a Contactar</div>
+          <div style="font-size: 26px; font-weight: 800; color: var(--uach-blue);" id="stat-desp-total">54</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Subcontrato / Mano de obra / Prof.</div>
+        </div>
+        <div class="card" style="padding: 16px; border-left: 4px solid #f59e0b;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟡 Pendientes de Envío</div>
+          <div style="font-size: 26px; font-weight: 800; color: #b45309;" id="stat-desp-pendientes">-</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Por contactar</div>
+        </div>
+        <div class="card" style="padding: 16px; border-left: 4px solid var(--green);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟢 Ya Enviados</div>
+          <div style="font-size: 26px; font-weight: 800; color: var(--green);" id="stat-desp-enviados">-</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Mensaje entregado</div>
+        </div>
+      </div>
+
+      <!-- Filtros de despacho -->
+      <div class="toolbar-wrap" style="margin-bottom: 16px;">
+        <div class="toolbar-row" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+          <input type="text" id="desp-search" class="search-input" placeholder="Buscar por nombre, rubro o fono..." style="max-width: 320px;" oninput="filtrarTablaDespacho()">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="desp-filtro-envio" onchange="filtrarTablaDespacho()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+              <option value="todos">Todos los envíos</option>
+              <option value="pendientes" selected>🟡 Solo Pendientes</option>
+              <option value="enviados">🟢 Solo Enviados</option>
+            </select>
+            <select id="desp-filtro-tipo" onchange="filtrarTablaDespacho()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+              <option value="todos">Todos los tipos</option>
+              <option value="Subcontrato">Subcontratos</option>
+              <option value="Mano de obra">Mano de obra</option>
+              <option value="Profesional">Profesionales</option>
+            </select>
+            <button class="btn-primary" onclick="loadDespachoFichas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Despacho -->
+      <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px;">
+            <thead>
+              <tr style="background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                <th style="padding: 12px 14px;">Contacto / Empresa</th>
+                <th style="padding: 12px 14px;">Tipo</th>
+                <th style="padding: 12px 14px;">Rubro</th>
+                <th style="padding: 12px 14px;">Ciudad</th>
+                <th style="padding: 12px 14px;">Estado Ficha</th>
+                <th style="padding: 12px 14px; text-align: center;">Envío</th>
+                <th style="padding: 12px 14px; text-align: center; width: 170px;">Acción WhatsApp</th>
+              </tr>
+            </thead>
+            <tbody id="despacho-tbody">
+              <tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando contactos de despacho...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> <!-- /admin-sec-despacho -->
   </section>
 
   <!-- === FOOTER === -->
@@ -2295,6 +2374,172 @@
     window.loadEstadisticas = loadEstadisticas;
     window.filtrarTablaStats = filtrarTablaStats;
     window.exportarStatsCSV = exportarStatsCSV;
+
+
+    // === GESTIÓN DE DESPACHO DE FICHAS (WHATSAPP) ===
+    let DESPACHO_LISTA = [];
+
+    function cambiarSubTabAdmin(tab) {
+      const btnStats = document.getElementById('subtab-btn-stats');
+      const btnDesp = document.getElementById('subtab-btn-despacho');
+      const secStats = document.getElementById('admin-sec-stats');
+      const secDesp = document.getElementById('admin-sec-despacho');
+
+      if (tab === 'stats') {
+        if (secStats) secStats.classList.remove('hidden');
+        if (secDesp) secDesp.classList.add('hidden');
+        if (btnStats) { btnStats.style.background = 'var(--uach-blue)'; btnStats.style.color = '#fff'; btnStats.style.borderColor = 'var(--uach-blue)'; }
+        if (btnDesp) { btnDesp.style.background = 'var(--card)'; btnDesp.style.color = 'var(--text)'; btnDesp.style.borderColor = 'var(--border)'; }
+        loadEstadisticas();
+      } else {
+        if (secStats) secStats.classList.add('hidden');
+        if (secDesp) secDesp.classList.remove('hidden');
+        if (btnDesp) { btnDesp.style.background = 'var(--uach-blue)'; btnDesp.style.color = '#fff'; btnDesp.style.borderColor = 'var(--uach-blue)'; }
+        if (btnStats) { btnStats.style.background = 'var(--card)'; btnStats.style.color = 'var(--text)'; btnStats.style.borderColor = 'var(--border)'; }
+        loadDespachoFichas();
+      }
+    }
+
+    async function loadDespachoFichas() {
+      const tbody = document.getElementById('despacho-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando contactos...</td></tr>';
+      try {
+        const r = await fetch('/api/despacho-fichas');
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        DESPACHO_LISTA = out.contactos || [];
+        actualizarContadoresDespacho();
+        filtrarTablaDespacho();
+      } catch(e) {
+        console.error(e);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: #ef4444;">Error cargando contactos: ' + esc(e.message) + '</td></tr>';
+      }
+    }
+
+    function actualizarContadoresDespacho() {
+      const tot = DESPACHO_LISTA.length;
+      const env = DESPACHO_LISTA.filter(c => Number(c.link_enviado) === 1).length;
+      const pend = tot - env;
+
+      const elTotTab = document.getElementById('cnt-despacho-total');
+      const elTot = document.getElementById('stat-desp-total');
+      const elPend = document.getElementById('stat-desp-pendientes');
+      const elEnv = document.getElementById('stat-desp-enviados');
+
+      if (elTotTab) elTotTab.textContent = tot;
+      if (elTot) elTot.textContent = tot;
+      if (elPend) elPend.textContent = pend;
+      if (elEnv) elEnv.textContent = env;
+    }
+
+    function filtrarTablaDespacho() {
+      const tbody = document.getElementById('despacho-tbody');
+      if (!tbody) return;
+
+      const q = (document.getElementById('desp-search')?.value || '').toLowerCase().trim();
+      const fEnvio = document.getElementById('desp-filtro-envio')?.value || 'todos';
+      const fTipo = document.getElementById('desp-filtro-tipo')?.value || 'todos';
+
+      const filtrados = DESPACHO_LISTA.filter(c => {
+        if (fEnvio === 'pendientes' && Number(c.link_enviado) === 1) return false;
+        if (fEnvio === 'enviados' && Number(c.link_enviado) !== 1) return false;
+        if (fTipo !== 'todos' && c.tipo !== fTipo) return false;
+        if (q) {
+          const matchNom = (c.nombre || '').toLowerCase().includes(q);
+          const matchRub = (c.rubro || '').toLowerCase().includes(q);
+          const matchFono = (c.fono || c.whatsapp || '').includes(q);
+          if (!matchNom && !matchRub && !matchFono) return false;
+        }
+        return true;
+      });
+
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding: 24px; text-align: center; color: var(--text-muted);">No hay contactos con esos filtros.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map(c => {
+        let fonoRaw = String(c.whatsapp || c.fono || '').replace(/\D/g, '');
+        const fonoDisplay = c.whatsapp || c.fono || 'Sin teléfono';
+
+        // Badges de estado de ficha
+        let badgeEstado = '<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; background:#e8f5e9; color:#1e7e34;">🟢 Disponible</span>';
+        if (c.estado_disponibilidad === 'Ocupado') {
+          badgeEstado = '<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; background:#fef3c7; color:#92400e;">🟡 Ocupado</span>';
+        } else if (c.estado_disponibilidad === 'Ya no trabaja en el rubro') {
+          badgeEstado = '<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; background:#f3f4f6; color:#4b5563;">⚪ Fuera rubro</span>';
+        } else if (c.estado_publicacion === 'bloqueado' || c.estado_disponibilidad === 'No deseo figurar en el directorio') {
+          badgeEstado = '<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; background:#fee2e2; color:#991b1b;">🔴 Bloqueado</span>';
+        }
+
+        // Badges de estado de envío
+        const yaEnviado = Number(c.link_enviado) === 1;
+        const badgeEnvio = yaEnviado
+          ? `<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; background:#eaf7ef; color:#1a9e5c;">🟢 Enviado ${c.fecha_envio_link ? '(' + c.fecha_envio_link.slice(5) + ')' : ''}</span>`
+          : '<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; background:#fef3c7; color:#b45309;">🟡 Pendiente</span>';
+
+        return `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 12px 14px; font-weight: 600; color: var(--text);">
+              ${esc(c.nombre)}
+              <div style="font-size: 11.5px; color: var(--text-muted); font-weight: normal;">${esc(fonoDisplay)}</div>
+            </td>
+            <td style="padding: 12px 14px;"><span style="font-size: 12px; padding: 2px 8px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border); font-weight: 500;">${esc(c.tipo)}</span></td>
+            <td style="padding: 12px 14px; color: var(--text);">${esc(c.rubro)}</td>
+            <td style="padding: 12px 14px; color: var(--text-muted);">${esc(c.ciudad)}</td>
+            <td style="padding: 12px 14px;">${badgeEstado}</td>
+            <td style="padding: 12px 14px; text-align: center;">${badgeEnvio}</td>
+            <td style="padding: 12px 14px; text-align: center;">
+              <button onclick="enviarWhatsAppFicha('${esc(c.id)}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--green); color: #fff; border: none; border-radius: 6px; font-weight: 600; font-size: 12.5px; cursor: pointer; text-decoration: none;">
+                📲 Enviar WhatsApp
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function enviarWhatsAppFicha(id) {
+      const c = DESPACHO_LISTA.find(x => x.id === id);
+      if (!c) return;
+
+      let fono = String(c.whatsapp || c.fono || '').replace(/\D/g, '');
+      if (!fono) {
+        alert('Este contacto no tiene número de teléfono registrado.');
+        return;
+      }
+      if (fono.length === 9 && fono.startsWith('9')) fono = '56' + fono;
+      else if (fono.length === 8) fono = '569' + fono;
+
+      const linkFicha = 'https://eje-austral.jems.cl/ficha.html?t=' + (c.token_acceso || '');
+      const nombre = c.nombre || 'colega';
+      const rubro = c.rubro || 'servicios de construcción';
+
+      const texto = `Estimado/a ${nombre}, le saludamos desde la red de profesionales de la construcción Eje Austral (Titulados UACh).\n\nLe escribimos porque profesionales de nuestra red técnica han recomendado sus servicios de ${rubro} para proyectos y obras en la zona sur.\n\nPara saber si se encuentra con disponibilidad para nuevos trabajos, con faenas en curso, o si prefiere no recibir solicitudes, le invitamos a indicar su estado actual en su ficha personal (le tomará solo 10 segundos):\n🔗 ${linkFicha}\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad de inmediato.\n\n¡Muchas gracias y mucho éxito!`;
+
+      const url = `https://wa.me/${fono}?text=${encodeURIComponent(texto)}`;
+      window.open(url, '_blank');
+
+      // Marcar como enviado en la base de datos
+      try {
+        await fetch('/api/marcar-envio-ficha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: c.id })
+        });
+        c.link_enviado = 1;
+        c.fecha_envio_link = new Date().toISOString().slice(0, 10);
+        actualizarContadoresDespacho();
+        filtrarTablaDespacho();
+      } catch(e) {
+        console.error('Error al marcar envío:', e);
+      }
+    }
+
+    window.cambiarSubTabAdmin = cambiarSubTabAdmin;
+    window.loadDespachoFichas = loadDespachoFichas;
+    window.filtrarTablaDespacho = filtrarTablaDespacho;
+    window.enviarWhatsAppFicha = enviarWhatsAppFicha;
 
 </script>
 </body>
