@@ -816,6 +816,7 @@
     <div class="tabs">
       <div class="tab active" data-tab="directorio">Directorio <span class="count" id="cnt-directorio">0</span></div>
       <div class="tab" data-tab="ofertas">Ofertas Laborales <span class="count" id="cnt-ofertas">0</span></div>
+      <div class="tab hidden" id="tab-stats" data-tab="estadisticas">📊 Estadísticas</div>
     </div>
   </div>
 
@@ -878,6 +879,74 @@
     </div>
     <div class="grid" id="grid-ofertas">
       <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>
+    </div>
+  </section>
+
+  <!-- === VISTA: ESTADÍSTICAS (SOLO ADMINISTRADOR) === -->
+  <section id="view-estadisticas" class="hidden">
+    <div style="margin-bottom: 24px;">
+      <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 8px 0; font-size: 24px;">📊 Panel de Estadísticas y Rendimiento</h2>
+      <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Métricas exclusivas de administrador: visitas a la web y contactos de WhatsApp generados por cada profesional.</p>
+    </div>
+
+    <!-- 3 KPI Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
+      <div class="card" style="padding: 20px; border-left: 4px solid var(--uach-blue);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Visitas a la Web</div>
+        <div style="font-size: 32px; font-weight: 800; color: var(--uach-blue);" id="stat-total-visitas">0</div>
+        <div style="font-size: 13px; color: var(--text); margin-top: 4px;" id="stat-visitas-hoy">Hoy: 0 visitas</div>
+      </div>
+
+      <div class="card" style="padding: 20px; border-left: 4px solid var(--green);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Contactos WhatsApp Iniciados</div>
+        <div style="font-size: 32px; font-weight: 800; color: var(--green);" id="stat-total-clics">0</div>
+        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Veces que se contactó a un profesional</div>
+      </div>
+
+      <div class="card" style="padding: 20px; border-left: 4px solid var(--gold);">
+        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Top Más Contactado</div>
+        <div style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px;" id="stat-top-nombre">Sin datos aún</div>
+        <div style="font-size: 13px; color: var(--uach-blue); font-weight: 600;" id="stat-top-rubro">-</div>
+      </div>
+    </div>
+
+    <!-- Toolbar del Dashboard -->
+    <div class="toolbar-wrap" style="margin-bottom: 16px;">
+      <div class="toolbar-row" style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <input type="text" id="stat-search" class="search-input" placeholder="Buscar profesional o rubro en estadísticas..." style="max-width: 380px;" oninput="filtrarTablaStats()">
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-secondary" onclick="exportarStatsCSV()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">📥 Exportar a Excel (CSV)</button>
+          <button class="btn-primary" onclick="loadEstadisticas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Actualizar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla Ranking -->
+    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+          <thead>
+            <tr style="background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <th style="padding: 12px 16px; width: 60px;">#</th>
+              <th style="padding: 12px 16px;">Profesional / Empresa</th>
+              <th style="padding: 12px 16px;">Rubro</th>
+              <th style="padding: 12px 16px;">Ciudad</th>
+              <th style="padding: 12px 16px; text-align: center; width: 160px;">Clics WhatsApp</th>
+            </tr>
+          </thead>
+          <tbody id="stats-ranking-tbody">
+            <tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando estadísticas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Actividad Reciente -->
+    <div class="card" style="padding: 20px;">
+      <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--uach-blue); font-family: 'Fraunces', serif;">⚡ Últimos Contactos Iniciados en Tiempo Real</h3>
+      <div id="stats-ultimos-clics" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text);">
+        <div style="color: var(--text-muted);">Sin actividad reciente registrada.</div>
+      </div>
     </div>
   </section>
 
@@ -1441,7 +1510,7 @@
               </div>
             </div>
             <div class="actions" onclick="event.stopPropagation()">
-              ${wa ? `<a class="icon-btn whatsapp" href="https://wa.me/${wa}" target="_blank" title="WhatsApp">
+              ${wa ? `<a class="icon-btn whatsapp" href="https://wa.me/${wa}" target="_blank" title="WhatsApp" onclick="registrarClicContacto('${esc(c.id)}')">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3 1.2 4.6 1.2 5.5 0 10-4.5 10-10s-4.4-9.9-9.8-9.9zm0 18c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3c-.8-1.2-1.2-2.7-1.2-4.2 0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 7.9-8 7.9z"/></svg>
               </a>` : ''}
               <a class="icon-btn" href="tel:${esc(String(c.fono || '').replace(/\s/g,''))}" title="Llamar">
@@ -1704,7 +1773,7 @@
         </div>
 
         <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-          ${wa ? `<a href="https://wa.me/${wa}" target="_blank" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
+          ${wa ? `<a href="https://wa.me/${wa}" target="_blank" onclick="registrarClicContacto('${esc(c.id)}')" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
           <button onclick="compartirContacto('${esc(c.id)}')" style="padding:10px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">↗ Compartir ficha</button>
         </div>
 
@@ -1833,6 +1902,11 @@
     function showApp() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
+      registrarVisita();
+      if (esAdmin()) {
+        const tabStats = document.getElementById('tab-stats');
+        if (tabStats) tabStats.classList.remove('hidden');
+      }
       loadData();
       loadOfertas(); // carga las ofertas al entrar para que el contador del tab sea real
     }
@@ -1845,7 +1919,10 @@
         const tab = tabEl.dataset.tab;
         document.getElementById('view-directorio').classList.toggle('hidden', tab !== 'directorio');
         document.getElementById('view-ofertas').classList.toggle('hidden', tab !== 'ofertas');
+        const viewStats = document.getElementById('view-estadisticas');
+        if (viewStats) viewStats.classList.toggle('hidden', tab !== 'estadisticas');
         if (tab === 'ofertas' && !OFERTAS_CARGADAS) loadOfertas();
+        if (tab === 'estadisticas') loadEstadisticas();
       });
     });
 
@@ -2066,6 +2143,159 @@
     } else {
       showLoginScreen();
     }
-  </script>
+  
+    // === ESTADÍSTICAS Y SEGUIMIENTO ===
+    let STATS_DATA = null;
+
+    function registrarVisita() {
+      try {
+        if (sessionStorage.getItem('eje_austral_visita_reg')) return;
+        sessionStorage.setItem('eje_austral_visita_reg', '1');
+        fetch('/api/registrar-visita', { method: 'POST', keepalive: true }).catch(() => {});
+      } catch(e) {}
+    }
+
+    function registrarClicContacto(contactoId) {
+      if (!contactoId) return;
+      try {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/registrar-clic-contacto', JSON.stringify({ contactoId }));
+        } else {
+          fetch('/api/registrar-clic-contacto', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contactoId }),
+            keepalive: true
+          }).catch(() => {});
+        }
+      } catch(e) {}
+    }
+
+    async function loadEstadisticas() {
+      const tbody = document.getElementById('stats-ranking-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando datos...</td></tr>';
+      try {
+        const r = await apiFetch('/api/estadisticas');
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        STATS_DATA = out.stats;
+        renderEstadisticas();
+      } catch(e) {
+        console.error(e);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: #ef4444;">Error cargando estadísticas: ' + esc(e.message) + '</td></tr>';
+      }
+    }
+
+    function renderEstadisticas() {
+      if (!STATS_DATA) return;
+      const elVisitasTot = document.getElementById('stat-total-visitas');
+      const elVisitasHoy = document.getElementById('stat-visitas-hoy');
+      const elClicsTot = document.getElementById('stat-total-clics');
+      const elTopNom = document.getElementById('stat-top-nombre');
+      const elTopRub = document.getElementById('stat-top-rubro');
+
+      if (elVisitasTot) elVisitasTot.textContent = Number(STATS_DATA.total_visitas).toLocaleString('es-CL');
+      if (elVisitasHoy) elVisitasHoy.textContent = 'Hoy: ' + Number(STATS_DATA.visitas_hoy).toLocaleString('es-CL') + ' visitas';
+      if (elClicsTot) elClicsTot.textContent = Number(STATS_DATA.total_clics).toLocaleString('es-CL');
+
+      if (STATS_DATA.top_profesional) {
+        if (elTopNom) elTopNom.textContent = STATS_DATA.top_profesional.nombre + ' (' + STATS_DATA.top_profesional.clics + ' clics)';
+        if (elTopRub) elTopRub.textContent = STATS_DATA.top_profesional.rubro;
+      } else {
+        if (elTopNom) elTopNom.textContent = 'Sin contactos aún';
+        if (elTopRub) elTopRub.textContent = 'Empieza a registrar al hacer clics';
+      }
+
+      filtrarTablaStats();
+      renderUltimosClics();
+    }
+
+    function filtrarTablaStats() {
+      const tbody = document.getElementById('stats-ranking-tbody');
+      if (!tbody || !STATS_DATA) return;
+      const q = (document.getElementById('stat-search')?.value || '').toLowerCase().trim();
+      
+      const filtrados = (STATS_DATA.ranking || []).filter(c => {
+        if (!q) return true;
+        return c.nombre.toLowerCase().includes(q) || c.rubro.toLowerCase().includes(q) || c.ciudad.toLowerCase().includes(q);
+      });
+
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding: 20px; text-align: center; color: var(--text-muted);">No se encontraron profesionales con ese criterio.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map((c, i) => {
+        let medal = `${i + 1}°`;
+        if (i === 0 && c.total_clics > 0) medal = '🥇 1°';
+        else if (i === 1 && c.total_clics > 0) medal = '🥈 2°';
+        else if (i === 2 && c.total_clics > 0) medal = '🥉 3°';
+
+        const badgeBg = c.total_clics > 0 ? 'background: #e8f5e9; color: #1e7e34;' : 'background: var(--bg); color: var(--text-muted);';
+
+        return `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 12px 16px; font-weight: 700; color: var(--text-muted);">${medal}</td>
+            <td style="padding: 12px 16px; font-weight: 600; color: var(--text);">${esc(c.nombre)}</td>
+            <td style="padding: 12px 16px; color: var(--text-muted);">${esc(c.rubro)}</td>
+            <td style="padding: 12px 16px; color: var(--text-muted);">${esc(c.ciudad)}</td>
+            <td style="padding: 12px 16px; text-align: center;">
+              <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 13px; ${badgeBg}">
+                💬 ${c.total_clics}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderUltimosClics() {
+      const cont = document.getElementById('stats-ultimos-clics');
+      if (!cont || !STATS_DATA) return;
+      const items = STATS_DATA.ultimos_clics || [];
+      if (items.length === 0) {
+        cont.innerHTML = '<div style="color: var(--text-muted); padding: 8px 0;">Aún no se registran clics de contacto recientes.</div>';
+        return;
+      }
+
+      cont.innerHTML = items.map(it => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg); border-radius: 6px; border: 1px solid var(--border);">
+          <div>
+            <span style="font-weight: 600; color: var(--text);">${esc(it.nombre || 'Contacto #' + it.contacto_id)}</span>
+            <span style="color: var(--text-muted); font-size: 12px; margin-left: 6px;">(${esc(it.rubro || 'General')})</span>
+          </div>
+          <div style="font-size: 12px; color: var(--text-muted); font-family: monospace;">
+            ${esc(it.fecha)} ${esc(it.hora)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function exportarStatsCSV() {
+      if (!STATS_DATA || !STATS_DATA.ranking) {
+        alert('No hay datos para exportar aún.');
+        return;
+      }
+      let csv = 'Posicion;Nombre;Rubro;Ciudad;Tipo;Total_Clics_WhatsApp\n';
+      STATS_DATA.ranking.forEach(c => {
+        csv += `"${c.posicion}";"${c.nombre.replace(/"/g, '""')}";"${c.rubro.replace(/"/g, '""')}";"${c.ciudad.replace(/"/g, '""')}";"${c.tipo}";${c.total_clics}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `estadisticas-eje-austral-${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    window.registrarClicContacto = registrarClicContacto;
+    window.loadEstadisticas = loadEstadisticas;
+    window.filtrarTablaStats = filtrarTablaStats;
+    window.exportarStatsCSV = exportarStatsCSV;
+
+</script>
 </body>
 </html>
