@@ -13,19 +13,27 @@ export async function onRequestPost({ request, env }) {
     // Verificar si el contacto solicitó previamente estar bloqueado del directorio
     const fonoDigits = String(body.fono || '').replace(/\D/g, '');
     const waDigits = String(body.whatsapp || '').replace(/\D/g, '');
+    const sigDigitsFono = fonoDigits.length >= 8 ? fonoDigits.slice(-8) : '';
+    const sigDigitsWa = waDigits.length >= 8 ? waDigits.slice(-8) : '';
 
-    if (fonoDigits.length >= 8 || waDigits.length >= 8) {
+    if (sigDigitsFono || sigDigitsWa) {
       const bloq = await env.DB.prepare(`
         SELECT nombre FROM contactos 
         WHERE estado_publicacion = 'bloqueado' 
           AND (
-            (? != '' AND (fono LIKE '%' || ? || '%' OR whatsapp LIKE '%' || ? || '%'))
-            OR (? != '' AND (fono LIKE '%' || ? || '%' OR whatsapp LIKE '%' || ? || '%'))
+            (? != '' AND (
+              REPLACE(REPLACE(REPLACE(COALESCE(fono, ''), ' ', ''), '+', ''), '-', '') LIKE '%' || ? || '%'
+              OR REPLACE(REPLACE(REPLACE(COALESCE(whatsapp, ''), ' ', ''), '+', ''), '-', '') LIKE '%' || ? || '%'
+            ))
+            OR (? != '' AND (
+              REPLACE(REPLACE(REPLACE(COALESCE(fono, ''), ' ', ''), '+', ''), '-', '') LIKE '%' || ? || '%'
+              OR REPLACE(REPLACE(REPLACE(COALESCE(whatsapp, ''), ' ', ''), '+', ''), '-', '') LIKE '%' || ? || '%'
+            ))
           )
         LIMIT 1
       `).bind(
-        fonoDigits, fonoDigits, fonoDigits,
-        waDigits, waDigits, waDigits
+        sigDigitsFono, sigDigitsFono, sigDigitsFono,
+        sigDigitsWa, sigDigitsWa, sigDigitsWa
       ).first();
 
       if (bloq) {

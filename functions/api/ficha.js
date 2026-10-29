@@ -56,7 +56,8 @@ async function handleUpdate({ request, env }) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const token = String(body.token || '').trim();
+    const url = new URL(request.url);
+    const token = String(body.token || url.searchParams.get('t') || '').trim();
     if (!TOKEN_RE.test(token)) {
       return Response.json({ error: 'Link no válido' }, { status: 404 });
     }
