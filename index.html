@@ -750,6 +750,9 @@
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
       </p>
+      <div id="login-rec-notice" class="hidden" style="margin-bottom: 14px; padding: 10px 14px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 8px; font-size: 13px; font-weight: 500; line-height: 1.4; text-align: left;">
+        ⭐ <strong>Recomendación para colega:</strong> Ingresa la clave del grupo UACh para dejar tu recomendación.
+      </div>
       <input type="password" id="login-password" class="login-input" placeholder="Contraseña del grupo" autocomplete="current-password" />
       <button class="login-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
       <div id="login-error" class="login-error hidden"></div>
@@ -1504,10 +1507,30 @@
         paintStats();
         renderContactos();
         switchView(state.view);
+        verificarEnlaceRecomendarDirecto();
       } catch (e) {
         console.error(e);
         showError('No se pudo cargar los datos. Detalle: ' + e.message);
         document.getElementById('grid-contactos').innerHTML = '<div class="empty" style="grid-column: 1/-1;">Sin datos.</div>';
+      }
+    }
+
+    function verificarEnlaceRecomendarDirecto() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const recId = (urlParams.get('rec') || urlParams.get('recomendar') || '').trim();
+      if (!recId) return;
+
+      const c = DATA.contactos.find(x => x.id === recId || (x.id && x.id.toLowerCase() === recId.toLowerCase()));
+      if (c) {
+        setTimeout(() => {
+          openRecModal(c.id, c.nombre);
+          try {
+            const urlSinRec = new URL(window.location);
+            urlSinRec.searchParams.delete('rec');
+            urlSinRec.searchParams.delete('recomendar');
+            window.history.replaceState({}, '', urlSinRec);
+          } catch(e) {}
+        }, 200);
       }
     }
 
@@ -2105,6 +2128,9 @@
     function showLoginScreen(errorMsg) {
       document.getElementById('app').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
+      const recId = (new URLSearchParams(window.location.search).get('rec') || new URLSearchParams(window.location.search).get('recomendar') || '').trim();
+      const recNotice = document.getElementById('login-rec-notice');
+      if (recNotice) recNotice.classList.toggle('hidden', !recId);
       if (errorMsg) {
         const e = document.getElementById('login-error');
         e.textContent = errorMsg;
@@ -2525,6 +2551,8 @@
         [c.tipo, c.rubro].filter(Boolean).join(' · '),
         c.ciudad ? `📍 ${c.ciudad}` : '',
         c.fono ? `📞 ${c.fono}` : '',
+        '',
+        `⭐ ¿Trabajaste con este contacto? Deja tu recomendación aquí: https://eje-austral.jems.cl/?rec=${encodeURIComponent(c.id)}`,
         '',
         'Vía Eje Austral — directorio UACh Construcción Civil'
       ].filter(Boolean);
