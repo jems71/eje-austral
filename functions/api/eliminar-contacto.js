@@ -1,0 +1,22 @@
+// functions/api/eliminar-contacto.js — Cloudflare Pages Function con D1
+export async function onRequestPost({ request, env }) {
+  try {
+    if (!env.DB) {
+      return Response.json({ error: "Base de datos D1 no vinculada" }, { status: 500 });
+    }
+
+    const body = await request.json().catch(() => ({}));
+    const id = String(body.id || '').trim();
+
+    if (!id) {
+      return Response.json({ error: "El id del contacto es obligatorio" }, { status: 400 });
+    }
+
+    await env.DB.prepare("DELETE FROM contactos WHERE id = ?").bind(id).run();
+
+    return Response.json({ ok: true, id }, { status: 200 });
+
+  } catch (error) {
+    return Response.json({ error: "Error al eliminar contacto en D1", detail: error.message }, { status: 500 });
+  }
+}
