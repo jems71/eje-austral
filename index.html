@@ -174,17 +174,18 @@
 
     .list-wrap { max-width: 1200px; margin: 0 auto; padding: 8px 20px 40px; }
     .list-header {
-      display: grid; grid-template-columns: 2fr 1.5fr 1fr 120px;
+      display: grid; grid-template-columns: 2.2fr 130px 1.6fr 1fr 110px;
       gap: 16px; padding: 12px 16px; font-size: 11px;
       font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
       color: var(--text-muted); border-bottom: 2px solid var(--border);
     }
     .list-row {
-      display: grid; grid-template-columns: 2fr 1.5fr 1fr 120px;
+      display: grid; grid-template-columns: 2.2fr 130px 1.6fr 1fr 110px;
       gap: 16px; padding: 14px 16px; align-items: center;
       border-bottom: 1px solid var(--border); cursor: pointer;
       transition: background 0.15s ease;
     }
+    .list-row .col-estado { display: flex; align-items: center; }
     .list-row:hover { background: rgba(10, 36, 71, 0.04); }
     .list-row .col-nombre {
       font-family: 'Fraunces', serif; font-size: 15px;
@@ -1507,6 +1508,7 @@
       const header = `
         <div class="list-header">
           <div>Nombre</div>
+          <div>Estado</div>
           <div>Rubro</div>
           <div>Recomiendan</div>
           <div>Ingresado</div>
@@ -1527,7 +1529,8 @@
           : `<div class="col-fecha" style="opacity:0.35;">—</div>`;
         return `
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
-            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span> ${getEstadoBadge(c.estado_disponibilidad, c.tipo)}</div>
+            <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
+            <div class="col-estado">${getEstadoBadge(c.estado_disponibilidad, c.tipo)}</div>
             <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
@@ -1899,10 +1902,16 @@
           ${c.id ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">ID: ${esc(c.id.toUpperCase())}</div>` : ''}
         </div>
 
-        <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <div style="margin-bottom: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
           ${wa ? `<a href="https://wa.me/${wa}" target="_blank" onclick="registrarClicContacto('${esc(c.id)}')" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
           <button onclick="compartirContacto('${esc(c.id)}')" style="padding:10px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">↗ Compartir ficha</button>
         </div>
+        ${c.token_acceso ? `
+          <div style="margin-bottom: 18px; padding: 10px 14px; background: var(--bg); border: 1.5px dashed var(--border); border-radius: 8px; font-size: 12.5px; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+            <span>¿Eres <strong>${esc(c.nombre)}</strong>?</span>
+            <a href="/ficha.html?t=${esc(c.token_acceso)}" target="_blank" style="color: var(--uach-blue); font-weight: 700; text-decoration: underline;">✏️ Actualizar mi estado o rubros</a>
+          </div>
+        ` : ''}
 
         <div class="rec-detail-header">
           <div>
@@ -2601,7 +2610,7 @@
       const nombre = c.nombre || 'colega';
       const rubro = c.rubro || 'servicios de construcción';
 
-      const texto = `Estimado/a ${nombre}, le saludamos desde la red de profesionales de la construcción Eje Austral (Titulados UACh).\n\nLe escribimos porque profesionales de nuestra red técnica han recomendado sus servicios de ${rubro} para proyectos y obras en la zona sur.\n\nPara saber si se encuentra con disponibilidad para nuevos trabajos, con faenas en curso, o si prefiere no recibir solicitudes, le invitamos a indicar su estado actual en su ficha personal (le tomará solo 10 segundos):\n🔗 ${linkFicha}\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad de inmediato.\n\n¡Muchas gracias y mucho éxito!`;
+      const texto = `Estimado/a ${nombre}, le saludamos desde la red de profesionales de la construcción Eje Austral (Titulados UACh).\n\nLe escribimos porque profesionales de nuestra red técnica han recomendado sus servicios de ${rubro} para proyectos y obras en la zona sur.\n\nPara saber si se encuentra con disponibilidad para nuevos trabajos, con faenas en curso, o si prefiere no recibir solicitudes, le invitamos a indicar su estado actual en su ficha personal (le tomará solo 10 segundos):\n🔗 ${linkFicha}\n\n💡 Consejo: Guarde este mensaje o este enlace en sus favoritos; podrá volver a entrar cuando quiera más adelante para cambiar su estado si queda libre o toma nuevas obras.\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad de inmediato.\n\n¡Muchas gracias y mucho éxito!`;
 
       const url = `https://wa.me/${fono}?text=${encodeURIComponent(texto)}`;
       window.open(url, '_blank');
