@@ -1064,12 +1064,28 @@
         </a>
       </div>
     </div>
-    <div class="footer-author">
-      Un aporte de <strong>Juan Carlos García</strong> al grupo · Construcción Civil UACh
+    <div class="footer-author" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <span>Un aporte de <strong>Juan Carlos García</strong> al grupo · Construcción Civil UACh</span>
+      <button type="button" onclick="solicitarAccesoAdmin()" style="background: transparent; border: none; color: var(--text-muted); font-size: 11.5px; cursor: pointer; text-decoration: underline; opacity: 0.6; font-family: inherit;">🔐 Acceso Administrador</button>
     </div>
   </footer>
 
   </div> <!-- /#app -->
+
+  <!-- === MODAL: Login Administrador === -->
+  <div id="modal-admin-login" class="modal-bg hidden" style="z-index: 150;">
+    <div class="modal" style="max-width: 400px; text-align: center;">
+      <div style="font-size: 32px; margin-bottom: 8px;">🔐</div>
+      <h3 class="serif" style="color: var(--uach-blue); margin-bottom: 4px;">Acceso Administrador</h3>
+      <p class="sub" style="margin-bottom: 16px;">Ingresa la clave maestra de administrador (Juan Carlos García) para habilitar la edición y métricas.</p>
+      <input type="password" id="admin-login-pwd" placeholder="Clave de administrador" style="text-align: center; font-size: 16px; margin-bottom: 10px;" onkeydown="if(event.key==='Enter') doAdminLogin();">
+      <div id="admin-login-err" style="color: #ef4444; font-size: 13px; margin-bottom: 12px;" class="hidden"></div>
+      <div style="display: flex; gap: 8px;">
+        <button type="button" class="btn-secondary" onclick="cancelarAdminLogin()" style="flex: 1; padding: 10px;">Cancelar</button>
+        <button type="button" class="btn-primary" id="btn-admin-login" onclick="doAdminLogin()" style="flex: 1; padding: 10px;">Desbloquear</button>
+      </div>
+    </div>
+  </div>
 
   <!-- === MODAL: Agregar contacto === -->
   <div id="modal-add" class="modal-bg hidden">
@@ -2216,16 +2232,42 @@
       try { localStorage.removeItem(LS_TOKEN_KEY); } catch (e) {}
     }
 
+    const SS_ADMIN_TOKEN_KEY = 'eje_austral_admin_token_v2';
+    function getAdminToken() {
+      try { return sessionStorage.getItem(SS_ADMIN_TOKEN_KEY) || ''; } catch(e) { return ''; }
+    }
+    function setAdminToken(t) {
+      try { sessionStorage.setItem(SS_ADMIN_TOKEN_KEY, t); } catch(e) {}
+    }
+    function clearAdminToken() {
+      try { sessionStorage.removeItem(SS_ADMIN_TOKEN_KEY); } catch(e) {}
+    }
+
     async function apiFetch(url, options = {}) {
       const opts = { ...options };
       opts.headers = { ...(options.headers || {}) };
-      const token = getToken();
+      const adminEndpoints = [
+        '/api/admin-editar-contacto',
+        '/api/eliminar-contacto',
+        '/api/eliminar-oferta',
+        '/api/estadisticas',
+        '/api/despacho-fichas',
+        '/api/marcar-envio-ficha'
+      ];
+      const esAdminEndpoint = adminEndpoints.some(ep => url.startsWith(ep));
+      const token = (esAdminEndpoint && getAdminToken()) ? getAdminToken() : getToken();
       if (token) opts.headers['Authorization'] = `Bearer ${token}`;
       const r = await fetch(url, opts);
       if (r.status === 401) {
-        clearToken();
-        showLoginScreen('La sesión expiró o no es válida. Volvé a ingresar.');
-        throw new Error('Sesión inválida');
+        if (esAdminEndpoint) {
+          clearAdminToken();
+          abrirModalAdminLogin('Tu sesión de administrador expiró. Ingresa la clave nuevamente.');
+          throw new Error('Sesión de administrador inválida');
+        } else {
+          clearToken();
+          showLoginScreen('La sesión expiró o no es válida. Volvé a ingresar.');
+          throw new Error('Sesión inválida');
+        }
       }
       return r;
     }
@@ -2248,7 +2290,9 @@
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       registrarVisita();
-      if (esAdmin()) {
+      if (new URLSearchParams(window.location.search).get('admin') === '1' && !esAdmin()) {
+        abrirModalAdminLogin();
+      } else if (esAdmin()) {
         const tabStats = document.getElementById('tab-stats');
         if (tabStats) tabStats.classList.remove('hidden');
         const chipSinZona = document.getElementById('chip-zona-sin-asignar');
@@ -2279,11 +2323,97 @@
     let OFERTAS_CARGADAS = false;
 
     function esAdmin() {
-      // Limpiar cualquier residuo previo en localStorage para que nunca contamine el acceso general
-      try { localStorage.removeItem('eje_austral_admin_mode'); } catch(e) {}
-      // Solo es administrador si explícitamente tiene ?admin=1 en la dirección URL actual
-      return new URLSearchParams(window.location.search).get('admin') === '1';
+      return !!getAdminToken();
     }
+
+    function solicitarAccesoAdmin() {
+      if (esAdmin()) {
+        alert('Ya estás en modo administrador.');
+        return;
+      }
+      abrirModalAdminLogin();
+    }
+
+    function abrirModalAdminLogin(msg) {
+      const err = document.getElementById('admin-login-err');
+      if (err) {
+        if (msg) { err.textContent = msg; err.classList.remove('hidden'); }
+        else { err.classList.add('hidden'); }
+      }
+      const pwd = document.getElementById('admin-login-pwd');
+      if (pwd) pwd.value = '';
+      document.getElementById('modal-admin-login').classList.remove('hidden');
+      setTimeout(() => { if (pwd) pwd.focus(); }, 100);
+    }
+
+    function cancelarAdminLogin() {
+      document.getElementById('modal-admin-login').classList.add('hidden');
+      try {
+        const u = new URL(window.location);
+        if (u.searchParams.has('admin')) {
+          u.searchParams.delete('admin');
+          window.history.replaceState({}, '', u);
+        }
+      } catch(e) {}
+    }
+
+    async function doAdminLogin() {
+      const pwdInput = document.getElementById('admin-login-pwd');
+      const err = document.getElementById('admin-login-err');
+      const btn = document.getElementById('btn-admin-login');
+      const pwd = (pwdInput?.value || '').trim();
+
+      if (!pwd) {
+        err.textContent = 'Ingresa la clave de administrador.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+      err.classList.add('hidden');
+
+      try {
+        const r = await fetch('/api/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok || !out.token) {
+          throw new Error(out.error || 'Clave de administrador incorrecta');
+        }
+
+        setAdminToken(out.token);
+        document.getElementById('modal-admin-login').classList.add('hidden');
+
+        try {
+          const u = new URL(window.location);
+          u.searchParams.set('admin', '1');
+          window.history.replaceState({}, '', u);
+        } catch(e) {}
+
+        const tabStats = document.getElementById('tab-stats');
+        if (tabStats) tabStats.classList.remove('hidden');
+        const chipSinZona = document.getElementById('chip-zona-sin-asignar');
+        if (chipSinZona) chipSinZona.classList.remove('hidden');
+
+        renderContactos();
+        if (OFERTAS_CARGADAS) renderOfertas();
+        alert('🔓 Modo Administrador desbloqueado correctamente.');
+      } catch(e) {
+        err.textContent = e.message || 'Error al autenticar administrador';
+        err.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Desbloquear';
+      }
+    }
+
+    window.solicitarAccesoAdmin = solicitarAccesoAdmin;
+    window.abrirModalAdminLogin = abrirModalAdminLogin;
+    window.cancelarAdminLogin = cancelarAdminLogin;
+    window.doAdminLogin = doAdminLogin;
 
     function formatFechaOferta(iso) {
       if (!iso) return '';
