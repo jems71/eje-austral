@@ -2279,20 +2279,10 @@
     let OFERTAS_CARGADAS = false;
 
     function esAdmin() {
-      const urlAdmin = new URLSearchParams(window.location.search).get('admin');
-      if (urlAdmin === '1') {
-        try { localStorage.setItem('eje_austral_admin_mode', '1'); } catch(e) {}
-        return true;
-      }
-      if (urlAdmin === '0') {
-        try { localStorage.removeItem('eje_austral_admin_mode'); } catch(e) {}
-        return false;
-      }
-      try {
-        return localStorage.getItem('eje_austral_admin_mode') === '1';
-      } catch(e) {
-        return false;
-      }
+      // Limpiar cualquier residuo previo en localStorage para que nunca contamine el acceso general
+      try { localStorage.removeItem('eje_austral_admin_mode'); } catch(e) {}
+      // Solo es administrador si explícitamente tiene ?admin=1 en la dirección URL actual
+      return new URLSearchParams(window.location.search).get('admin') === '1';
     }
 
     function formatFechaOferta(iso) {
