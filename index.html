@@ -832,7 +832,7 @@
       <div class="tab" data-tab="ofertas">Ofertas Laborales <span class="count" id="cnt-ofertas">0</span></div>
       <div class="tab hidden" id="tab-stats" data-tab="estadisticas">📊 Estadísticas</div>
       <div class="tab-install-wrap" style="margin-left: auto; display: flex; align-items: center; padding: 6px 0;">
-        <button id="btn-instalar-app" onclick="solicitarInstalacionPWA()" style="display: inline-flex; align-items: center; gap: 7px; background: #fff; color: var(--uach-blue); border: 1.5px solid var(--border); padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+        <button id="btn-instalar-app" onclick="solicitarInstalacionPWA()" title="Crea un acceso directo en tu escritorio para abrir Eje Austral con un clic como un programa, sin escribir la página web." style="display: inline-flex; align-items: center; gap: 7px; background: #fff; color: var(--uach-blue); border: 1.5px solid var(--border); padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           <span id="txt-instalar-app">🖥️ Instalar en escritorio</span>
         </button>
@@ -1060,7 +1060,7 @@
         <div class="subtitle">DIR-UACH/CC · v5.9 · 2026</div>
       </div>
       <div class="footer-right">
-        <button class="footer-btn" onclick="solicitarInstalacionPWA()">
+        <button class="footer-btn" onclick="solicitarInstalacionPWA()" title="Crea un acceso directo en tu escritorio o celular para abrir el directorio al instante.">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           Instalar aplicación
         </button>
@@ -2668,10 +2668,16 @@
     }
 
     function actualizarTextoBotonInstalar() {
+      const btn = document.getElementById('btn-instalar-app');
       const txt = document.getElementById('txt-instalar-app');
       if (!txt) return;
       const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       txt.textContent = esMovil ? '📲 Instalar App' : '🖥️ Instalar en escritorio';
+      if (btn) {
+        btn.title = esMovil
+          ? 'Agrega el ícono de Eje Austral a la pantalla de tu celular para abrirlo con un solo toque.'
+          : 'Crea un acceso directo en tu escritorio para abrir Eje Austral con un clic como un programa, sin escribir la página web.';
+      }
     }
     actualizarTextoBotonInstalar();
 
