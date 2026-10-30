@@ -51,6 +51,7 @@ export async function onRequestPost({ request, env }) {
     const fono = String(body.fono || '').trim();
     const whatsapp = String(body.whatsapp || '').trim();
     const email = String(body.email || '').trim();
+    const sitioWeb = String(body.sitio_web || body.sitioWeb || '').trim();
     const ultimoProyecto = String(body.ultimoProyecto || body.ultimo_proyecto || '').trim();
     const estadoDisp = String(body.estado_disponibilidad || '').trim();
 
@@ -65,6 +66,7 @@ export async function onRequestPost({ request, env }) {
           fono = ?,
           whatsapp = ?,
           email = ?,
+          sitio_web = ?,
           ultimo_proyecto = CASE WHEN ? != '' THEN ? ELSE ultimo_proyecto END,
           estado_disponibilidad = CASE WHEN ? != '' THEN ? ELSE estado_disponibilidad END
       WHERE id = ?
@@ -78,6 +80,7 @@ export async function onRequestPost({ request, env }) {
       fono,
       whatsapp,
       email,
+      sitioWeb,
       ultimoProyecto, ultimoProyecto,
       estadoDisp, estadoDisp,
       id

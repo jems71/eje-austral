@@ -1,5 +1,5 @@
 // functions/api/ficha.js — Cloudflare Pages Function con D1
-const EDITABLE_FIELDS = ['estado_disponibilidad', 'whatsapp', 'ciudad', 'rubro'];
+const EDITABLE_FIELDS = ['estado_disponibilidad', 'whatsapp', 'ciudad', 'rubro', 'sitio_web'];
 const ESTADOS_VALIDOS = [
   'Disponible',
   'Ocupado',
@@ -34,6 +34,7 @@ export async function onRequestGet({ request, env }) {
       ciudad: record.ciudad || '',
       whatsapp: record.whatsapp || record.fono || '',
       fono: record.fono || '',
+      sitio_web: record.sitio_web || '',
       estado_disponibilidad: record.estado_disponibilidad || 'Disponible',
       estado_publicacion: record.estado_publicacion || 'publicado',
       fecha_ultima_actualizacion_estado: record.fecha_ultima_actualizacion_estado || null
@@ -102,6 +103,11 @@ async function handleUpdate({ request, env }) {
     if (body.rubro !== undefined && body.rubro !== null) {
       updates.push("rubro = ?");
       values.push(String(body.rubro).trim().slice(0, 100));
+    }
+
+    if (body.sitio_web !== undefined && body.sitio_web !== null) {
+      updates.push("sitio_web = ?");
+      values.push(String(body.sitio_web).trim().slice(0, 255));
     }
 
     if (updates.length === 0) {
