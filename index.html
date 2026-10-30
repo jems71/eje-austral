@@ -831,6 +831,12 @@
       <div class="tab active" data-tab="directorio">Directorio <span class="count" id="cnt-directorio">0</span></div>
       <div class="tab" data-tab="ofertas">Ofertas Laborales <span class="count" id="cnt-ofertas">0</span></div>
       <div class="tab hidden" id="tab-stats" data-tab="estadisticas">📊 Estadísticas</div>
+      <div class="tab-install-wrap" style="margin-left: auto; display: flex; align-items: center; padding: 6px 0;">
+        <button id="btn-instalar-app" onclick="solicitarInstalacionPWA()" style="display: inline-flex; align-items: center; gap: 7px; background: #fff; color: var(--uach-blue); border: 1.5px solid var(--border); padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .15s; white-space: nowrap; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span id="txt-instalar-app">🖥️ Instalar en escritorio</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1054,6 +1060,10 @@
         <div class="subtitle">DIR-UACH/CC · v5.9 · 2026</div>
       </div>
       <div class="footer-right">
+        <button class="footer-btn" onclick="solicitarInstalacionPWA()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Instalar aplicación
+        </button>
         <button class="footer-btn" onclick="openAboutModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           Acerca del directorio
@@ -1071,6 +1081,63 @@
   </footer>
 
   </div> <!-- /#app -->
+
+  <!-- === MODAL: Guía de Instalación PWA === -->
+  <div id="modal-instalar-guia" class="modal-bg hidden" onclick="if(event.target===this) closeInstalarModal()">
+    <div class="modal" style="max-width: 520px;">
+      <button class="modal-close" onclick="closeInstalarModal()">×</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px;">
+        <div style="width: 44px; height: 44px; background: var(--uach-blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: #fff;">📲</div>
+        <div>
+          <h3 class="serif" style="margin: 0; color: var(--uach-blue); font-size: 20px;">Instalar Eje Austral</h3>
+          <div style="font-size: 12.5px; color: var(--text-muted);">Acceso directo en tu Escritorio o Pantalla de Inicio</div>
+        </div>
+      </div>
+      <p style="font-size: 13.5px; line-height: 1.5; color: var(--text); margin: 14px 0 16px;">
+        Puedes tener Eje Austral instalado como un programa en tu computador o app en tu celular, abriéndose al instante sin necesidad de escribir la dirección web:
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Opción PC -->
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;">
+          <div style="font-weight: 700; font-size: 13.5px; color: var(--uach-blue); margin-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+            💻 En Computador (Google Chrome o Microsoft Edge)
+          </div>
+          <div style="font-size: 13px; color: var(--text); line-height: 1.5;">
+            1. En la barra de direcciones de tu navegador (arriba a la derecha), haz clic en el ícono <strong>🖥️ Instalar</strong> (junto a la estrella de favoritos).<br>
+            2. O ve al menú de tres puntos <strong>⋮</strong> ➡️ <strong>"Guardar y compartir"</strong> ➡️ <strong>"Crear acceso directo..."</strong> (marca la casilla <em>"Abrir como ventana"</em>).
+          </div>
+        </div>
+
+        <!-- Opción iPhone / Safari -->
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;">
+          <div style="font-weight: 700; font-size: 13.5px; color: #0284c7; margin-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+            📱 En iPhone / iPad (Safari)
+          </div>
+          <div style="font-size: 13px; color: var(--text); line-height: 1.5;">
+            1. Toca el botón <strong>Compartir 📤</strong> (en la barra inferior de Safari).<br>
+            2. Desliza hacia abajo y toca <strong>"Agregar a inicio" ➕</strong>.<br>
+            3. Toca <strong>"Agregar"</strong> arriba a la derecha.
+          </div>
+        </div>
+
+        <!-- Opción Android -->
+        <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;">
+          <div style="font-weight: 700; font-size: 13.5px; color: var(--green); margin-bottom: 5px; display: flex; align-items: center; gap: 6px;">
+            🤖 En Celular Android (Chrome)
+          </div>
+          <div style="font-size: 13px; color: var(--text); line-height: 1.5;">
+            1. Toca los tres puntos <strong>⋮</strong> arriba a la derecha.<br>
+            2. Selecciona <strong>"Instalar aplicación"</strong> o <strong>"Agregar a la pantalla principal"</strong>.
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 18px;">
+        <button class="btn-primary" onclick="closeInstalarModal()" style="width: 100%; padding: 10px;">¡Entendido!</button>
+      </div>
+    </div>
+  </div>
 
   <!-- === MODAL: Login Administrador === -->
   <div id="modal-admin-login" class="modal-bg hidden" style="z-index: 150;">
@@ -2561,6 +2628,56 @@
     window.submitRecomendacion = submitRecomendacion;
     window.openAboutModal = openAboutModal;
     window.closeAboutModal = closeAboutModal;
+
+    // === GESTIÓN DE INSTALACIÓN PWA (ACCESO DIRECTO / ESCRITORIO) ===
+    let deferredPromptPWA = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPromptPWA = e;
+    });
+
+    window.addEventListener('appinstalled', () => {
+      deferredPromptPWA = null;
+      const txt = document.getElementById('txt-instalar-app');
+      if (txt) txt.textContent = '✅ App instalada';
+    });
+
+    async function solicitarInstalacionPWA() {
+      if (deferredPromptPWA) {
+        deferredPromptPWA.prompt();
+        const { outcome } = await deferredPromptPWA.userChoice;
+        if (outcome === 'accepted') {
+          deferredPromptPWA = null;
+          const txt = document.getElementById('txt-instalar-app');
+          if (txt) txt.textContent = '✅ App instalada';
+        }
+      } else {
+        openInstalarModal();
+      }
+    }
+
+    function openInstalarModal() {
+      const modal = document.getElementById('modal-instalar-guia');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeInstalarModal() {
+      const modal = document.getElementById('modal-instalar-guia');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function actualizarTextoBotonInstalar() {
+      const txt = document.getElementById('txt-instalar-app');
+      if (!txt) return;
+      const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      txt.textContent = esMovil ? '📲 Instalar App' : '🖥️ Instalar en escritorio';
+    }
+    actualizarTextoBotonInstalar();
+
+    window.solicitarInstalacionPWA = solicitarInstalacionPWA;
+    window.openInstalarModal = openInstalarModal;
+    window.closeInstalarModal = closeInstalarModal;
     window.doLogin = doLogin;
     window.switchView = switchView;
     window.closeDupModal = closeDupModal;
