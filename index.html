@@ -1189,9 +1189,11 @@
       <input type="text" id="f-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, La Unión">
       <datalist id="lista-comunas"></datalist>
       <div class="help-text">Si trabaja en varias ciudades, separá con comas. Empezá a tipear para ver sugerencias.</div>
-      <label>Página Web / Catálogo Online (opcional)</label>
-      <input type="text" id="f-sitio-web" placeholder="https://www.ejemplo.cl">
-      <div class="help-text">Ideal si la empresa cuenta con catálogo de productos o página web oficial.</div>
+      <div id="wrap-f-sitio-web" style="display: none;">
+        <label>Página Web / Catálogo Online (opcional)</label>
+        <input type="text" id="f-sitio-web" placeholder="https://www.ejemplo.cl">
+        <div class="help-text">Ideal si la empresa cuenta con catálogo de productos o página web oficial.</div>
+      </div>
       <div class="section-title">Notas y referencia</div>
       <label>Último proyecto</label>
       <input type="text" id="f-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
@@ -1229,7 +1231,7 @@
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <div>
           <label>Tipo</label>
-          <select id="admin-edit-tipo">
+          <select id="admin-edit-tipo" onchange="actualizarCamposTipoAdminEdit()">
             <option value="Subcontrato">🔧 Subcontrato</option>
             <option value="Mano de obra">👷 Mano de obra</option>
             <option value="Arriendo">🏗️ Arriendo</option>
@@ -1252,8 +1254,10 @@
       <input type="text" id="admin-edit-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, Temuco, Puerto Montt, Todo Chile">
       <div class="help-text">Si atiende varias ciudades o zonas, podés escribir p. ej. "Valdivia, Osorno" o "Todo Chile".</div>
 
-      <label>Página Web / Catálogo Online</label>
-      <input type="text" id="admin-edit-sitio-web" placeholder="https://www.ejemplo.cl (opcional)">
+      <div id="wrap-admin-edit-sitio-web">
+        <label>Página Web / Catálogo Online</label>
+        <input type="text" id="admin-edit-sitio-web" placeholder="https://www.ejemplo.cl (opcional)">
+      </div>
       <label>Último proyecto (opcional)</label>
       <input type="text" id="admin-edit-ultimo-proyecto" placeholder="Obra o faena reciente (opcional)">
 
@@ -1487,6 +1491,9 @@
       if (!url) return '';
       return String(url).trim().replace(/^https?:\/\//i, '').replace(/\/$/, '');
     }
+    function tipoAdmiteWeb(tipo) {
+      return ['Proveedor', 'Subcontrato', 'Arriendo'].includes(tipo);
+    }
     function iniciales(nombre) { return (nombre || '').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
 
     // =====================================================
@@ -1577,6 +1584,10 @@
       if (inpNombre) inpNombre.placeholder = cfg.nombre.ph;
       if (inpRubro) inpRubro.placeholder = cfg.rubro.ph;
       if (inpContacto) inpContacto.placeholder = cfg.contacto.ph;
+      const wrapWebAdd = document.getElementById('wrap-f-sitio-web');
+      if (wrapWebAdd) {
+        wrapWebAdd.style.display = tipoAdmiteWeb(tipo) ? 'block' : 'none';
+      }
     }
 
     function formatZona(c) {
@@ -1829,7 +1840,7 @@
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
             <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
             <div class="col-estado">${getEstadoBadge(c.estado_disponibilidad, c.tipo)}</div>
-            <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}${c.sitio_web ? ` · <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" title="Sitio Web / Catálogo" style="color:#0284c7; font-weight:600; text-decoration:none;">🌐 Web</a>` : ''}</div>
+            <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? ` · <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" title="Sitio Web / Catálogo" style="color:#0284c7; font-weight:600; text-decoration:none;">🌐 Web</a>` : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
             ${esAdmin() ? `<div style="display:flex; align-items:center; margin-left:8px;" onclick="event.stopPropagation(); abrirModalAdminEditar('${esc(c.id)}');"><button title="Editar contacto (Admin)" style="background:transparent; border:1px solid var(--border); border-radius:4px; padding:4px 8px; cursor:pointer; color:var(--uach-blue); font-size:12px;">✏️</button></div>` : ''}
@@ -1937,7 +1948,7 @@
               ${wa ? `<a class="icon-btn whatsapp" href="https://wa.me/${wa}" target="_blank" title="WhatsApp" onclick="registrarClicContacto('${esc(c.id)}')">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.1-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.4 0 1.4 1 2.8 1.2 3 .1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.6-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2C6.5 2 2 6.5 2 12c0 1.8.5 3.5 1.3 5L2 22l5.2-1.3c1.4.8 3 1.2 4.6 1.2 5.5 0 10-4.5 10-10s-4.4-9.9-9.8-9.9zm0 18c-1.5 0-2.9-.4-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3c-.8-1.2-1.2-2.7-1.2-4.2 0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 7.9-8 7.9z"/></svg>
               </a>` : ''}
-              ${c.sitio_web ? `<a class="icon-btn" href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" title="Visitar Sitio Web / Catálogo (${esc(limpiarUrlDisplay(c.sitio_web))})" style="color:#0284c7; border-color:#bfdbfe;">
+              ${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? `<a class="icon-btn" href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" title="Visitar Sitio Web / Catálogo (${esc(limpiarUrlDisplay(c.sitio_web))})" style="color:#0284c7; border-color:#bfdbfe;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               </a>` : ''}
               <a class="icon-btn" href="tel:${esc(String(c.fono || '').replace(/\s/g,''))}" title="Llamar">
@@ -2212,14 +2223,14 @@
           ${c.contacto ? `<div><strong>Contacto:</strong> ${esc(c.contacto)}</div>` : ''}
           ${c.fono ? `<div><strong>Fono:</strong> ${esc(c.fono)}</div>` : ''}
           ${c.email ? `<div><strong>Email:</strong> ${esc(c.email)}</div>` : ''}
-          ${c.sitio_web ? `<div><strong>Sitio Web / Catálogo:</strong> <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="color:var(--uach-blue); font-weight:600; text-decoration:underline;">${esc(limpiarUrlDisplay(c.sitio_web))} ↗</a></div>` : ''}
+          ${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? `<div><strong>Sitio Web / Catálogo:</strong> <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="color:var(--uach-blue); font-weight:600; text-decoration:underline;">${esc(limpiarUrlDisplay(c.sitio_web))} ↗</a></div>` : ''}
           ${c.ultimoProyecto ? `<div><strong>Último proyecto:</strong> ${esc(c.ultimoProyecto)}</div>` : ''}
           ${c.id ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">ID: ${esc(c.id.toUpperCase())}</div>` : ''}
         </div>
 
         <div style="margin-bottom: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
           ${wa ? `<a href="https://wa.me/${wa}" target="_blank" onclick="registrarClicContacto('${esc(c.id)}')" style="display:inline-block; padding:10px 16px; background:var(--green); color:#fff; border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">💬 Contactar por WhatsApp</a>` : ''}
-          ${c.sitio_web ? `<a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:10px 16px; background:#f0f7ff; border:1px solid #bfdbfe; color:var(--uach-blue); border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">🌐 Ver Catálogo / Web ↗</a>` : ''}
+          ${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? `<a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:6px; padding:10px 16px; background:#f0f7ff; border:1px solid #bfdbfe; color:var(--uach-blue); border-radius:6px; text-decoration:none; font-size:13px; font-weight:600;">🌐 Ver Catálogo / Web ↗</a>` : ''}
           <button onclick="compartirContacto('${esc(c.id)}')" style="padding:10px 16px; background:var(--card); color:var(--text); border:1px solid var(--border); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">↗ Compartir ficha</button>
           ${esAdmin() ? `<button onclick="abrirModalAdminEditar('${esc(c.id)}')" style="padding:10px 16px; background:var(--uach-blue); color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; display:inline-flex; align-items:center; gap:6px;">✏️ Editar Ficha (Admin)</button>` : ''}
         </div>
@@ -2768,8 +2779,17 @@
       document.getElementById('admin-edit-whatsapp').value = c.whatsapp || c.fono || '';
       document.getElementById('admin-edit-sitio-web').value = c.sitio_web || '';
       document.getElementById('admin-edit-ultimo-proyecto').value = c.ultimoProyecto || c.ultimo_proyecto || '';
+      actualizarCamposTipoAdminEdit();
 
       document.getElementById('modal-admin-edit').classList.remove('hidden');
+    }
+
+    function actualizarCamposTipoAdminEdit() {
+      const tipo = document.getElementById('admin-edit-tipo')?.value || '';
+      const wrap = document.getElementById('wrap-admin-edit-sitio-web');
+      if (wrap) {
+        wrap.style.display = tipoAdmiteWeb(tipo) ? 'block' : 'none';
+      }
     }
 
     function closeAdminEditModal() {
