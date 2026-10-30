@@ -947,6 +947,7 @@
         <div style="display: flex; gap: 8px;">
           <button class="btn-secondary" onclick="exportarStatsCSV()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">📥 Exportar a Excel (CSV)</button>
           <button class="btn-primary" onclick="loadEstadisticas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Actualizar</button>
+          <button onclick="reiniciarVisitasAdmin()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; border: 1.5px solid #ef4444; background: transparent; color: #ef4444; font-family: inherit; transition: all .15s;" onmouseover="this.style.background='#ef4444';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#ef4444'" title="Reinicia el contador de visitas a 0">🗑️ Reiniciar Visitas</button>
         </div>
       </div>
     </div>
@@ -2319,7 +2320,8 @@
         '/api/eliminar-oferta',
         '/api/estadisticas',
         '/api/despacho-fichas',
-        '/api/marcar-envio-ficha'
+        '/api/marcar-envio-ficha',
+        '/api/admin-reset-estadisticas'
       ];
       const esAdminEndpoint = adminEndpoints.some(ep => url.startsWith(ep));
       const token = (esAdminEndpoint && getAdminToken()) ? getAdminToken() : getToken();
@@ -2941,6 +2943,7 @@
 
     function registrarVisita() {
       try {
+        if (esAdmin() || new URLSearchParams(window.location.search).get('admin') === '1') return;
         if (sessionStorage.getItem('eje_austral_visita_reg')) return;
         sessionStorage.setItem('eje_austral_visita_reg', '1');
         fetch('/api/registrar-visita', { method: 'POST', keepalive: true }).catch(() => {});
@@ -3093,6 +3096,29 @@
     window.loadEstadisticas = loadEstadisticas;
     window.filtrarTablaStats = filtrarTablaStats;
     window.exportarStatsCSV = exportarStatsCSV;
+
+    async function reiniciarVisitasAdmin() {
+      if (!confirm('¿Estás seguro de reiniciar el contador de visitas a cero?\n\nEsta acción pondrá en 0 las visitas acumuladas y las de hoy.')) {
+        return;
+      }
+      try {
+        const r = await apiFetch('/api/admin-reset-estadisticas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tipo: 'visitas' })
+        });
+        const res = await r.json();
+        if (res.ok) {
+          alert('✅ Visitas reiniciadas a cero exitosamente.');
+          loadEstadisticas();
+        } else {
+          alert('Error: ' + (res.error || 'No se pudo reiniciar'));
+        }
+      } catch(e) {
+        alert('Error al reiniciar visitas: ' + e.message);
+      }
+    }
+    window.reiniciarVisitasAdmin = reiniciarVisitasAdmin;
 
 
     // === GESTIÓN DE DESPACHO DE FICHAS (WHATSAPP) ===
