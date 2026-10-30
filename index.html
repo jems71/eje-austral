@@ -361,8 +361,9 @@
     .modal h3 { font-family: 'Fraunces', serif; font-size: 22px; margin-bottom: 4px; color: var(--uach-blue); }
     .modal .sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
     .modal label { display: block; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; margin-top: 14px; font-weight: 600; }
-    .modal input, .modal select, .modal textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; font-family: inherit; color: var(--text); background: var(--bg); }
-    .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: var(--uach-blue); }
+    .modal input, .modal select, .modal textarea { width: 100%; padding: 10px 12px; border: 1.5px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: inherit; color: var(--text); background: #ffffff; transition: border-color .15s, box-shadow .15s; }
+    .modal input:focus, .modal select:focus, .modal textarea:focus { outline: none; border-color: var(--uach-blue); box-shadow: 0 0 0 3px rgba(10,36,71,0.08); background: #ffffff; }
+    .modal input::placeholder, .modal textarea::placeholder { color: #9ca3af; font-style: italic; }
     .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
     .modal-actions button { flex: 1; padding: 12px; border-radius: 4px; border: none; cursor: pointer; font-family: inherit; font-size: 14px; font-weight: 600; }
     .btn-primary { background: var(--uach-blue); color: #fff; }
@@ -1189,7 +1190,7 @@
       <datalist id="lista-comunas"></datalist>
       <div class="help-text">Si trabaja en varias ciudades, separá con comas. Empezá a tipear para ver sugerencias.</div>
       <label>Página Web / Catálogo Online (opcional)</label>
-      <input type="text" id="f-sitio-web" placeholder="Ej: www.sysprotec.cl o https://...">
+      <input type="text" id="f-sitio-web" placeholder="https://www.ejemplo.cl">
       <div class="help-text">Ideal si la empresa cuenta con catálogo de productos o página web oficial.</div>
       <div class="section-title">Notas y referencia</div>
       <label>Último proyecto</label>
@@ -1252,9 +1253,9 @@
       <div class="help-text">Si atiende varias ciudades o zonas, podés escribir p. ej. "Valdivia, Osorno" o "Todo Chile".</div>
 
       <label>Página Web / Catálogo Online</label>
-      <input type="text" id="admin-edit-sitio-web" placeholder="Ej: www.sysprotec.cl o https://...">
+      <input type="text" id="admin-edit-sitio-web" placeholder="https://www.ejemplo.cl (opcional)">
       <label>Último proyecto (opcional)</label>
-      <input type="text" id="admin-edit-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
+      <input type="text" id="admin-edit-ultimo-proyecto" placeholder="Obra o faena reciente (opcional)">
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
         <div>
