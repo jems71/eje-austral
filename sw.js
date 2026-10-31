@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eje-austral-v3'; // Subimos a v3 para forzar la actualización
+const CACHE_NAME = 'eje-austral-v4'; // Subimos a v4 para invalidar caché previo
 
 const APP_SHELL = [
   '/',
@@ -6,7 +6,6 @@ const APP_SHELL = [
   '/assets/icon-192.png',
   '/assets/icon-512.png',
   '/assets/logo-grupo.png'
-  // Quitamos '/index.html' de aquí
 ];
 
 self.addEventListener('install', (e) => {
@@ -17,7 +16,6 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  // Borra los cachés viejos cuando se active la nueva versión
   e.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
@@ -27,7 +25,7 @@ self.addEventListener('activate', (e) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
@@ -37,13 +35,18 @@ self.addEventListener('fetch', (e) => {
     return; 
   }
 
-  // 2. Para el HTML (la página en sí), siempre buscar en la red primero.
-  // Si no hay internet, recién ahí usa la caché.
-  if (e.request.mode === 'navigate' || e.request.url.endsWith('/') || e.request.url.includes('index.html')) {
+  // 2. Para el HTML (navegación, index, o cualquier URL que pida documento), SIEMPRE buscar en la red primero
+  const esHTML = e.request.mode === 'navigate' ||
+                 e.request.destination === 'document' ||
+                 (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) ||
+                 e.request.url.includes('index.html') ||
+                 e.request.url.includes('?admin') ||
+                 e.request.url.endsWith('/');
+
+  if (esHTML) {
     e.respondWith(
       fetch(e.request)
         .then(response => {
-          // Guardamos una copia actualizada en caché por si se corta el internet después
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(e.request, responseClone));
           return response;
@@ -53,7 +56,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // 3. Para los demás archivos (imágenes, fuentes), usa la caché primero
+  // 3. Para los demás archivos estáticos (imágenes, fuentes), usar la caché primero
   e.respondWith(
     caches.match(e.request).then(cachedResponse => {
       return cachedResponse || fetch(e.request);
