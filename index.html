@@ -3923,7 +3923,7 @@
         return;
       }
 
-      tbody.innerHTML = filtrados.map((c, idx) => {
+      tbody.innerHTML = filtrados.map((c) => {
         const yaEnviado = Number(c.mensaje_enviado) === 1;
         const badgeEnvio = yaEnviado
           ? `<div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
@@ -3998,7 +3998,7 @@
         "🔗 *Link:* https://eje-austral.jems.cl",
         "🔑 *Clave de acceso:* miraflores",
         "",
-        "💡 *Dato práctico:* Adentro de la app, arriba a la derecha, hay un botón que dice *"🖥️ Instalar en escritorio / 📲 Instalar App"*. Si lo presionas, te deja el acceso directo (*EA*) en el escritorio de tu PC o en la pantalla de tu celular para entrar en un clic cuando necesites un dato.",
+        '💡 *Dato práctico:* Adentro de la app, arriba a la derecha, hay un botón que dice *"🖥️ Instalar en escritorio / 📲 Instalar App"*. Si lo presionas, te deja el acceso directo (*EA*) en el escritorio de tu PC o en la pantalla de tu celular para entrar en un clic cuando necesites un dato.',
         "",
         "Aprovecho de hacerte una consulta muy cortita para ir mejorándola:",
         "1️⃣ ¿Ya habías alcanzado a conocer o entrar a la app?",
@@ -4140,7 +4140,6 @@
     window.marcarConociaAppColega = marcarConociaAppColega;
     window.guardarFilaColega = guardarFilaColega;
     window.exportarColegasCSV = exportarColegasCSV;
-
 </script>
 </body>
 </html>
