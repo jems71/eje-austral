@@ -1,4 +1,4 @@
-const CACHE_NAME = 'eje-austral-v4'; // Subimos a v4 para invalidar caché previo
+const CACHE_NAME = 'eje-austral-v5'; // Subimos a v5 para desplegar seguimiento de colegas y textos en chileno
 
 const APP_SHELL = [
   '/',
