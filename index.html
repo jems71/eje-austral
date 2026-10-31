@@ -1497,6 +1497,19 @@
     function tipoAdmiteWeb(tipo) {
       return ['Proveedor', 'Subcontrato', 'Arriendo'].includes(tipo);
     }
+    function renderAportadoPor(textoAportado, nombreContacto) {
+      if (!textoAportado) return '';
+      const match = textoAportado.match(/(?:\+?56)?\s*9\s*\d{3,4}\s*\d{4}/);
+      let btnWa = '';
+      if (match) {
+        let digits = match[0].replace(/\D/g, '');
+        if (digits.length === 9 && digits.startsWith('9')) digits = '56' + digits;
+        const msg = `Hola! Vi en Eje Austral que diste el dato / recomendaste a "${nombreContacto}". ¿Qué tal tu experiencia trabajando con ellos? Saludos!`;
+        const waUrl = `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
+        btnWa = ` <a href="${waUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:4px; margin-left:8px; font-size:11.5px; color:#166534; font-weight:600; text-decoration:none; padding:2px 8px; background:#dcfce7; border:1px solid #bbf7d0; border-radius:4px; vertical-align:middle;" title="Enviar WhatsApp al colega que dio el dato">💬 Preguntarle al colega</a>`;
+      }
+      return `<div><strong>Aportado por (en WhatsApp):</strong> <span style="color:var(--uach-blue); font-weight:600;">${esc(textoAportado)}</span>${btnWa}</div>`;
+    }
     function iniciales(nombre) { return (nombre || '').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
 
     // =====================================================
@@ -2227,7 +2240,7 @@
           ${c.fono ? `<div><strong>Fono:</strong> ${esc(c.fono)}</div>` : ''}
           ${c.email ? `<div><strong>Email:</strong> ${esc(c.email)}</div>` : ''}
           ${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? `<div><strong>Sitio Web / Catálogo:</strong> <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="color:var(--uach-blue); font-weight:600; text-decoration:underline;">${esc(limpiarUrlDisplay(c.sitio_web))} ↗</a></div>` : ''}
-          ${(c.recomendadoPor || c.recomendado_por) ? `<div><strong>Aportado por (en WhatsApp):</strong> <span style="color:var(--uach-blue); font-weight:600;">${esc(c.recomendadoPor || c.recomendado_por)}</span></div>` : ''}
+          ${renderAportadoPor(c.recomendadoPor || c.recomendado_por, c.nombre)}
           ${c.ultimoProyecto ? `<div><strong>Último proyecto:</strong> ${esc(c.ultimoProyecto)}</div>` : ''}
           ${c.id ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">ID: ${esc(c.id.toUpperCase())}</div>` : ''}
         </div>
