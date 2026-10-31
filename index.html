@@ -754,6 +754,9 @@
       <div id="login-rec-notice" class="hidden" style="margin-bottom: 14px; padding: 10px 14px; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 8px; font-size: 13px; font-weight: 500; line-height: 1.4; text-align: left;">
         ⭐ <strong>Recomendación para colega:</strong> Ingresa la clave del grupo UACh para dejar tu recomendación.
       </div>
+      <div id="login-admin-notice" class="hidden" style="margin-bottom: 14px; padding: 10px 14px; background: #fef3c7; color: #92400e; border: 1.5px solid #fde68a; border-radius: 8px; font-size: 13px; font-weight: 600; line-height: 1.4; text-align: left;">
+        🔐 <strong>Acceso Administrador (EAA):</strong> Ingresa tu clave maestra (<code>jems2026</code>) para entrar directamente a tu panel de control.
+      </div>
       <input type="password" id="login-password" class="login-input" placeholder="Contraseña del grupo" autocomplete="current-password" />
       <button class="login-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
       <div id="login-error" class="login-error hidden"></div>
@@ -2553,6 +2556,15 @@
       const recId = (new URLSearchParams(window.location.search).get('rec') || new URLSearchParams(window.location.search).get('recomendar') || '').trim();
       const recNotice = document.getElementById('login-rec-notice');
       if (recNotice) recNotice.classList.toggle('hidden', !recId);
+
+      const isAdmin = new URLSearchParams(window.location.search).get('admin') === '1';
+      const adminNotice = document.getElementById('login-admin-notice');
+      if (adminNotice) adminNotice.classList.toggle('hidden', !isAdmin);
+      const pwdInput = document.getElementById('login-password');
+      if (pwdInput && isAdmin) {
+        pwdInput.placeholder = 'Clave de Administrador (jems2026)';
+      }
+
       if (errorMsg) {
         const e = document.getElementById('login-error');
         e.textContent = errorMsg;
@@ -2565,10 +2577,15 @@
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       registrarVisita();
-      if (new URLSearchParams(window.location.search).get('admin') === '1' && !esAdmin()) {
+      const isAdminParam = new URLSearchParams(window.location.search).get('admin') === '1';
+      if (isAdminParam && !esAdmin()) {
         abrirModalAdminLogin();
       } else if (esAdmin()) {
         actualizarEstadoAdminUI();
+        if (isAdminParam) {
+          const tabStats = document.querySelector('.tab[data-tab="estadisticas"]');
+          if (tabStats) tabStats.click();
+        }
       }
       loadData();
       loadOfertas(); // carga las ofertas al entrar para que el contador del tab sea real
@@ -2666,6 +2683,9 @@
         } catch(e) {}
 
         actualizarEstadoAdminUI();
+
+        const tabStats = document.querySelector('.tab[data-tab="estadisticas"]');
+        if (tabStats) tabStats.click();
 
         renderContactos();
         if (OFERTAS_CARGADAS) renderOfertas();
@@ -2849,6 +2869,9 @@
           throw new Error(out.error || 'No autorizado');
         }
         setToken(out.token);
+        if (out.isAdmin && out.adminToken) {
+          setAdminToken(out.adminToken);
+        }
         document.getElementById('login-password').value = '';
         showApp();
       } catch (e) {
