@@ -757,13 +757,9 @@
       <input type="password" id="login-password" class="login-input" placeholder="Contraseña del grupo" autocomplete="current-password" />
       <button class="login-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
       <div id="login-error" class="login-error hidden"></div>
-      <div class="login-footer" style="text-align: center;">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;">
-          <img src="/assets/jems-cubo.png" alt="JEMS" style="width: 22px; height: 22px; object-fit: contain;">
-          <span style="font-size: 12px; font-weight: 700; color: var(--uach-blue);">JEMS · Ingeniería · Gestión · Tecnología</span>
-        </div>
-        Plataforma creada y gestionada por <strong>Juan Carlos García</strong> (Constructor Civil UACh).<br>
-        Si no tenés la clave, pedila al administrador del grupo de <strong>WhatsApp UACh</strong>.
+      <div class="login-footer">
+        Si no tenés la contraseña, pedila al administrador del grupo <strong>WhatsApp UACh</strong>.<br>
+        Si vos no perteneces al grupo, este sitio no es para vos.
       </div>
     </div>
   </div>
@@ -1062,20 +1058,17 @@
   <footer class="site-footer">
     <div class="footer-inner">
       <div class="footer-left">
-        <div class="title" style="display: flex; align-items: center; gap: 8px;">
-          <span>Eje Austral</span>
-          <span style="font-size: 11px; padding: 2px 7px; background: rgba(255,255,255,0.12); border-radius: 4px; font-weight: 500;">v5.9</span>
-        </div>
-        <div class="subtitle">Directorio de Construcción · Red Alumni UACh</div>
+        <div class="title">Eje Austral</div>
+        <div class="subtitle">DIR-UACH/CC · v5.9 · 2026</div>
       </div>
       <div class="footer-right">
-        <button class="footer-btn" onclick="solicitarInstalacionPWA()" title="Instalar en escritorio o celular">
+        <button class="footer-btn" onclick="solicitarInstalacionPWA()" title="Crea un acceso directo en tu escritorio o celular para abrir el directorio al instante.">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
           Instalar aplicación
         </button>
         <button class="footer-btn" onclick="openAboutModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          Acerca de Eje Austral
+          Acerca del directorio
         </button>
         <a class="footer-btn" href="mailto:jemsjuangarcia@gmail.com">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -1083,22 +1076,9 @@
         </a>
       </div>
     </div>
-
-    <!-- SECCIÓN CORPORATIVA JEMS (Fundador y Desarrollador Oficial) -->
-    <div style="max-width: 1200px; margin: 24px auto 0; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.12); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-      <a href="https://jems.cl" target="_blank" rel="noopener noreferrer" style="display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff;" title="Visitar JEMS (Ingeniería · Gestión · Tecnología)">
-        <img src="/assets/jems-logo.png" alt="JEMS Ingeniería · Gestión · Tecnología" style="height: 38px; width: auto; max-width: 190px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
-        <div style="border-left: 1px solid rgba(255,255,255,0.22); padding-left: 14px;">
-          <div style="font-size: 13px; font-weight: 700; color: #fff; letter-spacing: 0.3px;">Desarrollado y Gestionado por JEMS</div>
-          <div style="font-size: 11.5px; color: #93c5fd; opacity: 0.95;">Juan Carlos García · Constructor Civil UACh</div>
-        </div>
-      </a>
-
-      <div style="display: flex; align-items: center; gap: 14px; font-size: 11.5px; color: rgba(255,255,255,0.7); flex-wrap: wrap;">
-        <span>Servicios de Inspección, Gestión y Tecnología en Obras</span>
-        <a href="https://jems.cl" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: underline; font-weight: 600;">jems.cl ↗</a>
-        <button type="button" onclick="solicitarAccesoAdmin()" style="background: transparent; border: none; color: rgba(255,255,255,0.45); font-size: 11px; cursor: pointer; text-decoration: underline; font-family: inherit;">🔐 Administrador</button>
-      </div>
+    <div class="footer-author" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+      <span>Un aporte de <strong>Juan Carlos García</strong> al grupo · Construcción Civil UACh</span>
+      <button type="button" onclick="solicitarAccesoAdmin()" style="background: transparent; border: none; color: var(--text-muted); font-size: 11.5px; cursor: pointer; text-decoration: underline; opacity: 0.6; font-family: inherit;">🔐 Acceso Administrador</button>
     </div>
   </footer>
 
@@ -1389,18 +1369,10 @@
       </p>
 
       <div class="about-section">
-        <h4>Desarrollo y Gestión Técnica</h4>
+        <h4>Desarrollo</h4>
         <div class="author-card">
-          <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
-            <img src="/assets/jems-cubo.png" alt="JEMS" style="width: 48px; height: 48px; object-fit: contain;">
-            <div>
-              <div class="name" style="font-weight: 800; font-size: 16px; color: var(--uach-blue);">Juan Carlos García García</div>
-              <div class="pro" style="font-size: 13px; color: var(--text-muted); margin-top: 1px;">Constructor Civil · UACh · Valdivia</div>
-              <div style="font-size: 12px; color: #0284c7; font-weight: 600; margin-top: 3px;">
-                JEMS: Ingeniería · Gestión · Tecnología · <a href="https://jems.cl" target="_blank" style="color: #0284c7; text-decoration: underline;">jems.cl ↗</a>
-              </div>
-            </div>
-          </div>
+          <div class="name">Juan Carlos García García</div>
+          <div class="pro">Construcción Civil · UACh · Valdivia</div>
           <div class="quote">
             "Lo armé pensando en cómo nos podemos ayudar entre colegas
             titulados. Si tienen ideas para mejorarlo, encuentran algo que
