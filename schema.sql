@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS contactos (
   fecha_ultima_actualizacion_estado TEXT,
   total_clics INTEGER DEFAULT 0,
   sitio_web TEXT,
+  certificaciones TEXT,
   estado_publicacion TEXT DEFAULT 'publicado',
   consentimiento_publicacion INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now'))

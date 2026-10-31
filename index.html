@@ -1194,6 +1194,11 @@
         <input type="text" id="f-sitio-web" placeholder="https://www.ejemplo.cl">
         <div class="help-text">Ideal si la empresa cuenta con catálogo de productos o página web oficial.</div>
       </div>
+      <div>
+        <label>🏅 Certificaciones y Registros Oficiales (opcional)</label>
+        <input type="text" id="f-certificaciones" placeholder="Ej: SEC Clase B, Soldador AWS 4G, Registro MINVU">
+        <div class="help-text">Indica si cuenta con certificaciones SEC (eléctrico/gas), soldador calificado, registros MOP/MINVU, etc.</div>
+      </div>
       <div class="section-title">Notas y referencia</div>
       <label>Último proyecto</label>
       <input type="text" id="f-ultimo-proyecto" placeholder="Ej: Edificio Costanera, Valdivia 2025">
@@ -1261,6 +1266,9 @@
         <label>Página Web / Catálogo Online</label>
         <input type="text" id="admin-edit-sitio-web" placeholder="https://www.ejemplo.cl (opcional)">
       </div>
+      <label style="color: var(--uach-blue); font-weight: 700;">🏅 Certificaciones y Registros Oficiales (opcional)</label>
+      <input type="text" id="admin-edit-certificaciones" placeholder="Ej: SEC Clase B, Soldador AWS 4G, Registro MINVU">
+      <div class="help-text">Indica si cuenta con certificaciones SEC (eléctrico/gas), soldador calificado, registros MOP/MINVU, etc.</div>
       <label>Último proyecto (opcional)</label>
       <input type="text" id="admin-edit-ultimo-proyecto" placeholder="Obra o faena reciente (opcional)">
 
@@ -1814,7 +1822,7 @@
         }
         if (state.q) {
           const q = normText(state.q);
-          const hay = normText([c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo].join(' '));
+          const hay = normText([c.nombre, c.rubro, c.ciudad, c.recomendadoPor, c.contacto, c.tipo, c.certificaciones].join(' '));
           if (!hay.includes(q)) return false;
         }
         return true;
@@ -1856,7 +1864,7 @@
           <div class="list-row" onclick="openDetailModal('${esc(c.id)}')">
             <div class="col-nombre">${esc(c.nombre)}<span class="tipo-mini ${tipoClass}">${tipoCfg.icono} ${tipoCfg.miniLabel}</span></div>
             <div class="col-estado">${getEstadoBadge(c.estado_disponibilidad, c.tipo)}</div>
-            <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? ` · <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" title="Sitio Web / Catálogo" style="color:#0284c7; font-weight:600; text-decoration:none;">🌐 Web</a>` : ''}</div>
+            <div class="col-rubro">${esc(c.rubro)}${c.ciudad ? ' · ' + esc(c.ciudad) : ''}${c.certificaciones ? ' · <span style="color:#b45309; font-weight:600;">🏅 ' + esc(c.certificaciones) + '</span>' : ''}${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? ` · <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" title="Sitio Web / Catálogo" style="color:#0284c7; font-weight:600; text-decoration:none;">🌐 Web</a>` : ''}</div>
             <div class="col-recom">${avatares}${extra}${countTxt}</div>
             ${fechaHtml}
             ${esAdmin() ? `<div style="display:flex; align-items:center; margin-left:8px;" onclick="event.stopPropagation(); abrirModalAdminEditar('${esc(c.id)}');"><button title="Editar contacto (Admin)" style="background:transparent; border:1px solid var(--border); border-radius:4px; padding:4px 8px; cursor:pointer; color:var(--uach-blue); font-size:12px;">✏️</button></div>` : ''}
@@ -1946,6 +1954,7 @@
             <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
               ${['Subcontrato', 'Mano de obra', 'Profesional'].includes(c.tipo) ? getEstadoBadge(c.estado_disponibilidad, c.tipo) : ''}
               ${fechaBadge}
+              ${c.certificaciones ? `<span class="badge-cert" title="Certificaciones: ${esc(c.certificaciones)}" style="display:inline-flex; align-items:center; gap:4px; font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:10px; background:#fef3c7; color:#92400e; border:1px solid #fde68a;">🏅 ${esc(c.certificaciones.length > 28 ? c.certificaciones.slice(0, 26) + '...' : c.certificaciones)}</span>` : ''}
             </div>
             <div class="info-row"><div class="label">Contacto</div><div class="value">${esc(c.contacto || '—')}</div></div>
             <div class="info-row"><div class="label">Fono</div><div class="value">${esc(c.fono || '—')}</div></div>
@@ -2197,6 +2206,7 @@
           : '',
         ciudad: document.getElementById('f-ciudad').value.trim(),
         sitio_web: (document.getElementById('f-sitio-web')?.value || '').trim(),
+        certificaciones: (document.getElementById('f-certificaciones')?.value || '').trim(),
         recomendadoPor: recom,
         ultimoProyecto: document.getElementById('f-ultimo-proyecto').value.trim(),
         notas: document.getElementById('f-notas').value.trim()
@@ -2232,6 +2242,7 @@
           <div style="display: flex; gap: 8px; align-items: center; margin-top: 8px; flex-wrap: wrap;">
             ${['Subcontrato', 'Mano de obra', 'Profesional'].includes(c.tipo) ? getEstadoBadge(c.estado_disponibilidad, c.tipo) : ''}
             ${fechaFmt ? `<div class="detail-fecha-pill">${ICON_CALENDAR} Ingresado: ${esc(fechaFmt)}</div>` : ''}
+            ${c.certificaciones ? `<div style="display:inline-flex; align-items:center; gap:6px; padding:3px 10px; background:#fef3c7; border:1px solid #fde68a; border-radius:12px; font-size:12px; font-weight:600; color:#92400e;">🏅 ${esc(c.certificaciones)}</div>` : ''}
           </div>
         </div>
 
@@ -2241,6 +2252,7 @@
           ${c.email ? `<div><strong>Email:</strong> ${esc(c.email)}</div>` : ''}
           ${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? `<div><strong>Sitio Web / Catálogo:</strong> <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="color:var(--uach-blue); font-weight:600; text-decoration:underline;">${esc(limpiarUrlDisplay(c.sitio_web))} ↗</a></div>` : ''}
           ${renderAportadoPor(c.recomendadoPor || c.recomendado_por, c.nombre)}
+          ${c.certificaciones ? `<div><strong>Certificaciones / Registros:</strong> <span style="color:#b45309; font-weight:600;">🏅 ${esc(c.certificaciones)}</span></div>` : ''}
           ${c.ultimoProyecto ? `<div><strong>Último proyecto:</strong> ${esc(c.ultimoProyecto)}</div>` : ''}
           ${c.id ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">ID: ${esc(c.id.toUpperCase())}</div>` : ''}
         </div>
@@ -2795,6 +2807,7 @@
       document.getElementById('admin-edit-fono').value = c.fono || '';
       document.getElementById('admin-edit-whatsapp').value = c.whatsapp || c.fono || '';
       document.getElementById('admin-edit-sitio-web').value = c.sitio_web || '';
+      document.getElementById('admin-edit-certificaciones').value = c.certificaciones || '';
       document.getElementById('admin-edit-recomendado-por').value = c.recomendadoPor || c.recomendado_por || '';
       document.getElementById('admin-edit-ultimo-proyecto').value = c.ultimoProyecto || c.ultimo_proyecto || '';
       actualizarCamposTipoAdminEdit();
@@ -2824,6 +2837,7 @@
       const fono = document.getElementById('admin-edit-fono').value.trim();
       const whatsapp = document.getElementById('admin-edit-whatsapp').value.trim();
       const sitioWeb = document.getElementById('admin-edit-sitio-web').value.trim();
+      const certificaciones = document.getElementById('admin-edit-certificaciones').value.trim();
       const recomendadoPor = document.getElementById('admin-edit-recomendado-por').value.trim();
       const ultimoProyecto = document.getElementById('admin-edit-ultimo-proyecto').value.trim();
 
@@ -2850,6 +2864,7 @@
             fono,
             whatsapp,
             sitio_web: sitioWeb,
+            certificaciones,
             recomendado_por: recomendadoPor,
             ultimoProyecto
           })
@@ -2872,6 +2887,7 @@
             fono,
             whatsapp,
             sitio_web: sitioWeb,
+            certificaciones,
             recomendadoPor,
             recomendado_por: recomendadoPor,
             ultimoProyecto,
@@ -3357,7 +3373,7 @@
         ? `nuestro colega titulado UACh ${recomLimpio}`
         : 'profesionales titulados de nuestra red técnica UACh';
 
-      const texto = `Estimado/a ${nombre}, le saluda Juan Carlos García, Constructor Civil de la Universidad Austral de Chile (UACh) y coordinador de la red técnica Eje Austral.\n\nLe escribo porque ${quienRecom} recomendó su trabajo en ${rubro} para proyectos y obras.\n\nPara que los colegas de la red puedan contactarle directamente cuando necesiten sus servicios, le invitamos a indicar su estado actual en su tarjeta personal (toma 10 segundos):\n🔗 ${linkFicha}\n\n📌 ¿Cómo funciona?\nEste enlace es su tarjeta digital permanente en nuestra red. Guárdela en sus favoritos o no borre este chat: cada vez que termine una faena o quede libre, vuelva a entrar a su enlace para ponerse "Disponible".\n\n🛡️ Seguridad y Confianza:\nEste enlace NO le pedirá contraseñas, pagos ni datos bancarios; es 100% gratuito. Ante cualquier duda o para verificar este mensaje, puede consultarle a quien lo recomendó o llamarme directamente a mí a este mismo WhatsApp (+56 9 6255 3313).\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad.\n\n¡Muchas gracias y mucho éxito en sus faenas!`;
+      const texto = `Estimado/a ${nombre}, le saluda Juan Carlos García, Constructor Civil de la Universidad Austral de Chile (UACh) y coordinador de la red técnica Eje Austral.\n\nLe escribo porque ${quienRecom} recomendó su trabajo en ${rubro} para proyectos y obras.\n\nPara que los colegas de la red puedan contactarle directamente cuando necesiten sus servicios, le invitamos a indicar su estado actual en su tarjeta personal (toma 10 segundos):\n🔗 ${linkFicha}\n\n📌 ¿Cómo funciona?\nEste enlace es su tarjeta digital permanente en nuestra red. Guárdela en sus favoritos o no borre este chat: cada vez que termine una faena o quede libre, vuelva a entrar a su enlace para ponerse "Disponible".\n\n💡 ¿Cuenta con certificaciones oficiales?\nEn su misma tarjeta puede indicar si cuenta con certificaciones técnicas (SEC eléctrico o gas, soldador calificado, registros MINVU/MOP, etc.) para darle mayor visibilidad y preferencia en obras de la red.\n\n🛡️ Seguridad y Confianza:\nEste enlace NO le pedirá contraseñas, pagos ni datos bancarios; es 100% gratuito. Ante cualquier duda o para verificar este mensaje, puede consultarle a quien lo recomendó o llamarme directamente a mí a este mismo WhatsApp (+56 9 6255 3313).\n\nSi prefiere no figurar en el directorio, también puede indicarlo en el mismo enlace y respetaremos su privacidad.\n\n¡Muchas gracias y mucho éxito en sus faenas!`;
 
       const url = `https://wa.me/${fono}?text=${encodeURIComponent(texto)}`;
       window.open(url, '_blank');

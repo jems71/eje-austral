@@ -52,6 +52,7 @@ export async function onRequestPost({ request, env }) {
     const whatsapp = String(body.whatsapp || '').trim();
     const email = String(body.email || '').trim();
     const sitioWeb = String(body.sitio_web || body.sitioWeb || '').trim();
+    const certificaciones = String(body.certificaciones || '').trim();
     const recomendadoPor = String(body.recomendado_por || body.recomendadoPor || '').trim();
     const ultimoProyecto = String(body.ultimoProyecto || body.ultimo_proyecto || '').trim();
     const estadoDisp = String(body.estado_disponibilidad || '').trim();
@@ -68,6 +69,7 @@ export async function onRequestPost({ request, env }) {
           whatsapp = ?,
           email = ?,
           sitio_web = ?,
+          certificaciones = ?,
           recomendado_por = CASE WHEN ? != '' THEN ? ELSE recomendado_por END,
           ultimo_proyecto = CASE WHEN ? != '' THEN ? ELSE ultimo_proyecto END,
           estado_disponibilidad = CASE WHEN ? != '' THEN ? ELSE estado_disponibilidad END
@@ -83,6 +85,7 @@ export async function onRequestPost({ request, env }) {
       whatsapp,
       email,
       sitioWeb,
+      certificaciones,
       recomendadoPor, recomendadoPor,
       ultimoProyecto, ultimoProyecto,
       estadoDisp, estadoDisp,

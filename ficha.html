@@ -154,6 +154,34 @@
           <div id="sugerencias-rubros" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
         </div>
 
+        <!-- SECCIÓN: Certificaciones y Registros Oficiales -->
+        <div class="field" style="margin-top: 22px; padding-top: 18px; border-top: 1.5px dashed var(--border);">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+            <span style="font-size: 18px;">🏅</span>
+            <label class="lbl" style="margin-bottom: 0;">Certificaciones y Registros Oficiales (opcional)</label>
+          </div>
+          <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.45;">
+            Si cuentas con certificaciones técnicas (SEC, soldador calificado, MINVU, MOP, etc.), agrégalas aquí para destacar tu perfil y dar mayor respaldo en obras y faenas:
+          </div>
+
+          <!-- Contenedor de Chips de Certificaciones Actuales -->
+          <div id="chips-certificaciones" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; min-height: 38px; padding: 8px; background: #faf8f5; border: 1.5px dashed var(--border); border-radius: 10px;">
+            <!-- Generado dinámicamente -->
+          </div>
+
+          <input type="hidden" id="f-certificaciones" />
+
+          <!-- Formulario rápido para escribir otra certificación personalizada -->
+          <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+            <input type="text" id="f-otra-cert" placeholder="Ej: SEC Clase B, Soldador 4G..." onkeydown="if(event.key==='Enter'){event.preventDefault();sumarCertFicha();}" style="font-size: 14px; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; flex: 1; background: #fff;" />
+            <button type="button" onclick="sumarCertFicha()" style="background: var(--uach-blue); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">➕ Agregar</button>
+          </div>
+
+          <!-- Sugerencias populares de certificaciones -->
+          <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Sugerencias frecuentes (toca para sumar):</div>
+          <div id="sugerencias-certificaciones" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;"></div>
+        </div>
+
         <button class="btn" id="btn-guardar">Guardar cambios</button>
         <div class="msg" id="msg"></div>
 
@@ -218,6 +246,11 @@
         const rubroInicial = (d.rubro || '').trim();
         LISTA_RUBROS = rubroInicial ? rubroInicial.split(/[,/•;]+/).map(s => s.trim()).filter(Boolean) : [];
         renderRubrosChips();
+
+        $('f-certificaciones').value = d.certificaciones || '';
+        const certInicial = (d.certificaciones || '').trim();
+        LISTA_CERTIFICACIONES = certInicial ? certInicial.split(/[,/•;]+/).map(s => s.trim()).filter(Boolean) : [];
+        renderCertificacionesChips();
         const estado = d.estado_disponibilidad || 'Disponible';
         document.querySelectorAll('input[name="estado"]').forEach(r => { r.checked = (r.value === estado); });
 
@@ -244,7 +277,8 @@
             whatsapp: $('f-whatsapp').value,
             ciudad: $('f-ciudad').value,
             rubro: $('f-rubro').value,
-            sitio_web: ($('f-web').value || '').trim()
+            sitio_web: ($('f-web').value || '').trim(),
+            certificaciones: ($('f-certificaciones').value || '').trim()
           })
         });
         if (!r.ok) throw new Error();
@@ -363,6 +397,89 @@
     window.sumarRubroFicha = sumarRubroFicha;
     window.agregarSugerenciaRubro = agregarSugerenciaRubro;
     window.quitarRubroFicha = quitarRubroFicha;
+
+    const SUGERENCIAS_CERTIFICACIONES = [
+      'SEC Eléctrico',
+      'SEC Gas',
+      'Soldador Calificado (AWS)',
+      'Registro MINVU / SERVIU',
+      'Registro MOP',
+      'Instalador Sanitario SISS',
+      'Operador Maquinaria / Rigger',
+      'Prevención de Riesgos'
+    ];
+
+    let LISTA_CERTIFICACIONES = [];
+
+    function renderCertificacionesChips() {
+      const cont = $('chips-certificaciones');
+      const hiddenInput = $('f-certificaciones');
+      if (!cont) return;
+
+      if (LISTA_CERTIFICACIONES.length === 0) {
+        cont.innerHTML = '<span style="font-size: 12px; color: var(--text-muted); padding: 4px 6px;">No tienes certificaciones registradas. Elige de las sugerencias abajo o escribe la tuya.</span>';
+        if (hiddenInput) hiddenInput.value = '';
+      } else {
+        cont.innerHTML = LISTA_CERTIFICACIONES.map((cert, idx) => `
+          <span style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 16px; font-size: 13px; font-weight: 600;">
+            🏅 ${esc(cert)}
+            <span onclick="quitarCertFicha(${idx})" style="cursor: pointer; font-size: 14px; font-weight: 700; color: #b45309; padding-left: 2px;" title="Eliminar certificación">✕</span>
+          </span>
+        `).join('');
+        if (hiddenInput) hiddenInput.value = LISTA_CERTIFICACIONES.join(', ');
+      }
+
+      renderSugerenciasCertificaciones();
+    }
+
+    function renderSugerenciasCertificaciones() {
+      const contSug = $('sugerencias-certificaciones');
+      if (!contSug) return;
+
+      const certsNorm = LISTA_CERTIFICACIONES.map(c => c.toLowerCase().trim());
+
+      contSug.innerHTML = SUGERENCIAS_CERTIFICACIONES.map(sug => {
+        const yaTiene = certsNorm.includes(sug.toLowerCase().trim());
+        if (yaTiene) return '';
+        return `
+          <button type="button" onclick="agregarSugerenciaCert('${esc(sug)}')" style="background: #fff; border: 1.5px solid var(--border); border-radius: 14px; padding: 6px 12px; font-size: 12.5px; font-weight: 500; cursor: pointer; color: var(--text); font-family: inherit; transition: all .15s;">
+            + ${esc(sug)}
+          </button>
+        `;
+      }).filter(Boolean).join('');
+    }
+
+    function sumarCertFicha() {
+      const input = $('f-otra-cert');
+      const val = (input.value || '').trim();
+      if (!val) return;
+
+      const partes = val.split(/[,/•;]+/).map(s => s.trim()).filter(Boolean);
+      partes.forEach(p => {
+        if (!LISTA_CERTIFICACIONES.some(c => c.toLowerCase() === p.toLowerCase())) {
+          LISTA_CERTIFICACIONES.push(p);
+        }
+      });
+
+      input.value = '';
+      renderCertificacionesChips();
+    }
+
+    function agregarSugerenciaCert(sug) {
+      if (!LISTA_CERTIFICACIONES.some(c => c.toLowerCase() === sug.toLowerCase())) {
+        LISTA_CERTIFICACIONES.push(sug);
+        renderCertificacionesChips();
+      }
+    }
+
+    function quitarCertFicha(idx) {
+      LISTA_CERTIFICACIONES.splice(idx, 1);
+      renderCertificacionesChips();
+    }
+
+    window.sumarCertFicha = sumarCertFicha;
+    window.agregarSugerenciaCert = agregarSugerenciaCert;
+    window.quitarCertFicha = quitarCertFicha;
     let CONTACTO_DATOS = null;
 
     function pedirRecomendacionCliente() {
