@@ -917,6 +917,7 @@
       <button id="subtab-btn-stats" onclick="cambiarSubTabAdmin('stats')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; background: var(--uach-blue); color: #fff; font-family: inherit; transition: background .15s;">📊 Rendimiento y Clics</button>
       <button id="subtab-btn-despacho" onclick="cambiarSubTabAdmin('despacho')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: background .15s;">📲 Despacho WhatsApp (<span id="cnt-despacho-total">54</span>)</button>
       <button id="subtab-btn-recs" onclick="cambiarSubTabAdmin('recs')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: all .15s;">🔔 Por Aprobar (<span id="cnt-recs-pendientes">0</span>)</button>
+      <button id="subtab-btn-colegas" onclick="cambiarSubTabAdmin('colegas')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: all .15s;">🎓 Encuesta Colegas (<span id="cnt-colegas-total">285</span>)</button>
       <button id="btn-instalar-admin-panel" class="hidden" onclick="abrirModalInstalarEAA()" style="margin-left: auto; padding: 9px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; border: 1.5px solid #fde68a; background: #fffbeb; color: #92400e; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         🖥️ Crear acceso directo EAA
       </button>
@@ -1076,6 +1077,87 @@
         <div style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando recomendaciones pendientes...</div>
       </div>
     </div> <!-- /admin-sec-recs -->
+
+    <!-- SUB-CONTENIDO 4: DIFUSIÓN Y ENCUESTA A COLEGAS DEL GRUPO UACH -->
+    <div id="admin-sec-colegas" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div>
+          <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 6px 0; font-size: 24px;">🎓 Difusión y Encuesta a Colegas (Grupo WhatsApp UACh)</h2>
+          <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Planilla de los 285 integrantes del grupo <strong>Titulad@s ConstrUach</strong> para enviar acceso a la app, recordar el botón de escritorio y registrar su opinión.</p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" onclick="exportarColegasCSV()" style="padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 6px; border: 1.5px solid #16a34a; background: #f0fdf4; color: #15803d; font-family: inherit;">📥 Descargar Planilla Excel (.csv)</button>
+          <button type="button" class="btn-primary" onclick="loadColegasGrupo()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar</button>
+        </div>
+      </div>
+
+      <!-- Tarjetas KPI de la campaña -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div class="card" style="padding: 16px; border-left: 4px solid var(--uach-blue);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Colegas Grupo</div>
+          <div style="font-size: 26px; font-weight: 800; color: var(--uach-blue);" id="stat-col-total">285</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Titulad@s ConstrUach</div>
+        </div>
+        <div class="card" style="padding: 16px; border-left: 4px solid #f59e0b;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟡 Pendientes de Envío</div>
+          <div style="font-size: 26px; font-weight: 800; color: #b45309;" id="stat-col-pendientes">-</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Faltan por contactar</div>
+        </div>
+        <div class="card" style="padding: 16px; border-left: 4px solid var(--green);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟢 Mensajes Enviados</div>
+          <div style="font-size: 26px; font-weight: 800; color: var(--green);" id="stat-col-enviados">-</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">WhatsApp despachado</div>
+        </div>
+        <div class="card" style="padding: 16px; border-left: 4px solid #0284c7;">
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">📊 Respuestas Encuesta</div>
+          <div style="font-size: 26px; font-weight: 800; color: #0369a1;" id="stat-col-respondidos">0</div>
+          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" id="stat-col-detalle-resp">Sí la conocían: 0 · No: 0</div>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="toolbar-wrap" style="margin-bottom: 16px;">
+        <div class="toolbar-row" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+          <input type="text" id="col-search" class="search-input" placeholder="Buscar por nombre, alias, teléfono u opinión..." style="max-width: 340px;" oninput="filtrarTablaColegas()">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="col-filtro-envio" onchange="filtrarTablaColegas()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+              <option value="todos">Todos los envíos</option>
+              <option value="pendientes" selected>🟡 Solo Pendientes de envío</option>
+              <option value="enviados">🟢 Solo Enviados</option>
+            </select>
+            <select id="col-filtro-resp" onchange="filtrarTablaColegas()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+              <option value="todos">Todas las respuestas</option>
+              <option value="respondidos">✅ Con respuesta registrada</option>
+              <option value="sin_respuesta">⏳ Sin respuesta aún</option>
+              <option value="conocia_si">👍 Sí conocían la app</option>
+              <option value="conocia_no">🆕 No conocían la app</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de Colegas -->
+      <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <thead>
+              <tr style="background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+                <th style="padding: 12px 10px; width: 42px;">N°</th>
+                <th style="padding: 12px 10px; min-width: 150px;">Teléfono / Alias WA</th>
+                <th style="padding: 12px 10px; min-width: 170px;">Nombre Real (Editable)</th>
+                <th style="padding: 12px 10px; text-align: center; min-width: 125px;">¿Conocía la App?</th>
+                <th style="padding: 12px 10px; min-width: 240px;">Opinión / Qué mejora le haría</th>
+                <th style="padding: 12px 10px; text-align: center; min-width: 110px;">Estado Envío</th>
+                <th style="padding: 12px 10px; text-align: center; width: 170px;">Acción WhatsApp</th>
+              </tr>
+            </thead>
+            <tbody id="colegas-tbody">
+              <tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando planilla de colegas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> <!-- /admin-sec-colegas -->
   </section>
 
   <!-- === FOOTER === -->
@@ -2530,6 +2612,7 @@
         '/api/despacho-fichas',
         '/api/marcar-envio-ficha',
         '/api/admin-recomendaciones',
+        '/api/admin-colegas',
         '/api/admin-reset-estadisticas'
       ];
       const esAdminEndpoint = adminEndpoints.some(ep => url.startsWith(ep));
@@ -3435,14 +3518,16 @@
       const btnStats = document.getElementById('subtab-btn-stats');
       const btnDesp = document.getElementById('subtab-btn-despacho');
       const btnRecs = document.getElementById('subtab-btn-recs');
+      const btnCol = document.getElementById('subtab-btn-colegas');
       const secStats = document.getElementById('admin-sec-stats');
       const secDesp = document.getElementById('admin-sec-despacho');
       const secRecs = document.getElementById('admin-sec-recs');
+      const secCol = document.getElementById('admin-sec-colegas');
 
-      [btnStats, btnDesp, btnRecs].forEach(b => {
+      [btnStats, btnDesp, btnRecs, btnCol].forEach(b => {
         if (b) { b.style.background = 'var(--card)'; b.style.color = 'var(--text)'; b.style.borderColor = 'var(--border)'; }
       });
-      [secStats, secDesp, secRecs].forEach(s => {
+      [secStats, secDesp, secRecs, secCol].forEach(s => {
         if (s) s.classList.add('hidden');
       });
 
@@ -3458,6 +3543,10 @@
         if (secRecs) secRecs.classList.remove('hidden');
         if (btnRecs) { btnRecs.style.background = 'var(--uach-blue)'; btnRecs.style.color = '#fff'; btnRecs.style.borderColor = 'var(--uach-blue)'; }
         cargarRecomendacionesPendientesAdmin();
+      } else if (tab === 'colegas') {
+        if (secCol) secCol.classList.remove('hidden');
+        if (btnCol) { btnCol.style.background = 'var(--uach-blue)'; btnCol.style.color = '#fff'; btnCol.style.borderColor = 'var(--uach-blue)'; }
+        loadColegasGrupo();
       }
     }
 
@@ -3759,6 +3848,298 @@
         window.loadDespachoFichas = loadDespachoFichas;
     window.filtrarTablaDespacho = filtrarTablaDespacho;
     window.enviarWhatsAppFicha = enviarWhatsAppFicha;
+
+    // === PLANILLA DE DIFUSIÓN Y ENCUESTA A COLEGAS (GRUPO WHATSAPP UACH) ===
+    let COLEGAS_LISTA = [];
+
+    async function loadColegasGrupo() {
+      const tbody = document.getElementById('colegas-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando los 285 colegas del grupo...</td></tr>';
+      try {
+        const r = await apiFetch('/api/admin-colegas');
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        COLEGAS_LISTA = out.colegas || [];
+        actualizarContadoresColegas();
+        filtrarTablaColegas();
+      } catch (e) {
+        console.error(e);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: #ef4444;">Error cargando colegas: ' + esc(e.message) + '</td></tr>';
+      }
+    }
+
+    function actualizarContadoresColegas() {
+      const tot = COLEGAS_LISTA.length;
+      const env = COLEGAS_LISTA.filter(c => Number(c.mensaje_enviado) === 1).length;
+      const pend = tot - env;
+      const resp = COLEGAS_LISTA.filter(c => (c.conocia_app && c.conocia_app.trim() !== '') || (c.opinion_mejora && c.opinion_mejora.trim() !== '')).length;
+      const siCon = COLEGAS_LISTA.filter(c => c.conocia_app === 'Si').length;
+      const noCon = COLEGAS_LISTA.filter(c => c.conocia_app === 'No').length;
+
+      const elTab = document.getElementById('cnt-colegas-total');
+      const elTot = document.getElementById('stat-col-total');
+      const elPend = document.getElementById('stat-col-pendientes');
+      const elEnv = document.getElementById('stat-col-enviados');
+      const elResp = document.getElementById('stat-col-respondidos');
+      const elDet = document.getElementById('stat-col-detalle-resp');
+
+      if (elTab) elTab.textContent = tot;
+      if (elTot) elTot.textContent = tot;
+      if (elPend) elPend.textContent = pend;
+      if (elEnv) elEnv.textContent = env;
+      if (elResp) elResp.textContent = resp;
+      if (elDet) elDet.textContent = `Sí la conocían: ${siCon} · No: ${noCon}`;
+    }
+
+    function filtrarTablaColegas() {
+      const tbody = document.getElementById('colegas-tbody');
+      if (!tbody) return;
+
+      const q = (document.getElementById('col-search')?.value || '').toLowerCase().trim();
+      const fEnvio = document.getElementById('col-filtro-envio')?.value || 'todos';
+      const fResp = document.getElementById('col-filtro-resp')?.value || 'todos';
+
+      const filtrados = COLEGAS_LISTA.filter(c => {
+        const enviado = Number(c.mensaje_enviado) === 1;
+        const tieneResp = Boolean((c.conocia_app && c.conocia_app.trim()) || (c.opinion_mejora && c.opinion_mejora.trim()));
+        if (fEnvio === 'pendientes' && enviado) return false;
+        if (fEnvio === 'enviados' && !enviado) return false;
+        if (fResp === 'respondidos' && !tieneResp) return false;
+        if (fResp === 'sin_respuesta' && tieneResp) return false;
+        if (fResp === 'conocia_si' && c.conocia_app !== 'Si') return false;
+        if (fResp === 'conocia_no' && c.conocia_app !== 'No') return false;
+        if (q) {
+          const mNom = (c.nombre_real || '').toLowerCase().includes(q);
+          const mAli = (c.alias_whatsapp || '').toLowerCase().includes(q);
+          const mFon = (c.fono || '').toLowerCase().includes(q);
+          const mOpi = (c.opinion_mejora || '').toLowerCase().includes(q);
+          if (!mNom && !mAli && !mFon && !mOpi) return false;
+        }
+        return true;
+      });
+
+      if (filtrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="padding: 24px; text-align: center; color: var(--text-muted);">No hay colegas que coincidan con esos filtros.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtrados.map((c, idx) => {
+        const yaEnviado = Number(c.mensaje_enviado) === 1;
+        const badgeEnvio = yaEnviado
+          ? `<div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+               <span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:11.5px; font-weight:700; background:#eaf7ef; color:#1a9e5c;">🟢 Enviado ${c.fecha_envio ? '(' + esc(c.fecha_envio.slice(5)) + ')' : ''}</span>
+               <button type="button" onclick="toggleEnviadoColega(${c.id}, 0)" style="background:none; border:none; color:#64748b; font-size:11px; text-decoration:underline; cursor:pointer; padding:0;">Desmarcar</button>
+             </div>`
+          : `<span style="display:inline-block; padding:3px 8px; border-radius:10px; font-size:11.5px; font-weight:600; background:#fef3c7; color:#b45309;">🟡 Pendiente</span>`;
+
+        const btnSiStyle = c.conocia_app === 'Si'
+          ? 'background:#16a34a; color:#fff; border-color:#16a34a; font-weight:700;'
+          : 'background:#fff; color:var(--text); border-color:var(--border);';
+        const btnNoStyle = c.conocia_app === 'No'
+          ? 'background:#0284c7; color:#fff; border-color:#0284c7; font-weight:700;'
+          : 'background:#fff; color:var(--text); border-color:var(--border);';
+
+        return `
+          <tr style="border-bottom: 1px solid var(--border); background: ${yaEnviado ? '#f8fafc' : '#fff'};">
+            <td style="padding: 10px; color: var(--text-muted); font-weight: 600;">${c.id}</td>
+            <td style="padding: 10px;">
+              <div style="font-weight: 700; color: var(--uach-blue); font-family: monospace; font-size: 13.5px;">${esc(c.fono)}</div>
+              <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">${c.alias_whatsapp ? '💬 ' + esc(c.alias_whatsapp) : '<span style="opacity:0.6;">Sin alias visible</span>'}</div>
+            </td>
+            <td style="padding: 10px;">
+              <input type="text" id="col-nom-${c.id}" value="${esc(c.nombre_real || '')}" placeholder="Anote nombre real..."
+                onblur="guardarFilaColega(${c.id})"
+                onkeydown="if(event.key==='Enter'){this.blur();}"
+                style="width: 100%; padding: 6px 8px; font-size: 12.5px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit;">
+            </td>
+            <td style="padding: 10px; text-align: center;">
+              <div style="display: inline-flex; gap: 4px;">
+                <button type="button" onclick="marcarConociaAppColega(${c.id}, '${c.conocia_app === 'Si' ? '' : 'Si'}')"
+                  style="padding: 5px 10px; font-size: 12px; border: 1px solid; border-radius: 6px; cursor: pointer; font-family: inherit; ${btnSiStyle}">Sí</button>
+                <button type="button" onclick="marcarConociaAppColega(${c.id}, '${c.conocia_app === 'No' ? '' : 'No'}')"
+                  style="padding: 5px 10px; font-size: 12px; border: 1px solid; border-radius: 6px; cursor: pointer; font-family: inherit; ${btnNoStyle}">No</button>
+              </div>
+            </td>
+            <td style="padding: 10px;">
+              <div style="display: flex; gap: 5px; align-items: center;">
+                <input type="text" id="col-opi-${c.id}" value="${esc(c.opinion_mejora || '')}" placeholder="Opinión o mejora sugerida..."
+                  onblur="guardarFilaColega(${c.id})"
+                  onkeydown="if(event.key==='Enter'){this.blur();}"
+                  style="width: 100%; padding: 6px 8px; font-size: 12.5px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit;">
+                <span id="col-saved-${c.id}" style="font-size: 12px; color: #16a34a; display: none; font-weight: 700;">✓</span>
+              </div>
+            </td>
+            <td style="padding: 10px; text-align: center;">${badgeEnvio}</td>
+            <td style="padding: 10px; text-align: center;">
+              <button type="button" onclick="enviarWhatsAppColega(${c.id})"
+                style="padding: 8px 12px; background: ${yaEnviado ? '#e2e8f0' : '#16a34a'}; color: ${yaEnviado ? '#334155' : '#fff'}; border: none; border-radius: 6px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;">
+                📲 ${yaEnviado ? 'Reenviar WA' : 'Enviar WhatsApp'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function enviarWhatsAppColega(id) {
+      const c = COLEGAS_LISTA.find(x => Number(x.id) === Number(id));
+      if (!c) return;
+      const digits = String(c.fono || '').replace(/\D/g, '');
+      if (!digits) {
+        alert('Este registro no tiene un número válido.');
+        return;
+      }
+
+      const LineasMsg = [
+        "¡Hola colega! ¿Cómo estás? Te saluda *Juan Carlos García*, del grupo de WhatsApp de titulados de Construcción UACh. Te escribo por interno porque sé que con el movimiento del grupo muchas veces se pasan los mensajes.",
+        "",
+        "Por si aún no la conocías —o para que tengas el acceso siempre a mano—, te quería compartir *Eje Austral*, la plataforma de datos técnicos que armamos para nuestra red de colegas (subcontratos, maestros, proveedores y profesionales recomendados):",
+        "",
+        "🔗 *Link:* https://eje-austral.jems.cl",
+        "🔑 *Clave de acceso:* miraflores",
+        "",
+        "💡 *Dato práctico:* Adentro de la app, arriba a la derecha, hay un botón que dice *"🖥️ Instalar en escritorio / 📲 Instalar App"*. Si lo presionas, te deja el acceso directo (*EA*) en el escritorio de tu PC o en la pantalla de tu celular para entrar en un clic cuando necesites un dato.",
+        "",
+        "Aprovecho de hacerte una consulta muy cortita para ir mejorándola:",
+        "1️⃣ ¿Ya habías alcanzado a conocer o entrar a la app?",
+        "2️⃣ ¿Qué te parece hasta ahora o qué mejora le agregarías?",
+        "",
+        "¡Un abrazo!"
+      ];
+      const msg = LineasMsg.join('\n');
+      const waUrl = `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
+      window.open(waUrl, '_blank');
+
+      try {
+        const r = await apiFetch('/api/admin-colegas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'marcar_enviado', id: c.id, enviado: 1 })
+        });
+        const out = await r.json();
+        if (r.ok && out.ok) {
+          c.mensaje_enviado = 1;
+          c.fecha_envio = out.fecha_envio || new Date().toISOString().slice(0, 10);
+          actualizarContadoresColegas();
+          filtrarTablaColegas();
+        }
+      } catch (e) {
+        console.error('Error marcando enviado:', e);
+      }
+    }
+
+    async function toggleEnviadoColega(id, nuevoEstado) {
+      const c = COLEGAS_LISTA.find(x => Number(x.id) === Number(id));
+      if (!c) return;
+      try {
+        const r = await apiFetch('/api/admin-colegas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'marcar_enviado', id: c.id, enviado: nuevoEstado })
+        });
+        const out = await r.json();
+        if (r.ok && out.ok) {
+          c.mensaje_enviado = nuevoEstado;
+          c.fecha_envio = out.fecha_envio || '';
+          actualizarContadoresColegas();
+          filtrarTablaColegas();
+        }
+      } catch (e) {
+        alert('Error actualizando estado de envío: ' + e.message);
+      }
+    }
+
+    async function marcarConociaAppColega(id, valor) {
+      const c = COLEGAS_LISTA.find(x => Number(x.id) === Number(id));
+      if (!c) return;
+      c.conocia_app = valor;
+      await guardarFilaColega(id, true);
+      actualizarContadoresColegas();
+      filtrarTablaColegas();
+    }
+
+    async function guardarFilaColega(id, desdeBoton = false) {
+      const c = COLEGAS_LISTA.find(x => Number(x.id) === Number(id));
+      if (!c) return;
+      const inpNom = document.getElementById(`col-nom-${c.id}`);
+      const inpOpi = document.getElementById(`col-opi-${c.id}`);
+      const nuevoNom = inpNom ? inpNom.value.trim() : (c.nombre_real || '');
+      const nuevaOpi = inpOpi ? inpOpi.value.trim() : (c.opinion_mejora || '');
+
+      if (!desdeBoton && nuevoNom === (c.nombre_real || '') && nuevaOpi === (c.opinion_mejora || '')) {
+        return;
+      }
+
+      c.nombre_real = nuevoNom;
+      c.opinion_mejora = nuevaOpi;
+
+      try {
+        const r = await apiFetch('/api/admin-colegas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accion: 'guardar_encuesta',
+            id: c.id,
+            nombre_real: c.nombre_real,
+            conocia_app: c.conocia_app || '',
+            opinion_mejora: c.opinion_mejora
+          })
+        });
+        const out = await r.json();
+        if (r.ok && out.ok) {
+          c.fecha_respuesta = out.fecha_respuesta || '';
+          actualizarContadoresColegas();
+          const check = document.getElementById(`col-saved-${c.id}`);
+          if (check) {
+            check.style.display = 'inline';
+            setTimeout(() => { check.style.display = 'none'; }, 1800);
+          }
+        }
+      } catch (e) {
+        console.error('Error guardando encuesta colega:', e);
+      }
+    }
+
+    function exportarColegasCSV() {
+      if (!COLEGAS_LISTA || COLEGAS_LISTA.length === 0) {
+        alert('Primero carga la lista de colegas.');
+        return;
+      }
+      const filas = [
+        ['ID', 'Telefono', 'Alias WhatsApp', 'Nombre Real', 'Conocia la App', 'Opinion o Mejora', 'Estado Envio', 'Fecha Envio', 'Fecha Respuesta'].join(';')
+      ];
+      COLEGAS_LISTA.forEach(c => {
+        const limpiar = s => String(s || '').replace(/;/g, ',').replace(/\r?\n/g, ' ').trim();
+        filas.push([
+          c.id,
+          limpiar(c.fono),
+          limpiar(c.alias_whatsapp),
+          limpiar(c.nombre_real),
+          limpiar(c.conocia_app),
+          limpiar(c.opinion_mejora),
+          Number(c.mensaje_enviado) === 1 ? 'Enviado' : 'Pendiente',
+          limpiar(c.fecha_envio),
+          limpiar(c.fecha_respuesta)
+        ].join(';'));
+      });
+      const blob = new Blob(['\uFEFF' + filas.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Encuesta_Colegas_UACh_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.loadColegasGrupo = loadColegasGrupo;
+    window.filtrarTablaColegas = filtrarTablaColegas;
+    window.enviarWhatsAppColega = enviarWhatsAppColega;
+    window.toggleEnviadoColega = toggleEnviadoColega;
+    window.marcarConociaAppColega = marcarConociaAppColega;
+    window.guardarFilaColega = guardarFilaColega;
+    window.exportarColegasCSV = exportarColegasCSV;
 
 </script>
 </body>
