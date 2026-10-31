@@ -1194,13 +1194,13 @@
 
       <div style="margin: 16px 0; padding: 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;">
         <div style="font-weight: 700; font-size: 14px; color: var(--uach-blue); margin-bottom: 6px;">
-          Opción 1: Descargar archivo de acceso directo (.url) para Windows
+          Opción 1: Crear icono EAA en el Escritorio (ventana de aplicación)
         </div>
         <div style="font-size: 13px; color: var(--text-muted); line-height: 1.45; margin-bottom: 12px;">
-          Descarga un archivo listo para usar en tu computador. Al descargarlo, arrástralo a tu Escritorio y tendrás un icono llamado <strong>EAA - Eje Austral Admin</strong> que abre la plataforma directo en modo administrador.
+          Descarga un pequeño instalador y ábrelo con doble clic (si Windows avisa, elige <strong>"Más información" ➔ "Ejecutar de todas formas"</strong>). Aparecerá en tu Escritorio el icono <strong>EAA</strong>, que abre Eje Austral en su propia ventana, sin barra de direcciones, directo en modo administrador.
         </div>
         <button type="button" onclick="descargarAccesoDirectoEAA()" style="width: 100%; background: var(--uach-blue); color: #fff; border: none; padding: 11px 16px; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit;">
-          📥 Descargar Acceso Directo EAA (.url)
+          📥 Descargar instalador del icono EAA
         </button>
       </div>
 
@@ -2731,12 +2731,20 @@
     }
 
     function descargarAccesoDirectoEAA() {
-      const contenido = "[InternetShortcut]\r\nURL=https://eje-austral.jems.cl/?admin=1\r\nIconIndex=0\r\n";
+      // Descarga un pequeño instalador (.cmd) que crea en el Escritorio el acceso "EAA"
+      // abriendo Chrome/Edge en modo ventana de aplicación (sin barra de direcciones) directo en modo administrador.
+      const contenido = [
+        '@echo off',
+        'echo Creando acceso directo EAA en el Escritorio...',
+        String.raw`powershell -NoProfile -ExecutionPolicy Bypass -Command "$c=@('%ProgramFiles%\Google\Chrome\Application\chrome.exe','%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe','%LocalAppData%\Google\Chrome\Application\chrome.exe','%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe') | Where-Object { Test-Path $_ } | Select-Object -First 1; if (-not $c) { Write-Host 'No se encontro Chrome ni Edge.'; exit 1 }; $d=[Environment]::GetFolderPath('Desktop'); $s=(New-Object -ComObject WScript.Shell).CreateShortcut(\"$d\EAA.lnk\"); $s.TargetPath=$c; $s.Arguments='--app=https://eje-austral.jems.cl/?admin=1'; $s.IconLocation=\"$c,0\"; $s.Description='Eje Austral - Modo Administrador (EAA)'; $s.Save()"`,
+        'echo Listo: ya tienes el icono EAA en tu Escritorio.',
+        'pause'
+      ].join('\r\n') + '\r\n';
       const blob = new Blob([contenido], { type: 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'EAA - Eje Austral Admin.url';
+      a.download = 'Crear acceso EAA.cmd';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -2949,6 +2957,17 @@
       }
     }
     actualizarTextoBotonInstalar();
+
+    // Si ya se está ejecutando como app instalada (ventana sin barra de direcciones), ocultar el botón de instalar
+    function ocultarBotonInstalarSiEsApp() {
+      const esApp = window.matchMedia('(display-mode: standalone)').matches ||
+                    window.matchMedia('(display-mode: window-controls-overlay)').matches ||
+                    window.navigator.standalone === true;
+      const btn = document.getElementById('btn-instalar-app');
+      if (btn && esApp) btn.style.display = 'none';
+    }
+    ocultarBotonInstalarSiEsApp();
+    window.addEventListener('appinstalled', ocultarBotonInstalarSiEsApp);
 
     window.solicitarInstalacionPWA = solicitarInstalacionPWA;
     window.openInstalarModal = openInstalarModal;
