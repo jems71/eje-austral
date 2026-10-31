@@ -1510,9 +1510,13 @@ export async function onRequestGet({ request, env }) {
     const res = await env.DB.prepare(`
       SELECT id, fono, nombre_real, alias_whatsapp, conocia_app, opinion_mejora,
              COALESCE(mensaje_enviado, 0) AS mensaje_enviado,
-             fecha_envio, fecha_respuesta
+             fecha_envio, fecha_respuesta,
+             COALESCE(visitas, 0) AS visitas,
+             COALESCE(primer_ingreso, '') AS primer_ingreso,
+             COALESCE(ultimo_ingreso, '') AS ultimo_ingreso,
+             COALESCE(uso_app_instalada, 0) AS uso_app_instalada
       FROM colegas_grupo
-      ORDER BY mensaje_enviado ASC, id ASC
+      ORDER BY CASE WHEN id = 1 THEN 0 ELSE 1 END ASC, mensaje_enviado ASC, id ASC
     `).all();
 
     return Response.json({
