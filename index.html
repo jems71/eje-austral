@@ -1254,6 +1254,9 @@
       <input type="text" id="admin-edit-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, Temuco, Puerto Montt, Todo Chile">
       <div class="help-text">Si atiende varias ciudades o zonas, podés escribir p. ej. "Valdivia, Osorno" o "Todo Chile".</div>
 
+      <label style="color: var(--uach-blue); font-weight: 700;">🤝 Recomendado por / Quién dio el dato en WhatsApp</label>
+      <input type="text" id="admin-edit-recomendado-por" placeholder="Ej: ~Rodrigo (+56 9 3297 7548)">
+
       <div id="wrap-admin-edit-sitio-web">
         <label>Página Web / Catálogo Online</label>
         <input type="text" id="admin-edit-sitio-web" placeholder="https://www.ejemplo.cl (opcional)">
@@ -2224,6 +2227,7 @@
           ${c.fono ? `<div><strong>Fono:</strong> ${esc(c.fono)}</div>` : ''}
           ${c.email ? `<div><strong>Email:</strong> ${esc(c.email)}</div>` : ''}
           ${(c.sitio_web && tipoAdmiteWeb(c.tipo)) ? `<div><strong>Sitio Web / Catálogo:</strong> <a href="${formatearUrl(c.sitio_web)}" target="_blank" rel="noopener noreferrer" style="color:var(--uach-blue); font-weight:600; text-decoration:underline;">${esc(limpiarUrlDisplay(c.sitio_web))} ↗</a></div>` : ''}
+          ${(c.recomendadoPor || c.recomendado_por) ? `<div><strong>Aportado por (en WhatsApp):</strong> <span style="color:var(--uach-blue); font-weight:600;">${esc(c.recomendadoPor || c.recomendado_por)}</span></div>` : ''}
           ${c.ultimoProyecto ? `<div><strong>Último proyecto:</strong> ${esc(c.ultimoProyecto)}</div>` : ''}
           ${c.id ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">ID: ${esc(c.id.toUpperCase())}</div>` : ''}
         </div>
@@ -2778,6 +2782,7 @@
       document.getElementById('admin-edit-fono').value = c.fono || '';
       document.getElementById('admin-edit-whatsapp').value = c.whatsapp || c.fono || '';
       document.getElementById('admin-edit-sitio-web').value = c.sitio_web || '';
+      document.getElementById('admin-edit-recomendado-por').value = c.recomendadoPor || c.recomendado_por || '';
       document.getElementById('admin-edit-ultimo-proyecto').value = c.ultimoProyecto || c.ultimo_proyecto || '';
       actualizarCamposTipoAdminEdit();
 
@@ -2806,6 +2811,7 @@
       const fono = document.getElementById('admin-edit-fono').value.trim();
       const whatsapp = document.getElementById('admin-edit-whatsapp').value.trim();
       const sitioWeb = document.getElementById('admin-edit-sitio-web').value.trim();
+      const recomendadoPor = document.getElementById('admin-edit-recomendado-por').value.trim();
       const ultimoProyecto = document.getElementById('admin-edit-ultimo-proyecto').value.trim();
 
       if (!id || !nombre) {
@@ -2831,6 +2837,7 @@
             fono,
             whatsapp,
             sitio_web: sitioWeb,
+            recomendado_por: recomendadoPor,
             ultimoProyecto
           })
         });
@@ -2852,6 +2859,8 @@
             fono,
             whatsapp,
             sitio_web: sitioWeb,
+            recomendadoPor,
+            recomendado_por: recomendadoPor,
             ultimoProyecto,
             ultimo_proyecto: ultimoProyecto
           };
