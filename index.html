@@ -745,7 +745,7 @@
     <div class="login-box">
       <div class="login-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
       <h2>Eje Austral</h2>
-      <div class="subtitle">DIR-UACH/CC · v6.0 · EAA</div>
+      <div class="subtitle">DIR-UACH/CC · v6.0</div>
       <p class="lead">
         Acceso restringido al grupo de titulados de<br>
         <strong>Construcción Civil · Ing. en Construcción · UACh</strong>
@@ -760,8 +760,8 @@
       <button class="login-btn" id="login-btn" onclick="doLogin()">Ingresar</button>
       <div id="login-error" class="login-error hidden"></div>
       <div class="login-footer">
-        Si no tenés la contraseña, pedila al administrador del grupo <strong>WhatsApp UACh</strong>.<br>
-        Si vos no perteneces al grupo, este sitio no es para vos.
+        Si no tienes la contraseña, pídela al administrador del grupo <strong>WhatsApp UACh</strong>.<br>
+        Si no perteneces al grupo, este sitio es de uso exclusivo para integrantes.
       </div>
     </div>
   </div>
@@ -1342,7 +1342,7 @@
       <label>Ciudades de cobertura</label>
       <input type="text" id="f-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, La Unión">
       <datalist id="lista-comunas"></datalist>
-      <div class="help-text">Si trabaja en varias ciudades, separá con comas. Empezá a tipear para ver sugerencias.</div>
+      <div class="help-text">Si trabaja en varias ciudades, sepáralas con comas. Empieza a escribir para ver sugerencias.</div>
       <div id="wrap-f-sitio-web" style="display: none;">
         <label>Página Web / Catálogo Online (opcional)</label>
         <input type="text" id="f-sitio-web" placeholder="https://www.ejemplo.cl">
@@ -1411,7 +1411,7 @@
 
       <label style="color: var(--uach-blue); font-weight: 700;">📍 Ciudad / Zona de Cobertura</label>
       <input type="text" id="admin-edit-ciudad" list="lista-comunas" placeholder="Ej: Valdivia, Osorno, Temuco, Puerto Montt, Todo Chile">
-      <div class="help-text">Si atiende varias ciudades o zonas, podés escribir p. ej. "Valdivia, Osorno" o "Todo Chile".</div>
+      <div class="help-text">Si atiende varias ciudades o zonas, puedes escribir p. ej. "Valdivia, Osorno" o "Todo Chile".</div>
 
       <label style="color: var(--uach-blue); font-weight: 700;">🤝 Recomendado por / Quién dio el dato en WhatsApp</label>
       <input type="text" id="admin-edit-recomendado-por" placeholder="Ej: ~Rodrigo (+56 9 3297 7548)">
@@ -2279,7 +2279,7 @@
         bannerHtml = `<div class="dup-banner exact">
           <span class="dup-icon">💡</span>
           <strong>Ya hay un contacto con ese nombre exacto.</strong><br>
-          Si trabajaste con ellos, mejor sumá tu recomendación al existente — así el grupo ve la confianza acumulada.
+          Si trabajaste con ellos, mejor suma tu recomendación al existente — así el grupo ve la confianza acumulada.
         </div>`;
         listItems = dups.exact.map(c => ({ c, action: 'recommend' }));
       } else if (hasPhone) {
@@ -2293,7 +2293,7 @@
         title.textContent = '🔍 Contactos parecidos';
         bannerHtml = `<div class="dup-banner">
           <span class="dup-icon">📝</span>
-          Encontré contactos con nombres similares. Revisá si es el mismo antes de agregar:
+          Encontré contactos con nombres similares. Revisa si es el mismo antes de agregar:
         </div>`;
         listItems = dups.similar.map(c => ({ c, action: 'view' }));
       }
@@ -2384,7 +2384,7 @@
       const nombre = document.getElementById('f-nombre').value.trim();
       const recom = document.getElementById('f-recom').value.trim();
       if (!nombre) { alert('El nombre del contacto es obligatorio'); return; }
-      if (!recom) { alert('Por favor escribí TU nombre (quién recomienda). Es obligatorio para que el grupo sepa quién aportó el contacto.'); document.getElementById('f-recom').focus(); return; }
+      if (!recom) { alert('Por favor escribe TU nombre (quién recomienda). Es obligatorio para que el grupo sepa quién aportó el contacto.'); document.getElementById('f-recom').focus(); return; }
       const nuevo = {
         tipo: document.getElementById('f-tipo').value,
         rubro: document.getElementById('f-rubro').value.trim(),
@@ -2466,7 +2466,7 @@
           </div>
         </div>
 
-        <button class="recomendar-btn" onclick="openRecModal('${esc(c.id)}', '${esc(c.nombre).replace(/'/g,'')}')">+ Sumá tu recomendación</button>
+        <button class="recomendar-btn" onclick="openRecModal('${esc(c.id)}', '${esc(c.nombre).replace(/'/g,'')}')">+ Suma tu recomendación</button>
 
         <div class="recs-list">
           <h4>Qué dicen los colegas</h4>
@@ -2626,7 +2626,7 @@
           throw new Error('Sesión de administrador inválida');
         } else {
           clearToken();
-          showLoginScreen('La sesión expiró o no es válida. Volvé a ingresar.');
+          showLoginScreen('La sesión expiró o no es válida. Vuelve a ingresar.');
           throw new Error('Sesión inválida');
         }
       }
@@ -2944,7 +2944,7 @@
       const btn = document.getElementById('login-btn');
       errBox.classList.add('hidden');
       if (!pwd) {
-        errBox.textContent = 'Escribí la contraseña.';
+        errBox.textContent = 'Ingresa la contraseña.';
         errBox.classList.remove('hidden');
         return;
       }
