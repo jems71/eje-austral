@@ -49,9 +49,12 @@ CREATE TABLE IF NOT EXISTS recomendaciones (
   id TEXT PRIMARY KEY,
   contacto_id TEXT NOT NULL,
   autor TEXT,
+  cargo_autor TEXT,
+  fono_autor TEXT,
   comentario TEXT,
   proyecto TEXT,
   fecha TEXT,
+  estado TEXT DEFAULT 'aprobada',
   created_at TEXT DEFAULT (datetime('now')),
   FOREIGN KEY (contacto_id) REFERENCES contactos(id) ON DELETE CASCADE
 );

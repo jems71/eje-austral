@@ -7,28 +7,49 @@ export async function onRequestPost({ request, env }) {
 
     const body = await request.json().catch(() => ({}));
     if (!body.contactoId) return Response.json({ error: 'Falta contactoId' }, { status: 400 });
-    if (!body.autor || !body.autor.trim()) return Response.json({ error: 'Tu nombre es obligatorio' }, { status: 400 });
-    if (!body.comentario || !body.comentario.trim()) return Response.json({ error: 'El comentario es obligatorio' }, { status: 400 });
+    if (!body.autor || !body.autor.trim()) return Response.json({ error: 'Tu nombre y apellido son obligatorios' }, { status: 400 });
+    if (!body.proyecto || !body.proyecto.trim()) return Response.json({ error: 'La obra o faena ejecutada es obligatoria' }, { status: 400 });
 
     const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
     const now = new Date();
     const fecha = `${meses[now.getMonth()]} ${now.getFullYear()}`;
     const id = 'rec-' + Date.now().toString().slice(-8);
 
+    const autor = String(body.autor).trim();
+    const cargoAutor = String(body.cargoAutor || body.cargo_autor || '').trim();
+    const fonoAutor = String(body.fonoAutor || body.fono_autor || '').trim();
+    const proyecto = String(body.proyecto).trim();
+    const comentario = String(body.comentario || '').trim();
+
+    // Nueva recomendación entra con estado 'pendiente' para moderación del admin
     await env.DB.prepare(`
-      INSERT INTO recomendaciones (id, contacto_id, autor, comentario, fecha)
-      VALUES (?, ?, ?, ?, ?)
-    `).bind(id, String(body.contactoId), String(body.autor).trim(), String(body.comentario).trim(), fecha).run();
+      INSERT INTO recomendaciones (id, contacto_id, autor, cargo_autor, fono_autor, proyecto, comentario, fecha, estado, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pendiente', CURRENT_TIMESTAMP)
+    `).bind(
+      id,
+      String(body.contactoId),
+      autor,
+      cargoAutor,
+      fonoAutor,
+      proyecto,
+      comentario,
+      fecha
+    ).run();
 
     return Response.json({
       ok: true,
+      pendiente: true,
+      mensaje: 'Recomendación enviada correctamente. Será visible una vez verificada por la red.',
       record: {
         id,
-        _id: id,
         contacto_id: String(body.contactoId),
-        autor: String(body.autor).trim(),
-        comentario: String(body.comentario).trim(),
-        fecha
+        autor,
+        cargo_autor: cargoAutor,
+        fono_autor: fonoAutor,
+        proyecto,
+        comentario,
+        fecha,
+        estado: 'pendiente'
       }
     }, { status: 200 });
 

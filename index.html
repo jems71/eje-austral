@@ -914,6 +914,7 @@
     <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; align-items: center;">
       <button id="subtab-btn-stats" onclick="cambiarSubTabAdmin('stats')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; background: var(--uach-blue); color: #fff; font-family: inherit; transition: background .15s;">📊 Rendimiento y Clics</button>
       <button id="subtab-btn-despacho" onclick="cambiarSubTabAdmin('despacho')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: background .15s;">📲 Despacho WhatsApp (<span id="cnt-despacho-total">54</span>)</button>
+      <button id="subtab-btn-recs" onclick="cambiarSubTabAdmin('recs')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: all .15s;">🔔 Por Aprobar (<span id="cnt-recs-pendientes">0</span>)</button>
       <button id="btn-instalar-admin-panel" class="hidden" onclick="abrirModalInstalarEAA()" style="margin-left: auto; padding: 9px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; border: 1.5px solid #fde68a; background: #fffbeb; color: #92400e; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         🖥️ Crear acceso directo EAA
       </button>
@@ -1058,6 +1059,21 @@
         </div>
       </div>
     </div> <!-- /admin-sec-despacho -->
+
+    <!-- SUB-CONTENIDO 3: RECOMENDACIONES POR APROBAR -->
+    <div id="admin-sec-recs" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div>
+          <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 6px 0; font-size: 24px;">🔔 Moderación de Recomendaciones</h2>
+          <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Revisa y valida las calificaciones laborales emitidas por colegas antes de que sumen al contador público del trabajador.</p>
+        </div>
+        <button class="btn-primary" onclick="cargarRecomendacionesPendientesAdmin()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar</button>
+      </div>
+
+      <div id="recs-pendientes-list" style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando recomendaciones pendientes...</div>
+      </div>
+    </div> <!-- /admin-sec-recs -->
   </section>
 
   <!-- === FOOTER === -->
@@ -1348,25 +1364,61 @@
   </div>
 
   <!-- === MODAL: Recomendar === -->
-  <div id="modal-rec" class="modal-bg hidden">
-    <div class="modal">
+  <div id="modal-rec" class="modal-bg hidden" onclick="if(event.target===this) closeRecModal()">
+    <div class="modal" style="max-width: 490px;">
       <button class="modal-close" onclick="closeRecModal()">×</button>
-      <h3 class="serif" id="rec-title">Sumá tu recomendación</h3>
-      <p class="sub" id="rec-subtitle"></p>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span style="font-size: 22px;">⭐</span>
+        <h3 class="serif" id="rec-title" style="margin: 0; color: var(--uach-blue); font-size: 20px;">Recomendar contacto</h3>
+      </div>
+      <p class="sub" style="margin-bottom: 14px;">Tu respaldo técnico le permite a este contacto conseguir nuevos trabajos en la red.</p>
 
-      <label>Tu nombre *</label>
-      <input type="text" id="r-autor" placeholder="Tu nombre completo" required>
+      <!-- Tarjeta resumen del trabajador -->
+      <div id="rec-worker-card" style="padding: 10px 14px; background: #f0f7ff; border: 1.5px solid #bfdbfe; border-radius: 10px; margin-bottom: 16px;">
+        <div style="font-weight: 700; font-size: 14.5px; color: var(--uach-blue);" id="rec-worker-nombre">—</div>
+        <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 2px;" id="rec-worker-rubro">—</div>
+      </div>
 
-      <label>Proyecto u obra (opcional)</label>
-      <input type="text" id="r-proyecto" placeholder="Ej: Vivienda en Niebla, 2025">
+      <label>Tu Nombre y Apellido *</label>
+      <input type="text" id="r-autor" placeholder="Ej: Cristián Soto M." required>
 
-      <label>Tu experiencia con este contacto *</label>
-      <textarea id="r-comentario" rows="5" placeholder="Contá cómo te fue. ¿Qué destacarías? ¿Algo que el grupo deba saber? Lo que escribas es lo que vamos a ver los demás cuando busquemos a este proveedor."></textarea>
-      <div class="help-text">Escribí con confianza, esto le sirve al resto del grupo para decidir si lo contratan.</div>
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px;">
+        <div>
+          <label>Tu Cargo / Rol en la obra *</label>
+          <select id="r-cargo" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13.5px; background: #fff;">
+            <option value="Jefe de Terreno">👷 Jefe de Terreno</option>
+            <option value="Administrador de Obra">📋 Administrador de Obra</option>
+            <option value="ITO / Inspector">🔍 ITO / Inspector</option>
+            <option value="Constructor Civil">🎓 Constructor Civil</option>
+            <option value="Ingeniero en Construcción">🏗️ Ing. Construcción</option>
+            <option value="Arquitecto">📐 Arquitecto</option>
+            <option value="Contratista General">💼 Contratista General</option>
+            <option value="Cliente Particular">🏠 Cliente Particular</option>
+          </select>
+        </div>
+        <div>
+          <label>Tu WhatsApp *</label>
+          <input type="tel" id="r-fono" placeholder="+56 9 ...">
+        </div>
+      </div>
+      <div class="help-text">Tu WhatsApp permite que otro colega te consulte si necesita más detalles sobre este contacto.</div>
 
-      <div class="modal-actions">
+      <label style="margin-top: 10px;">Trabajo ejecutado y Obra / Proyecto *</label>
+      <input type="text" id="r-proyecto" placeholder="Ej: Enfierradura de losas en Edificio Costanera, Valdivia" required>
+      <div class="help-text">Indica qué faena específica realizó y en qué obra o ciudad.</div>
+
+      <!-- Letra C simplificada: Casilla de recomendación -->
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 11px 13px; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; margin: 14px 0 10px;">
+        <input type="checkbox" id="r-recomienda-check" checked style="width: 18px; height: 18px; accent-color: var(--uach-blue); cursor: pointer;">
+        <span style="font-weight: 700; font-size: 13.5px; color: var(--text);">Sí, recomiendo su trabajo para obras y proyectos</span>
+      </label>
+
+      <label>Comentario u observaciones (opcional)</label>
+      <textarea id="r-comentario" rows="2" placeholder="Ej: Excelente rendimiento, responsable con los plazos y muy prolijo."></textarea>
+
+      <div class="modal-actions" style="margin-top: 18px;">
         <button class="btn-secondary" onclick="closeRecModal()">Cancelar</button>
-        <button class="btn-primary" id="btn-rec-submit" onclick="submitRecomendacion()">Publicar recomendación</button>
+        <button class="btn-primary" id="btn-rec-submit" onclick="submitRecomendacion()">⭐ Enviar Recomendación</button>
       </div>
     </div>
   </div>
@@ -2341,12 +2393,19 @@
                   <div class="rec-head">
                     <div class="who">
                       <div class="ini">${esc(iniciales(r.autor))}</div>
-                      <span>${esc(r.autor)}${r.isOriginal ? ' <span style="font-weight:400; color:var(--text-muted); font-size:11px;">· (lo subió al directorio)</span>' : ''}</span>
+                      <span>${esc(r.autor)}${r.cargo_autor ? ' <span style="font-weight:600; color:var(--uach-blue); font-size:12px;">(' + esc(r.cargo_autor) + ')</span>' : ''}${r.isOriginal ? ' <span style="font-weight:400; color:var(--text-muted); font-size:11px;">· (lo subió al directorio)</span>' : ''}</span>
                     </div>
                     <span class="when">${esc(r.fecha || '')}</span>
                   </div>
+                  ${r.proyecto ? `<div class="proyecto" style="font-weight:600; color:var(--uach-blue); margin: 4px 0 2px;">🔨 Obra / Faena: ${esc(r.proyecto)}</div>` : ''}
                   ${r.comentario ? `<div class="comment">"${esc(r.comentario)}"</div>` : ''}
-                  ${r.proyecto ? `<div class="proyecto">Obra: ${esc(r.proyecto)}</div>` : ''}
+                  ${(r.fono_autor && r.fono_autor.replace(/\D/g,'').length >= 8) ? `
+                    <div style="margin-top: 6px;">
+                      <a href="https://wa.me/${String(r.fono_autor).replace(/\D/g,'')}?text=${encodeURIComponent('Hola estimado/a ' + r.autor + ', vi en Eje Austral que recomendaste a ' + c.nombre + '. ¿Qué tal tu experiencia trabajando con ellos? Saludos.')}" target="_blank" onclick="event.stopPropagation();" style="display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:#166534; background:#dcfce7; border:1px solid #bbf7d0; padding:3px 9px; border-radius:12px; text-decoration:none;">
+                        💬 Preguntarle al colega por WhatsApp
+                      </a>
+                    </div>
+                  ` : ''}
                 </div>
               `).join('')
           }
@@ -2358,45 +2417,76 @@
     function closeDetailModal() { document.getElementById('modal-detail').classList.add('hidden'); }
 
     function openRecModal(contactoId, nombre) {
-      currentDetailContact = DATA.contactos.find(c => c.id === contactoId);
-      document.getElementById('rec-title').textContent = 'Sumá tu recomendación';
-      document.getElementById('rec-subtitle').textContent = nombre;
+      const c = DATA.contactos.find(x => x.id === contactoId);
+      currentDetailContact = c || { id: contactoId, nombre: nombre };
+
+      const elTitle = document.getElementById('rec-title');
+      if (elTitle) elTitle.textContent = 'Recomendar a ' + (c ? c.nombre : nombre);
+
+      const elCardNom = document.getElementById('rec-worker-nombre');
+      if (elCardNom) elCardNom.textContent = c ? c.nombre : nombre;
+
+      const elCardRubro = document.getElementById('rec-worker-rubro');
+      if (elCardRubro) {
+        const ciudad = (c && c.ciudad) ? ` · 📍 ${c.ciudad}` : '';
+        const fono = (c && (c.whatsapp || c.fono)) ? ` · 📞 ${c.whatsapp || c.fono}` : '';
+        elCardRubro.textContent = (c ? `${c.tipo || ''}: ${c.rubro || 'Construcción'}` : 'Servicios de construcción') + ciudad + fono;
+      }
+
       document.getElementById('r-autor').value = '';
+      document.getElementById('r-fono').value = '';
+      document.getElementById('r-cargo').value = 'Jefe de Terreno';
       document.getElementById('r-proyecto').value = '';
       document.getElementById('r-comentario').value = '';
+      const chk = document.getElementById('r-recomienda-check');
+      if (chk) chk.checked = true;
+
       document.getElementById('modal-rec').classList.remove('hidden');
     }
     function closeRecModal() { document.getElementById('modal-rec').classList.add('hidden'); }
 
     async function submitRecomendacion() {
       const autor = document.getElementById('r-autor').value.trim();
+      const cargoAutor = document.getElementById('r-cargo').value;
+      const fonoAutor = document.getElementById('r-fono').value.trim();
+      const proyecto = document.getElementById('r-proyecto').value.trim();
       const comentario = document.getElementById('r-comentario').value.trim();
-      if (!autor) { alert('Escribí tu nombre'); return; }
-      if (!comentario) { alert('Escribí algo sobre tu experiencia con este contacto'); return; }
+      const recomienda = document.getElementById('r-recomienda-check')?.checked;
+
+      if (!autor) { alert('Por favor escribe tu Nombre y Apellido.'); document.getElementById('r-autor').focus(); return; }
+      if (!fonoAutor) { alert('Por favor ingresa tu número de WhatsApp para que otros colegas puedan consultarte.'); document.getElementById('r-fono').focus(); return; }
+      if (!proyecto) { alert('Por favor indica qué faena ejecutó y en qué obra o ciudad (Ej: Enfierradura en Edificio Costanera).'); document.getElementById('r-proyecto').focus(); return; }
+      if (!recomienda) { alert('Debes marcar la casilla confirmando que recomiendas el trabajo del contacto.'); return; }
       if (!currentDetailContact) return;
 
       const btn = document.getElementById('btn-rec-submit');
-      btn.disabled = true; btn.textContent = 'Publicando...';
+      btn.disabled = true; btn.textContent = 'Enviando...';
 
       const data = {
         contactoId: currentDetailContact.id,
-        autor: autor,
-        comentario: comentario,
-        proyecto: document.getElementById('r-proyecto').value.trim()
+        autor,
+        cargoAutor,
+        fonoAutor,
+        proyecto,
+        comentario
       };
 
       try {
-        const r = await apiFetch('/api/recomendar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        const r = await apiFetch('/api/recomendar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+
         closeRecModal();
-        await loadData();
-        openDetailModal(currentDetailContact.id);
+        alert('⭐ ¡Muchas gracias colega! Tu recomendación fue recibida con éxito.\n\nPara proteger la seriedad y veracidad del directorio, quedará visible en la ficha pública una vez validada por la red.');
       } catch (e) {
         console.error(e);
-        alert('Error al publicar recomendación: ' + e.message);
+        alert('Error al enviar recomendación: ' + e.message);
       } finally {
-        btn.disabled = false; btn.textContent = 'Publicar recomendación';
+        btn.disabled = false; btn.textContent = '⭐ Enviar Recomendación';
       }
     }
 
@@ -2604,6 +2694,9 @@
       if (btnInstalarAdmin) btnInstalarAdmin.classList.toggle('hidden', !admin);
       const btnInstalarAdminPanel = document.getElementById('btn-instalar-admin-panel');
       if (btnInstalarAdminPanel) btnInstalarAdminPanel.classList.toggle('hidden', !admin);
+      if (admin) {
+        cargarRecomendacionesPendientesAdmin();
+      }
     }
 
     function abrirModalInstalarEAA() {
@@ -3299,21 +3392,30 @@
     function cambiarSubTabAdmin(tab) {
       const btnStats = document.getElementById('subtab-btn-stats');
       const btnDesp = document.getElementById('subtab-btn-despacho');
+      const btnRecs = document.getElementById('subtab-btn-recs');
       const secStats = document.getElementById('admin-sec-stats');
       const secDesp = document.getElementById('admin-sec-despacho');
+      const secRecs = document.getElementById('admin-sec-recs');
+
+      [btnStats, btnDesp, btnRecs].forEach(b => {
+        if (b) { b.style.background = 'var(--card)'; b.style.color = 'var(--text)'; b.style.borderColor = 'var(--border)'; }
+      });
+      [secStats, secDesp, secRecs].forEach(s => {
+        if (s) s.classList.add('hidden');
+      });
 
       if (tab === 'stats') {
         if (secStats) secStats.classList.remove('hidden');
-        if (secDesp) secDesp.classList.add('hidden');
         if (btnStats) { btnStats.style.background = 'var(--uach-blue)'; btnStats.style.color = '#fff'; btnStats.style.borderColor = 'var(--uach-blue)'; }
-        if (btnDesp) { btnDesp.style.background = 'var(--card)'; btnDesp.style.color = 'var(--text)'; btnDesp.style.borderColor = 'var(--border)'; }
         loadEstadisticas();
-      } else {
-        if (secStats) secStats.classList.add('hidden');
+      } else if (tab === 'despacho') {
         if (secDesp) secDesp.classList.remove('hidden');
         if (btnDesp) { btnDesp.style.background = 'var(--uach-blue)'; btnDesp.style.color = '#fff'; btnDesp.style.borderColor = 'var(--uach-blue)'; }
-        if (btnStats) { btnStats.style.background = 'var(--card)'; btnStats.style.color = 'var(--text)'; btnStats.style.borderColor = 'var(--border)'; }
         loadDespachoFichas();
+      } else if (tab === 'recs') {
+        if (secRecs) secRecs.classList.remove('hidden');
+        if (btnRecs) { btnRecs.style.background = 'var(--uach-blue)'; btnRecs.style.color = '#fff'; btnRecs.style.borderColor = 'var(--uach-blue)'; }
+        cargarRecomendacionesPendientesAdmin();
       }
     }
 
@@ -3483,7 +3585,136 @@
     }
 
     window.cambiarSubTabAdmin = cambiarSubTabAdmin;
-    window.loadDespachoFichas = loadDespachoFichas;
+
+    // === MODERACIÓN DE RECOMENDACIONES (ADMIN) ===
+    let RECS_PENDIENTES_ADMIN = [];
+
+    async function cargarRecomendacionesPendientesAdmin() {
+      const cont = document.getElementById('recs-pendientes-list');
+      if (cont) cont.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando recomendaciones pendientes...</div>';
+
+      try {
+        const r = await apiFetch('/api/admin-recomendaciones');
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        RECS_PENDIENTES_ADMIN = out.pendientes || [];
+        actualizarContadorRecsPendientes();
+        renderRecomendacionesPendientesAdmin();
+      } catch(e) {
+        if (cont) cont.innerHTML = `<div style="padding: 20px; color: #ef4444; background: #fef2f2; border-radius: 8px;">Error al cargar recomendaciones: ${esc(e.message)}</div>`;
+      }
+    }
+
+    function actualizarContadorRecsPendientes() {
+      const cnt = document.getElementById('cnt-recs-pendientes');
+      const btn = document.getElementById('subtab-btn-recs');
+      const num = RECS_PENDIENTES_ADMIN.length;
+      if (cnt) cnt.textContent = num;
+      if (btn) {
+        if (num > 0) {
+          btn.style.borderColor = '#f59e0b';
+          btn.innerHTML = `🔔 Por Aprobar <span style="background: #f59e0b; color: #fff; padding: 2px 7px; border-radius: 10px; font-size: 11.5px; margin-left: 4px;">${num}</span>`;
+        } else {
+          btn.innerHTML = `🔔 Por Aprobar (<span id="cnt-recs-pendientes">0</span>)`;
+        }
+      }
+    }
+
+    function renderRecomendacionesPendientesAdmin() {
+      const cont = document.getElementById('recs-pendientes-list');
+      if (!cont) return;
+
+      if (RECS_PENDIENTES_ADMIN.length === 0) {
+        cont.innerHTML = `
+          <div style="padding: 40px 20px; text-align: center; background: #f8fafc; border: 1.5px dashed var(--border); border-radius: 12px; color: var(--text-muted);">
+            <div style="font-size: 32px; margin-bottom: 8px;">✅</div>
+            <div style="font-weight: 700; font-size: 16px; color: var(--text); margin-bottom: 4px;">No hay recomendaciones pendientes</div>
+            <div style="font-size: 13px;">Todas las calificaciones emitidas por colegas están al día y aprobadas.</div>
+          </div>
+        `;
+        return;
+      }
+
+      cont.innerHTML = RECS_PENDIENTES_ADMIN.map(r => {
+        const fonoLimpio = String(r.fono_autor || '').replace(/\D/g, '');
+        const waLink = fonoLimpio ? `https://wa.me/${fonoLimpio}?text=${encodeURIComponent(`Hola estimado/a ${r.autor}, te saluda Juan Carlos García de Eje Austral (Construcción Civil UACh). Te escribo para consultar brevemente sobre la recomendación que ingresaste para ${r.contacto_nombre || 'un trabajador'} en la obra "${r.proyecto || ''}". ¿Me confirmas tu recomendación? ¡Muchas gracias!`)}` : '';
+
+        return `
+          <div class="card" style="padding: 18px 20px; border-left: 4px solid #f59e0b; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+              <div>
+                <span style="font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: #b45309; letter-spacing: 0.5px; background: #fef3c7; padding: 3px 8px; border-radius: 6px;">Pendiente de Aprobación</span>
+                <div style="font-size: 17px; font-weight: 800; color: var(--uach-blue); margin-top: 6px;">
+                  Trabajador: ${esc(r.contacto_nombre || 'Contacto')} <span style="font-size: 13px; font-weight: 500; color: var(--text-muted);">(${esc(r.contacto_rubro || 'Construcción')})</span>
+                </div>
+              </div>
+              <div style="font-size: 12px; color: var(--text-muted);">${esc(r.fecha || '')}</div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5;">
+              <div><strong>👷 Colega que recomienda:</strong> ${esc(r.autor)} ${r.cargo_autor ? `<span style="color: var(--uach-blue); font-weight: 600;">(${esc(r.cargo_autor)})</span>` : ''}</div>
+              <div><strong>📞 Teléfono WhatsApp:</strong> ${esc(r.fono_autor || 'No registrado')}</div>
+              <div style="margin-top: 4px;"><strong>🔨 Obra / Faena:</strong> ${esc(r.proyecto || 'No especificada')}</div>
+              ${r.comentario ? `<div style="margin-top: 6px; font-style: italic; color: #334155;">"${esc(r.comentario)}"</div>` : ''}
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin-top: 4px;">
+              ${waLink ? `
+                <a href="${waLink}" target="_blank" style="padding: 8px 14px; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 6px; font-size: 12.5px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+                  💬 Consultar al Colega por WhatsApp
+                </a>
+              ` : ''}
+              <button type="button" onclick="rechazarRecomendacionAdmin('${esc(r.id)}')" style="padding: 8px 14px; background: #fff; color: #ef4444; border: 1px solid #fca5a5; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer;">
+                🗑️ Rechazar
+              </button>
+              <button type="button" onclick="aprobarRecomendacionAdmin('${esc(r.id)}')" style="padding: 8px 18px; background: #16a34a; color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                ✅ Aprobar y Publicar
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function aprobarRecomendacionAdmin(id) {
+      if (!confirm('¿Deseas aprobar esta recomendación? Sumará al contador del trabajador y será visible públicamente en el directorio.')) return;
+      try {
+        const r = await apiFetch('/api/admin-recomendaciones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, accion: 'aprobar' })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        alert('✅ Recomendación aprobada y publicada exitosamente.');
+        await cargarRecomendacionesPendientesAdmin();
+        await loadData();
+      } catch(e) {
+        alert('Error al aprobar: ' + e.message);
+      }
+    }
+
+    async function rechazarRecomendacionAdmin(id) {
+      if (!confirm('¿Seguro que deseas rechazar y descartar esta recomendación?')) return;
+      try {
+        const r = await apiFetch('/api/admin-recomendaciones', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, accion: 'rechazar' })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        await cargarRecomendacionesPendientesAdmin();
+      } catch(e) {
+        alert('Error al rechazar: ' + e.message);
+      }
+    }
+
+    window.cargarRecomendacionesPendientesAdmin = cargarRecomendacionesPendientesAdmin;
+    window.aprobarRecomendacionAdmin = aprobarRecomendacionAdmin;
+    window.rechazarRecomendacionAdmin = rechazarRecomendacionAdmin;
+
+        window.loadDespachoFichas = loadDespachoFichas;
     window.filtrarTablaDespacho = filtrarTablaDespacho;
     window.enviarWhatsAppFicha = enviarWhatsAppFicha;
 

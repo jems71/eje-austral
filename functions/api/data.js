@@ -44,8 +44,9 @@ export async function onRequestGet({ request, env }) {
       `).all(),
 
       env.DB.prepare(`
-        SELECT id, autor, contacto_id, comentario, proyecto, fecha
+        SELECT id, autor, cargo_autor, fono_autor, contacto_id, comentario, proyecto, fecha
         FROM recomendaciones
+        WHERE (estado IS NULL OR estado = 'aprobada')
       `).all(),
 
       env.DB.prepare(`
