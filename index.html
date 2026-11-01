@@ -2970,7 +2970,10 @@
       try { return sessionStorage.getItem(SS_ADMIN_TOKEN_KEY) || ''; } catch(e) { return ''; }
     }
     function setAdminToken(t) {
-      try { sessionStorage.setItem(SS_ADMIN_TOKEN_KEY, t); } catch(e) {}
+      try {
+        sessionStorage.setItem(SS_ADMIN_TOKEN_KEY, t);
+        localStorage.setItem('eje_austral_admin_dispositivo', '1');
+      } catch(e) {}
     }
     function clearAdminToken() {
       try { sessionStorage.removeItem(SS_ADMIN_TOKEN_KEY); } catch(e) {}
@@ -3739,8 +3742,11 @@
                       window.matchMedia('(display-mode: window-controls-overlay)').matches ||
                       window.navigator.standalone === true;
 
-        // Si es administrador sin link de prueba ?c=, no contar visita
-        if (!vieneConLinkColega && (esAdmin() || params.get('admin') === '1')) return;
+        // Si es dispositivo del administrador (PC o celular marcado), jamás contar como visita
+        const esDispositivoAdmin = localStorage.getItem('eje_austral_admin_dispositivo') === '1' ||
+                                   esAdmin() ||
+                                   params.get('admin') === '1';
+        if (esDispositivoAdmin) return;
         if (!vieneConLinkColega && sessionStorage.getItem('eje_austral_visita_reg')) return;
         sessionStorage.setItem('eje_austral_visita_reg', '1');
 
