@@ -673,6 +673,320 @@
       margin-top: 8px; margin-bottom: 4px;
     }
     .detail-fecha-pill svg { width: 11px; height: 11px; opacity: 0.55; }
+
+    /* === PANEL ADMINISTRADOR (OPTIMIZADO PARA ESCRITORIO PC) === */
+    #view-estadisticas {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 24px 80px;
+      animation: fadeInAdmin 0.2s ease-out;
+    }
+    @keyframes fadeInAdmin {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .admin-banner {
+      background: linear-gradient(135deg, #0a2540 0%, #1e3a8a 100%);
+      color: #fff;
+      border-radius: 12px;
+      padding: 22px 28px;
+      margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 4px 18px rgba(10, 37, 64, 0.12);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .admin-banner-info {
+      flex: 1 1 450px;
+    }
+    .admin-banner-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(201, 169, 97, 0.22);
+      border: 1px solid rgba(201, 169, 97, 0.5);
+      color: #fef3c7;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .admin-banner-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px #22c55e;
+      display: inline-block;
+    }
+    .admin-banner-title {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+    .admin-banner-sub {
+      font-size: 13.5px;
+      opacity: 0.88;
+      line-height: 1.5;
+      max-width: 650px;
+    }
+    .admin-banner-stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .admin-pill-stat {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      padding: 9px 15px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 105px;
+    }
+    .admin-pill-stat .lbl {
+      font-size: 9.5px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.75;
+      font-weight: 600;
+    }
+    .admin-pill-stat .val {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Subtabs Bar */
+    .admin-subtabs-nav {
+      display: flex;
+      gap: 6px;
+      background: #f1f5f9;
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .admin-subtab-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #475569;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .admin-subtab-btn:hover {
+      background: rgba(255, 255, 255, 0.8);
+      color: #0f172a;
+    }
+    .admin-subtab-btn.active {
+      background: #0a2540;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(10, 37, 64, 0.18);
+    }
+    .admin-subtab-btn .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .admin-subtab-btn.active .badge {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+    .admin-subtab-btn .badge-amber {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .admin-subtab-btn.active .badge-amber {
+      background: #f59e0b;
+      color: #ffffff;
+    }
+
+    /* KPI Cards Desktop */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    .kpi-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .kpi-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .kpi-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .kpi-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .kpi-card-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+    }
+    .kpi-icon-blue { background: #e0f2fe; color: #0369a1; }
+    .kpi-icon-green { background: #dcfce7; color: #15803d; }
+    .kpi-icon-gold { background: #fef3c7; color: #b45309; }
+    .kpi-icon-purple { background: #f3e8ff; color: #7e22ce; }
+    .kpi-card-value {
+      font-family: 'Fraunces', serif;
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .kpi-card-value.text-green { color: #15803d; }
+    .kpi-card-value.text-amber { color: #b45309; }
+    .kpi-card-value.text-blue { color: #0a2540; }
+    .kpi-card-value.text-purple { color: #7e22ce; }
+    .kpi-card-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Admin Toolbar */
+    .admin-toolbar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      background: #ffffff;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    /* Admin Modern Table */
+    .admin-table-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13.5px;
+    }
+    .admin-table thead tr {
+      background: #f8fafc;
+      border-bottom: 2px solid var(--border);
+    }
+    .admin-table th {
+      padding: 13px 16px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      z-index: 2;
+    }
+    .admin-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      color: var(--text);
+    }
+    .admin-table tbody tr {
+      transition: background 0.12s ease;
+    }
+    .admin-table tbody tr:nth-child(even) {
+      background: #fafbfd;
+    }
+    .admin-table tbody tr:hover {
+      background: #f1f5f9 !important;
+    }
+    .admin-tag-rubro {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 12px;
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 500;
+      border: 1px solid #e2e8f0;
+    }
+    .admin-badge-clics {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 12.5px;
+    }
+    .admin-badge-clics.activo {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+    .admin-badge-clics.cero {
+      background: #f1f5f9;
+      color: #94a3b8;
+      border: 1px solid #e2e8f0;
+    }
   
     /* === PANTALLA DE MANTENCIÓN (bloquea el acceso) === */
     .mantencion-screen { position: fixed; inset: 0; z-index: 9999; background: linear-gradient(135deg, var(--uach-blue) 0%, var(--uach-blue-dark) 100%); display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
@@ -777,7 +1091,7 @@
     <span class="group-badge">GRUPO WHATSAPP</span>
   </div>
 
-  <section class="hero">
+  <section class="hero" id="hero">
     <div class="container">
       <div class="uach-header">
         <div class="uach-logo"><img src="/assets/logo-grupo.png" alt="Logo Titulados Ingeniería en Construcción UACh"></div>
@@ -912,85 +1226,129 @@
 
   <!-- === VISTA: ADMINISTRADOR (ESTADÍSTICAS Y DESPACHO) === -->
   <section id="view-estadisticas" class="hidden">
+    <!-- Executive Admin Banner -->
+    <div class="admin-banner">
+      <div class="admin-banner-info">
+        <div class="admin-banner-badge">
+          <span class="dot"></span> Modo Administrador (EAA)
+        </div>
+        <h1 class="admin-banner-title">Centro de Rendimiento y Control Eje Austral</h1>
+        <p class="admin-banner-sub">Panel ejecutivo para monitorear visitas web, contactos comerciales iniciados en WhatsApp y la campaña activa con los 286 colegas titulados UACh.</p>
+      </div>
+      <div class="admin-banner-stats">
+        <div class="admin-pill-stat">
+          <span class="lbl">Servidor</span>
+          <span class="val" style="font-size:14px; font-family:inherit;">Cloudflare 🟢</span>
+        </div>
+        <div class="admin-pill-stat">
+          <span class="lbl">Directorio</span>
+          <span class="val">100 reg.</span>
+        </div>
+        <div class="admin-pill-stat">
+          <span class="lbl">Red Colegas</span>
+          <span class="val">286 fichas</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Subtabs del panel admin -->
-    <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 12px; flex-wrap: wrap; align-items: center;">
-      <button id="subtab-btn-stats" onclick="cambiarSubTabAdmin('stats')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; background: var(--uach-blue); color: #fff; font-family: inherit; transition: background .15s;">📊 Rendimiento y Clics</button>
-      <button id="subtab-btn-despacho" onclick="cambiarSubTabAdmin('despacho')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: background .15s;">📲 Despacho WhatsApp (<span id="cnt-despacho-total">54</span>)</button>
-      <button id="subtab-btn-recs" onclick="cambiarSubTabAdmin('recs')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: all .15s;">🔔 Por Aprobar (<span id="cnt-recs-pendientes">0</span>)</button>
-      <button id="subtab-btn-colegas" onclick="cambiarSubTabAdmin('colegas')" style="padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-family: inherit; transition: all .15s;">🎓 Encuesta Colegas (<span id="cnt-colegas-total">285</span>)</button>
-      <button id="btn-instalar-admin-panel" class="hidden" onclick="abrirModalInstalarEAA()" style="margin-left: auto; padding: 9px 15px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; border: 1.5px solid #fde68a; background: #fffbeb; color: #92400e; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div class="admin-subtabs-nav">
+      <button id="subtab-btn-stats" class="admin-subtab-btn active" onclick="cambiarSubTabAdmin('stats')">
+        <span>📊</span> Rendimiento y Clics
+      </button>
+      <button id="subtab-btn-despacho" class="admin-subtab-btn" onclick="cambiarSubTabAdmin('despacho')">
+        <span>📲</span> Despacho WhatsApp <span class="badge" id="cnt-despacho-total">54</span>
+      </button>
+      <button id="subtab-btn-recs" class="admin-subtab-btn" onclick="cambiarSubTabAdmin('recs')">
+        <span>🔔</span> Por Aprobar <span class="badge badge-amber" id="cnt-recs-pendientes">0</span>
+      </button>
+      <button id="subtab-btn-colegas" class="admin-subtab-btn" onclick="cambiarSubTabAdmin('colegas')">
+        <span>🎓</span> Difusión Colegas UACh <span class="badge" style="background:#e0f2fe; color:#0369a1;" id="cnt-colegas-total">286</span>
+      </button>
+      <button id="btn-instalar-admin-panel" class="hidden" onclick="abrirModalInstalarEAA()" style="margin-left: auto; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; border: 1.5px solid #fde68a; background: #fffbeb; color: #92400e; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         🖥️ Crear acceso directo EAA
       </button>
     </div>
 
     <!-- SUB-CONTENIDO 1: RENDIMIENTO Y CLICS -->
     <div id="admin-sec-stats">
-      <div style="margin-bottom: 24px;">
-        <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 8px 0; font-size: 24px;">📊 Panel de Estadísticas y Rendimiento</h2>
-        <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Métricas exclusivas de administrador: visitas a la web y contactos de WhatsApp generados por cada profesional.</p>
-      </div>
+      <!-- 4 KPI Cards Desktop -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Visitas a la Web</span>
+            <div class="kpi-card-icon kpi-icon-blue">🌐</div>
+          </div>
+          <div class="kpi-card-value text-blue" id="stat-total-visitas">0</div>
+          <div class="kpi-card-sub" id="stat-visitas-hoy">Hoy: 0 visitas</div>
+        </div>
 
-    <!-- 3 KPI Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 24px;">
-      <div class="card" style="padding: 20px; border-left: 4px solid var(--uach-blue);">
-        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Visitas a la Web</div>
-        <div style="font-size: 32px; font-weight: 800; color: var(--uach-blue);" id="stat-total-visitas">0</div>
-        <div style="font-size: 13px; color: var(--text); margin-top: 4px;" id="stat-visitas-hoy">Hoy: 0 visitas</div>
-      </div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Contactos WhatsApp Iniciados</span>
+            <div class="kpi-card-icon kpi-icon-green">💬</div>
+          </div>
+          <div class="kpi-card-value text-green" id="stat-total-clics">0</div>
+          <div class="kpi-card-sub">Clics a números de contacto</div>
+        </div>
 
-      <div class="card" style="padding: 20px; border-left: 4px solid var(--green);">
-        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Contactos WhatsApp Iniciados</div>
-        <div style="font-size: 32px; font-weight: 800; color: var(--green);" id="stat-total-clics">0</div>
-        <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Veces que se contactó a un profesional</div>
-      </div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Top Más Contactado</span>
+            <div class="kpi-card-icon kpi-icon-gold">🏆</div>
+          </div>
+          <div class="kpi-card-value" style="font-size: 20px; line-height: 1.25; margin-bottom: 2px;" id="stat-top-nombre">Sin datos aún</div>
+          <div class="kpi-card-sub" style="font-weight: 600; color: var(--uach-blue);" id="stat-top-rubro">-</div>
+        </div>
 
-      <div class="card" style="padding: 20px; border-left: 4px solid var(--gold);">
-        <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">Top Más Contactado</div>
-        <div style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 2px;" id="stat-top-nombre">Sin datos aún</div>
-        <div style="font-size: 13px; color: var(--uach-blue); font-weight: 600;" id="stat-top-rubro">-</div>
-      </div>
-    </div>
-
-    <!-- Toolbar del Dashboard -->
-    <div class="toolbar-wrap" style="margin-bottom: 16px;">
-      <div class="toolbar-row" style="display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        <input type="text" id="stat-search" class="search-input" placeholder="Buscar profesional o rubro en estadísticas..." style="max-width: 380px;" oninput="filtrarTablaStats()">
-        <div style="display: flex; gap: 8px;">
-          <button class="btn-secondary" onclick="exportarStatsCSV()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">📥 Exportar a Excel (CSV)</button>
-          <button class="btn-primary" onclick="loadEstadisticas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Actualizar</button>
-          <button onclick="reiniciarVisitasAdmin()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; border: 1.5px solid #ef4444; background: transparent; color: #ef4444; font-family: inherit; transition: all .15s;" onmouseover="this.style.background='#ef4444';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#ef4444'" title="Reinicia el contador de visitas a 0">🗑️ Reiniciar Visitas</button>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Red Colegas UACh</span>
+            <div class="kpi-card-icon kpi-icon-purple">🎓</div>
+          </div>
+          <div class="kpi-card-value text-purple">286</div>
+          <div class="kpi-card-sub">Campaña de difusión activa</div>
         </div>
       </div>
-    </div>
 
-    <!-- Tabla Ranking -->
-    <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
-      <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
-          <thead>
-            <tr style="background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-              <th style="padding: 12px 16px; width: 60px;">#</th>
-              <th style="padding: 12px 16px;">Profesional / Empresa</th>
-              <th style="padding: 12px 16px;">Rubro</th>
-              <th style="padding: 12px 16px;">Ciudad</th>
-              <th style="padding: 12px 16px; text-align: center; width: 130px;">Clics WhatsApp</th>
-              <th style="padding: 12px 16px; text-align: center; width: 190px;">Último Clic (Fecha y Hora)</th>
-            </tr>
-          </thead>
-          <tbody id="stats-ranking-tbody">
-            <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando estadísticas...</td></tr>
-          </tbody>
-        </table>
+      <!-- Toolbar del Dashboard -->
+      <div class="admin-toolbar">
+        <input type="text" id="stat-search" class="search-input" placeholder="Buscar profesional o rubro en estadísticas..." style="max-width: 380px;" oninput="filtrarTablaStats()">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary" onclick="exportarStatsCSV()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">📥 Exportar a Excel (CSV)</button>
+          <button type="button" class="btn-primary" onclick="loadEstadisticas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">🔄 Actualizar</button>
+          <button type="button" onclick="reiniciarVisitasAdmin()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; border: 1.5px solid #ef4444; background: transparent; color: #ef4444; font-family: inherit; transition: all .15s;" onmouseover="this.style.background='#ef4444';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#ef4444'" title="Reinicia el contador de visitas a 0">🗑️ Reiniciar Visitas</button>
+        </div>
       </div>
-    </div>
 
-    <!-- Actividad Reciente -->
-    <div class="card" style="padding: 20px;">
-      <h3 style="margin: 0 0 12px 0; font-size: 16px; color: var(--uach-blue); font-family: 'Fraunces', serif;">⚡ Últimos Contactos Iniciados en Tiempo Real</h3>
-      <div id="stats-ultimos-clics" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text);">
-        <div style="color: var(--text-muted);">Sin actividad reciente registrada.</div>
+      <!-- Tabla Ranking -->
+      <div class="admin-table-card">
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Posición</th>
+                <th>Profesional / Empresa</th>
+                <th>Rubro</th>
+                <th>Ciudad</th>
+                <th style="text-align: center; width: 140px;">Clics WhatsApp</th>
+                <th style="text-align: center; width: 210px;">Último Clic Registrado</th>
+              </tr>
+            </thead>
+            <tbody id="stats-ranking-tbody">
+              <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando estadísticas...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      <!-- Actividad Reciente -->
+      <div class="admin-table-card" style="padding: 20px 24px;">
+        <h3 style="margin: 0 0 14px 0; font-size: 16px; color: var(--uach-blue); font-family: 'Fraunces', serif;">⚡ Últimos Contactos Comerciales Iniciados en Tiempo Real</h3>
+        <div id="stats-ultimos-clics" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text);">
+          <div style="color: var(--text-muted);">Sin actividad reciente registrada.</div>
+        </div>
+      </div>
     </div> <!-- /admin-sec-stats -->
 
     <!-- SUB-CONTENIDO 2: DESPACHO DE FICHAS WHATSAPP -->
@@ -1001,58 +1359,65 @@
       </div>
 
       <!-- Resumen de envíos -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px;">
-        <div class="card" style="padding: 16px; border-left: 4px solid var(--uach-blue);">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total a Contactar</div>
-          <div style="font-size: 26px; font-weight: 800; color: var(--uach-blue);" id="stat-desp-total">54</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Subcontrato / Mano de obra / Prof.</div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Total a Contactar</span>
+            <div class="kpi-card-icon kpi-icon-blue">👥</div>
+          </div>
+          <div class="kpi-card-value text-blue" id="stat-desp-total">54</div>
+          <div class="kpi-card-sub">Subcontrato / Mano de obra / Prof.</div>
         </div>
-        <div class="card" style="padding: 16px; border-left: 4px solid #f59e0b;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟡 Pendientes de Envío</div>
-          <div style="font-size: 26px; font-weight: 800; color: #b45309;" id="stat-desp-pendientes">-</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Por contactar</div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Pendientes de Envío</span>
+            <div class="kpi-card-icon kpi-icon-gold">🟡</div>
+          </div>
+          <div class="kpi-card-value text-amber" id="stat-desp-pendientes">-</div>
+          <div class="kpi-card-sub">Por contactar vía WhatsApp</div>
         </div>
-        <div class="card" style="padding: 16px; border-left: 4px solid var(--green);">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟢 Ya Enviados</div>
-          <div style="font-size: 26px; font-weight: 800; color: var(--green);" id="stat-desp-enviados">-</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Mensaje entregado</div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Mensajes Enviados</span>
+            <div class="kpi-card-icon kpi-icon-green">🟢</div>
+          </div>
+          <div class="kpi-card-value text-green" id="stat-desp-enviados">-</div>
+          <div class="kpi-card-sub">Tarjeta de actualización entregada</div>
         </div>
       </div>
 
       <!-- Filtros de despacho -->
-      <div class="toolbar-wrap" style="margin-bottom: 16px;">
-        <div class="toolbar-row" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-          <input type="text" id="desp-search" class="search-input" placeholder="Buscar por nombre, rubro o fono..." style="max-width: 320px;" oninput="filtrarTablaDespacho()">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <select id="desp-filtro-envio" onchange="filtrarTablaDespacho()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
-              <option value="todos">Todos los envíos</option>
-              <option value="pendientes" selected>🟡 Solo Pendientes</option>
-              <option value="enviados">🟢 Solo Enviados</option>
-            </select>
-            <select id="desp-filtro-tipo" onchange="filtrarTablaDespacho()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
-              <option value="todos">Todos los tipos</option>
-              <option value="Subcontrato">Subcontratos</option>
-              <option value="Mano de obra">Mano de obra</option>
-              <option value="Profesional">Profesionales</option>
-            </select>
-            <button class="btn-primary" onclick="loadDespachoFichas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar</button>
-          </div>
+      <div class="admin-toolbar">
+        <input type="text" id="desp-search" class="search-input" placeholder="Buscar por nombre, rubro o fono..." style="max-width: 320px;" oninput="filtrarTablaDespacho()">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <select id="desp-filtro-envio" onchange="filtrarTablaDespacho()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+            <option value="todos">Todos los envíos</option>
+            <option value="pendientes" selected>🟡 Solo Pendientes</option>
+            <option value="enviados">🟢 Solo Enviados</option>
+          </select>
+          <select id="desp-filtro-tipo" onchange="filtrarTablaDespacho()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+            <option value="todos">Todos los tipos</option>
+            <option value="Subcontrato">Subcontratos</option>
+            <option value="Mano de obra">Mano de obra</option>
+            <option value="Profesional">Profesionales</option>
+          </select>
+          <button class="btn-primary" onclick="loadDespachoFichas()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar</button>
         </div>
       </div>
 
       <!-- Tabla de Despacho -->
-      <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+      <div class="admin-table-card">
         <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px;">
+          <table class="admin-table">
             <thead>
-              <tr style="background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
-                <th style="padding: 12px 14px;">Contacto / Empresa</th>
-                <th style="padding: 12px 14px;">Tipo</th>
-                <th style="padding: 12px 14px;">Rubro</th>
-                <th style="padding: 12px 14px;">Ciudad</th>
-                <th style="padding: 12px 14px;">Estado Ficha</th>
-                <th style="padding: 12px 14px; text-align: center;">Envío</th>
-                <th style="padding: 12px 14px; text-align: center; width: 170px;">Acción WhatsApp</th>
+              <tr>
+                <th>Contacto / Empresa</th>
+                <th>Tipo</th>
+                <th>Rubro</th>
+                <th>Ciudad</th>
+                <th>Estado Ficha</th>
+                <th style="text-align: center;">Envío</th>
+                <th style="text-align: center; width: 170px;">Acción WhatsApp</th>
               </tr>
             </thead>
             <tbody id="despacho-tbody">
@@ -1092,56 +1457,66 @@
       </div>
 
       <!-- Tarjetas KPI de la campaña -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin-bottom: 20px;">
-        <div class="card" style="padding: 16px; border-left: 4px solid var(--uach-blue);">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Total Colegas Grupo</div>
-          <div style="font-size: 26px; font-weight: 800; color: var(--uach-blue);" id="stat-col-total">286</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Titulad@s ConstrUach</div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Total Colegas Grupo</span>
+            <div class="kpi-card-icon kpi-icon-blue">🎓</div>
+          </div>
+          <div class="kpi-card-value text-blue" id="stat-col-total">286</div>
+          <div class="kpi-card-sub">Titulad@s ConstrUach</div>
         </div>
-        <div class="card" style="padding: 16px; border-left: 4px solid #f59e0b;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟡 Pendientes de Envío</div>
-          <div style="font-size: 26px; font-weight: 800; color: #b45309;" id="stat-col-pendientes">-</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Faltan por contactar</div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Pendientes de Envío</span>
+            <div class="kpi-card-icon kpi-icon-gold">🟡</div>
+          </div>
+          <div class="kpi-card-value text-amber" id="stat-col-pendientes">-</div>
+          <div class="kpi-card-sub">Faltan por contactar</div>
         </div>
-        <div class="card" style="padding: 16px; border-left: 4px solid var(--green);">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">🟢 WhatsApp Enviados</div>
-          <div style="font-size: 26px; font-weight: 800; color: var(--green);" id="stat-col-enviados">-</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Mensaje despachado</div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">WhatsApp Enviados</span>
+            <div class="kpi-card-icon kpi-icon-green">🟢</div>
+          </div>
+          <div class="kpi-card-value text-green" id="stat-col-enviados">-</div>
+          <div class="kpi-card-sub">Mensaje despachado</div>
         </div>
-        <div class="card" style="padding: 16px; border-left: 4px solid #0284c7;">
-          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">👁️ Colegas que Entraron</div>
-          <div style="font-size: 26px; font-weight: 800; color: #0369a1;" id="stat-col-respondidos">0</div>
-          <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;" id="stat-col-detalle-resp">Total visitas: 0 · App EA: 0</div>
+        <div class="kpi-card">
+          <div class="kpi-card-header">
+            <span class="kpi-card-label">Colegas que Entraron</span>
+            <div class="kpi-card-icon kpi-icon-purple">👁️</div>
+          </div>
+          <div class="kpi-card-value text-purple" id="stat-col-respondidos">0</div>
+          <div class="kpi-card-sub" id="stat-col-detalle-resp">Total visitas: 0 · App EA: 0</div>
         </div>
       </div>
 
       <!-- Filtros -->
-      <div class="toolbar-wrap" style="margin-bottom: 16px;">
-        <div class="toolbar-row" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-          <input type="text" id="col-search" class="search-input" placeholder="Buscar por nombre, alias, teléfono o nota..." style="max-width: 340px;" oninput="filtrarTablaColegas()">
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <select id="col-filtro-envio" onchange="filtrarTablaColegas()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
-              <option value="todos">Todos los envíos</option>
-              <option value="pendientes" selected>🟡 Solo Pendientes de envío</option>
-              <option value="enviados">🟢 Solo Enviados</option>
-            </select>
-            <select id="col-filtro-resp" onchange="filtrarTablaColegas()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
-              <option value="todos">Todos (Ingresos a la App)</option>
-              <option value="entraron">🟢 Sí entraron a la App</option>
-              <option value="no_entraron">⚪ Aún NO han entrado</option>
-              <option value="instalaron">🖥️ Instalaron acceso EA</option>
-              <option value="respondidos">📝 Con nota u opinión</option>
-            </select>
-          </div>
+      <div class="admin-toolbar">
+        <input type="text" id="col-search" class="search-input" placeholder="Buscar por nombre, alias, teléfono o nota..." style="max-width: 340px;" oninput="filtrarTablaColegas()">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <select id="col-filtro-envio" onchange="filtrarTablaColegas()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+            <option value="todos">Todos los envíos</option>
+            <option value="pendientes" selected>🟡 Solo Pendientes de envío</option>
+            <option value="enviados">🟢 Solo Enviados</option>
+          </select>
+          <select id="col-filtro-resp" onchange="filtrarTablaColegas()" style="padding: 8px 12px; font-size: 13px; border: 1px solid var(--border); border-radius: 6px; background: #fff; font-family: inherit;">
+            <option value="todos">Todos (Ingresos a la App)</option>
+            <option value="entraron">🟢 Sí entraron a la App</option>
+            <option value="no_entraron">⚪ Aún NO han entrado</option>
+            <option value="instalaron">🖥️ Instalaron acceso EA</option>
+            <option value="respondidos">📝 Con nota u opinión</option>
+          </select>
         </div>
       </div>
 
       <!-- Tabla de Colegas -->
-      <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 24px;">
+      <div class="admin-table-card">
         <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+          <table class="admin-table">
             <thead>
-              <tr style="background: var(--bg); border-bottom: 1px solid var(--border); color: var(--text-muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px;">
+              <tr>
                 <th style="padding: 12px 10px; width: 42px;">N°</th>
                 <th style="padding: 12px 10px; min-width: 145px;">Teléfono / Alias WA</th>
                 <th style="padding: 12px 10px; min-width: 155px;">Nombre Real (Editable)</th>
@@ -2685,6 +3060,8 @@
         document.getElementById('view-ofertas').classList.toggle('hidden', tab !== 'ofertas');
         const viewStats = document.getElementById('view-estadisticas');
         if (viewStats) viewStats.classList.toggle('hidden', tab !== 'estadisticas');
+        const heroEl = document.getElementById('hero');
+        if (heroEl) heroEl.classList.toggle('hidden', tab === 'estadisticas');
         if (tab === 'ofertas' && !OFERTAS_CARGADAS) loadOfertas();
         if (tab === 'estadisticas') loadEstadisticas();
       });
@@ -3419,7 +3796,7 @@
       const elTopRub = document.getElementById('stat-top-rubro');
 
       if (elVisitasTot) elVisitasTot.textContent = Number(STATS_DATA.total_visitas).toLocaleString('es-CL');
-      if (elVisitasHoy) elVisitasHoy.textContent = 'Hoy: ' + Number(STATS_DATA.visitas_hoy).toLocaleString('es-CL') + ' visitas';
+      if (elVisitasHoy) elVisitasHoy.innerHTML = `<span style="display:inline-block; padding:2px 7px; border-radius:10px; background:#e0f2fe; color:#0369a1; font-weight:700; font-size:12px;">Hoy: ${Number(STATS_DATA.visitas_hoy).toLocaleString('es-CL')}</span> visitas`;
       if (elClicsTot) elClicsTot.textContent = Number(STATS_DATA.total_clics).toLocaleString('es-CL');
 
       if (STATS_DATA.top_profesional) {
@@ -3450,25 +3827,26 @@
       }
 
       tbody.innerHTML = filtrados.map((c, i) => {
-        let medal = `${i + 1}°`;
-        if (i === 0 && c.total_clics > 0) medal = '🥇 1°';
-        else if (i === 1 && c.total_clics > 0) medal = '🥈 2°';
-        else if (i === 2 && c.total_clics > 0) medal = '🥉 3°';
+        let medal = `<span style="color:#64748b; font-weight:700;">#${i + 1}</span>`;
+        if (i === 0 && c.total_clics > 0) medal = '<span style="font-size:16px;" title="Top 1">🥇 1°</span>';
+        else if (i === 1 && c.total_clics > 0) medal = '<span style="font-size:16px;" title="Top 2">🥈 2°</span>';
+        else if (i === 2 && c.total_clics > 0) medal = '<span style="font-size:16px;" title="Top 3">🥉 3°</span>';
 
-        const badgeBg = c.total_clics > 0 ? 'background: #e8f5e9; color: #1e7e34;' : 'background: var(--bg); color: var(--text-muted);';
+        const hasClics = c.total_clics > 0;
+        const badgeCls = hasClics ? 'admin-badge-clics activo' : 'admin-badge-clics cero';
 
         return `
-          <tr style="border-bottom: 1px solid var(--border);">
-            <td style="padding: 12px 16px; font-weight: 700; color: var(--text-muted);">${medal}</td>
-            <td style="padding: 12px 16px; font-weight: 600; color: var(--text);">${esc(c.nombre)}</td>
-            <td style="padding: 12px 16px; color: var(--text-muted);">${esc(c.rubro)}</td>
-            <td style="padding: 12px 16px; color: var(--text-muted);">${esc(c.ciudad)}</td>
-            <td style="padding: 12px 16px; text-align: center;">
-              <span style="display: inline-block; padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 13px; ${badgeBg}">
+          <tr>
+            <td style="font-weight: 700;">${medal}</td>
+            <td style="font-weight: 600; color: #0f172a; font-size: 14px;">${esc(c.nombre)}</td>
+            <td><span class="admin-tag-rubro">${esc(c.rubro)}</span></td>
+            <td style="color: #475569;">📍 ${esc(c.ciudad)}</td>
+            <td style="text-align: center;">
+              <span class="${badgeCls}">
                 💬 ${c.total_clics}
               </span>
             </td>
-            <td style="padding: 12px 16px; text-align: center; font-size: 12px; color: var(--text-muted); font-family: monospace;">
+            <td style="text-align: center; font-size: 12px; color: #64748b; font-family: monospace;">
               ${c.ultimo_clic ? '🕒 ' + esc(c.ultimo_clic) : '—'}
             </td>
           </tr>
@@ -3561,7 +3939,12 @@
       const secCol = document.getElementById('admin-sec-colegas');
 
       [btnStats, btnDesp, btnRecs, btnCol].forEach(b => {
-        if (b) { b.style.background = 'var(--card)'; b.style.color = 'var(--text)'; b.style.borderColor = 'var(--border)'; }
+        if (b) {
+          b.classList.remove('active');
+          b.style.background = '';
+          b.style.color = '';
+          b.style.borderColor = '';
+        }
       });
       [secStats, secDesp, secRecs, secCol].forEach(s => {
         if (s) s.classList.add('hidden');
@@ -3569,19 +3952,19 @@
 
       if (tab === 'stats') {
         if (secStats) secStats.classList.remove('hidden');
-        if (btnStats) { btnStats.style.background = 'var(--uach-blue)'; btnStats.style.color = '#fff'; btnStats.style.borderColor = 'var(--uach-blue)'; }
+        if (btnStats) btnStats.classList.add('active');
         loadEstadisticas();
       } else if (tab === 'despacho') {
         if (secDesp) secDesp.classList.remove('hidden');
-        if (btnDesp) { btnDesp.style.background = 'var(--uach-blue)'; btnDesp.style.color = '#fff'; btnDesp.style.borderColor = 'var(--uach-blue)'; }
+        if (btnDesp) btnDesp.classList.add('active');
         loadDespachoFichas();
       } else if (tab === 'recs') {
         if (secRecs) secRecs.classList.remove('hidden');
-        if (btnRecs) { btnRecs.style.background = 'var(--uach-blue)'; btnRecs.style.color = '#fff'; btnRecs.style.borderColor = 'var(--uach-blue)'; }
+        if (btnRecs) btnRecs.classList.add('active');
         cargarRecomendacionesPendientesAdmin();
       } else if (tab === 'colegas') {
         if (secCol) secCol.classList.remove('hidden');
-        if (btnCol) { btnCol.style.background = 'var(--uach-blue)'; btnCol.style.color = '#fff'; btnCol.style.borderColor = 'var(--uach-blue)'; }
+        if (btnCol) btnCol.classList.add('active');
         loadColegasGrupo();
       }
     }
