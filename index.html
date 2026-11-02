@@ -4517,6 +4517,8 @@
           semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#f1f5f9; color:#475569;">🔒 Cubierta / Cerrada</span>`;
         } else if (tocaConsultar) {
           semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#fef3c7; color:#92400e;">⚠️ ${dias} días (Consultar)</span>`;
+        } else if (o.fecha_verificacion) {
+          semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#ecfdf5; color:#065f46;">🟢 Renovada (${dias}d)</span>`;
         } else {
           semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#ecfdf5; color:#065f46;">🟢 ${dias}d activa (Vigente)</span>`;
         }
@@ -4594,8 +4596,10 @@
         });
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
-        alert('✅ Oferta renovada exitosamente. Se mantiene activa y vigente en el portal.');
+        alert('✅ Oferta renovada exitosamente. Se reinició el contador a 0 días (Vigente).');
         await loadOfertasAdmin();
+        OFERTAS_CARGADAS = false;
+        await loadOfertas();
       } catch(e) {
         console.error(e);
         alert('Error al renovar oferta: ' + e.message);

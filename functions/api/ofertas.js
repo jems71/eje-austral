@@ -130,21 +130,30 @@ export async function onRequestGet({ request, env }) {
 
     const ofertas = (resultado.results || [])
       .map(oferta => {
-        const d = parseFecha(oferta.fecha_publicacion);
-        if (d && String(oferta.fecha_publicacion).includes('/')) {
+        const dPub = parseFecha(oferta.fecha_publicacion);
+        const dVer = parseFecha(oferta.fecha_verificacion);
+
+        if (dPub && String(oferta.fecha_publicacion).includes('/')) {
           try {
             env.DB.prepare("UPDATE ofertas SET fecha_publicacion = ? WHERE id = ?")
-              .bind(d.toISOString(), oferta.id)
+              .bind(dPub.toISOString(), oferta.id)
               .run();
           } catch(e) {}
         }
-        const ts = d ? d.getTime() : 0;
-        const diasTranscurridos = ts ? Math.floor((ahora.getTime() - ts) / (1000 * 60 * 60 * 24)) : 0;
+
+        // Si la oferta fue renovada/verificada por el admin, la vigencia se mide desde esa fecha
+        const dRef = dVer || dPub;
+        const tsRef = dRef ? dRef.getTime() : 0;
+        const tsPub = dPub ? dPub.getTime() : 0;
+
+        const diasTranscurridos = tsRef ? Math.floor((ahora.getTime() - tsRef) / (1000 * 60 * 60 * 24)) : 0;
+
         return {
           ...oferta,
-          fecha_publicacion: d ? d.toISOString() : oferta.fecha_publicacion,
+          fecha_publicacion: dPub ? dPub.toISOString() : oferta.fecha_publicacion,
+          fecha_verificacion: dVer ? dVer.toISOString() : (oferta.fecha_verificacion || ''),
           dias_transcurridos: Math.max(0, diasTranscurridos),
-          _timestamp: ts
+          _timestamp: tsPub
         };
       })
       // Orden: ACTIVAS PRIMERO (estado 'publicada' o null), luego las CUBIERTAS/BLOQUEADAS abajo.
