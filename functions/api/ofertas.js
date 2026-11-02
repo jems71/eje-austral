@@ -20,6 +20,27 @@ async function crearToken(password) {
     .join("");
 }
 
+async function crearAdminToken(password) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(password),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const firma = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode("grupo-uach-admin-session")
+  );
+
+  return Array.from(new Uint8Array(firma))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 function parseFecha(fecha) {
   if (!fecha) return null;
   const s = String(fecha).trim();
@@ -38,6 +59,7 @@ function parseFecha(fecha) {
 
 export async function onRequestGet({ request, env }) {
   const appPassword = env.APP_PASSWORD || "miraflores";
+  const adminPassword = env.ADMIN_PASSWORD || "jems2026";
   if (!env.DB) {
     return Response.json(
       { error: "Falta configurar la conexión D1" },
@@ -47,8 +69,9 @@ export async function onRequestGet({ request, env }) {
 
   const auth = request.headers.get("Authorization") || "";
   const tokenEsperado = await crearToken(appPassword);
+  const adminTokenEsperado = await crearAdminToken(adminPassword);
 
-  if (auth !== `Bearer ${tokenEsperado}`) {
+  if (auth !== `Bearer ${tokenEsperado}` && auth !== `Bearer ${adminTokenEsperado}`) {
     return Response.json(
       { error: "No autorizado" },
       { status: 401 }

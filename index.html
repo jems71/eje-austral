@@ -3672,7 +3672,7 @@
         throw new Error('Se requiere clave de administrador');
       }
 
-      const token = esAdminEndpoint ? getAdminToken() : (getAdminToken() || getToken());
+      const token = esAdminEndpoint ? getAdminToken() : getToken();
       if (token) opts.headers['Authorization'] = `Bearer ${token}`;
       const r = await fetch(url, opts);
       if (r.status === 401) {

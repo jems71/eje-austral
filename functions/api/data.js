@@ -17,8 +17,28 @@ function crearToken(password) {
   });
 }
 
+function crearAdminToken(password) {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  ).then(async key => {
+    const firma = await crypto.subtle.sign(
+      "HMAC",
+      key,
+      new TextEncoder().encode("grupo-uach-admin-session")
+    );
+    return Array.from(new Uint8Array(firma))
+      .map(b => b.toString(16).padStart(2, "0"))
+      .join("");
+  });
+}
+
 export async function onRequestGet({ request, env }) {
   const appPassword = env.APP_PASSWORD || "miraflores";
+  const adminPassword = env.ADMIN_PASSWORD || "jems2026";
   if (!env.DB) {
     return Response.json(
       { error: "Falta configurar la conexión D1" },
@@ -28,8 +48,9 @@ export async function onRequestGet({ request, env }) {
 
   const auth = request.headers.get("Authorization") || "";
   const tokenEsperado = await crearToken(appPassword);
+  const adminTokenEsperado = await crearAdminToken(adminPassword);
 
-  if (auth !== `Bearer ${tokenEsperado}`) {
+  if (auth !== `Bearer ${tokenEsperado}` && auth !== `Bearer ${adminTokenEsperado}`) {
     return Response.json({ error: "No autorizado" }, { status: 401 });
   }
 
@@ -50,41 +71,37 @@ export async function onRequestGet({ request, env }) {
       `).all(),
 
       env.DB.prepare(`
-        SELECT id, texto, publicado_por, fecha_publicacion, estado
+        SELECT id, texto, fecha_publicacion, publicado_por
         FROM ofertas
         WHERE (estado IS NULL OR estado = 'publicada')
         ORDER BY fecha_publicacion DESC
       `).all()
     ]);
 
-    const contactos = contactosResult.results.map(c => ({
-      ...c,
-      recomendadoPor: c.recomendadoPor || c.recomendado_por || "",
-      ultimoProyecto: c.ultimoProyecto || c.ultimo_proyecto || "",
-      fecha_ingreso: c.fecha_ingreso || "",
-      estado_disponibilidad: (['Subcontrato', 'Mano de obra', 'Profesional'].includes(c.tipo) && !c.fecha_ultima_actualizacion_estado)
-        ? 'Por confirmar'
-        : (c.estado_disponibilidad || 'Por confirmar')
-    }));
-
-    const recomendaciones = recomendacionesResult.results.map(r => ({
-      ...r,
-      contactoId: r.contacto_id || r.contactoId
-    }));
-
-    const ofertas = ofertasResult.results || [];
+    const contactos = (contactosResult.results || []).map(c => {
+      const { verificado, consentimiento_publicacion, estado_publicacion, notas_admin, notas_privadas, ...publico } = c;
+      return {
+        ...publico,
+        ciudad: c.ciudad || '',
+        recomendadoPor: c.recomendado_por || '',
+        ultimoProyecto: c.ultimo_proyecto || '',
+        sitio_web: c.sitio_web || '',
+        certificaciones: c.certificaciones || ''
+      };
+    });
 
     return Response.json({
       contactos,
-      recomendaciones,
-      ofertas,
-      _errors: [],
-      _counts: {
-        contactos: contactos.length,
-        recomendaciones: recomendaciones.length,
-        ofertas: ofertas.length
+      recomendaciones: recomendacionesResult.results || [],
+      ofertas: ofertasResult.results || []
+    }, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "public, max-age=30"
       }
     });
+
   } catch (error) {
     console.error("Error consultando D1:", error);
     return Response.json(
