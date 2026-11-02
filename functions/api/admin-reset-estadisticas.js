@@ -37,6 +37,9 @@ export async function onRequestPost({ request, env }) {
 
     if (tipo === 'visitas' || tipo === 'todo') {
       await env.DB.prepare("DELETE FROM registro_visitas;").run();
+      try {
+        await env.DB.prepare("DELETE FROM registro_visitas_log;").run();
+      } catch(e) {}
     }
 
     if (tipo === 'todo') {

@@ -18,6 +18,14 @@ async function crearAdminToken(password) {
     .join("");
 }
 
+function fechaHoyChile() {
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' }).format(new Date());
+  } catch (e) {
+    return new Date().toISOString().slice(0, 10);
+  }
+}
+
 export async function onRequestGet({ request, env }) {
   try {
     if (!env.DB) {
@@ -42,6 +50,19 @@ export async function onRequestGet({ request, env }) {
         )
       `).run();
       await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS registro_visitas_log (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          fecha TEXT NOT NULL,
+          hora TEXT NOT NULL,
+          dispositivo TEXT NOT NULL,
+          ciudad TEXT DEFAULT '',
+          colega_id INTEGER DEFAULT 0,
+          es_app INTEGER DEFAULT 0,
+          navegador TEXT DEFAULT '',
+          created_at TEXT DEFAULT (datetime('now'))
+        )
+      `).run();
+      await env.DB.prepare(`
         CREATE TABLE IF NOT EXISTS registro_clics_contacto (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           contacto_id TEXT NOT NULL,
@@ -53,9 +74,9 @@ export async function onRequestGet({ request, env }) {
       await env.DB.prepare("ALTER TABLE contactos ADD COLUMN total_clics INTEGER DEFAULT 0").run();
     } catch(e) {}
 
-    const hoy = new Date().toISOString().slice(0, 10);
+    const hoy = fechaHoyChile();
 
-    const [visitasTotalRes, visitasHoyRes, clicsTotalRes, rankingRes, ultimosClicsRes] = await Promise.all([
+    const [visitasTotalRes, visitasHoyRes, clicsTotalRes, rankingRes, ultimosClicsRes, desgloseFechasRes, ultimasVisitasRes] = await Promise.all([
       env.DB.prepare("SELECT COALESCE(SUM(total), 0) as total FROM registro_visitas").first(),
       env.DB.prepare("SELECT COALESCE(total, 0) as hoy FROM registro_visitas WHERE fecha = ?").bind(hoy).first(),
       env.DB.prepare("SELECT COALESCE(SUM(total_clics), 0) as total FROM contactos").first(),
@@ -77,6 +98,17 @@ export async function onRequestGet({ request, env }) {
         LEFT JOIN contactos c ON r.contacto_id = c.id
         ORDER BY r.id DESC
         LIMIT 15
+      `).all(),
+      env.DB.prepare(`
+        SELECT fecha, total, created_at FROM registro_visitas ORDER BY fecha DESC LIMIT 15
+      `).all(),
+      env.DB.prepare(`
+        SELECT r.id, r.fecha, r.hora, r.dispositivo, r.ciudad, r.colega_id, r.es_app, r.navegador,
+               c.nombre_real as colega_nombre, c.alias_whatsapp as colega_alias
+        FROM registro_visitas_log r
+        LEFT JOIN colegas_grupo c ON r.colega_id = c.id
+        ORDER BY r.id DESC
+        LIMIT 30
       `).all()
     ]);
 
@@ -101,7 +133,9 @@ export async function onRequestGet({ request, env }) {
         total_clics: clicsTotalRes ? Number(clicsTotalRes.total) : 0,
         top_profesional: topContactado ? { nombre: topContactado.nombre, rubro: topContactado.rubro, clics: topContactado.total_clics } : null,
         ranking,
-        ultimos_clics: ultimosClicsRes.results || []
+        ultimos_clics: ultimosClicsRes.results || [],
+        desglose_fechas: desgloseFechasRes.results || [],
+        ultimas_visitas: ultimasVisitasRes.results || []
       }
     }, { status: 200 });
 
