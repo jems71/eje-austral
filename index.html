@@ -4521,16 +4521,23 @@
         }
 
         const fonoColega = String(o.publicado_por_fono || o.contacto_fono || '').replace(/\D/g, '');
-        const nombreColega = o.publicado_por || 'Colega';
+        const ubicacionTexto = o.ciudad ? ` en ${o.ciudad}` : '';
+        const empresaTexto = o.empresa ? ` (${o.empresa})` : '';
 
         const btnWaMsg = encodeURIComponent(
-          `Hola ${nombreColega}, te escribo desde la red Eje Austral respecto a la oferta de "${o.cargo}" para ${o.ciudad} que compartiste en el grupo. ¿La vacante sigue disponible o ya se cerró el proceso? Saludos cordiales, Juan Carlos García.`
+          `Hola colega, te saluda Juan Carlos García del grupo UACh.
+
+` +
+          `Te escribo para consultarte por el aviso de *${o.cargo || 'trabajo'}*${empresaTexto}${ubicacionTexto} que compartiste en el grupo: ¿la vacante sigue disponible o ya se cubrió el puesto?
+
+` +
+          `Es para mantener la información al día en la plataforma Eje Austral. ¡Muchas gracias y un abrazo!`
         );
 
         const btnConsultarWa = (esCubierta)
           ? `<span style="font-size:11.5px; color:#64748b;">Proceso finalizado</span>`
           : ((fonoColega && fonoColega.length >= 8)
-            ? `<a href="https://wa.me/${fonoColega}?text=${btnWaMsg}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; background:var(--green); color:#fff; border-radius:6px; font-weight:600; font-size:12px; text-decoration:none;" title="Enviar WhatsApp a ${esc(nombreColega)} (+${fonoColega})">
+            ? `<a href="https://wa.me/${fonoColega}?text=${btnWaMsg}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; background:var(--green); color:#fff; border-radius:6px; font-weight:600; font-size:12px; text-decoration:none;" title="Consultar vigencia por WhatsApp (+${fonoColega})">
                 📲 Preguntar Vigencia (+569...)
               </a>`
             : `<span style="font-size:11.5px; color:var(--text-muted);">Sin fono registrado</span>`);
