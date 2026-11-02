@@ -55,22 +55,42 @@ export async function onRequestGet({ request, env }) {
     );
   }
 
+  // Migraciones automáticas idempotentes para campos estructurados de ofertas
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN cargo TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN ciudad TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN empresa TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN experiencia TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN tipo_postulacion TEXT DEFAULT 'interno'").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN contacto_nombre TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN contacto_fono TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN contacto_email TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN publicado_por_fono TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN fecha_verificacion TEXT DEFAULT ''").run(); } catch(e) {}
+
   try {
     const resultado = await env.DB.prepare(`
-      SELECT id, texto, fecha_publicacion, publicado_por, estado
+      SELECT id, texto, fecha_publicacion, publicado_por, estado,
+             COALESCE(cargo, '') as cargo,
+             COALESCE(ciudad, '') as ciudad,
+             COALESCE(empresa, '') as empresa,
+             COALESCE(experiencia, '') as experiencia,
+             COALESCE(tipo_postulacion, 'interno') as tipo_postulacion,
+             COALESCE(contacto_nombre, '') as contacto_nombre,
+             COALESCE(contacto_fono, '') as contacto_fono,
+             COALESCE(contacto_email, '') as contacto_email,
+             COALESCE(publicado_por_fono, '') as publicado_por_fono,
+             COALESCE(fecha_verificacion, '') as fecha_verificacion
       FROM ofertas
       WHERE (estado IS NULL OR estado = 'publicada')
       ORDER BY fecha_publicacion DESC
     `).all();
 
     const ahora = new Date();
-    // Ampliar vigencia a 30 días para no perder ofertas recientes del grupo
-    const limite = new Date(ahora.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const limite = new Date(ahora.getTime() - 35 * 24 * 60 * 60 * 1000);
 
     const ofertas = (resultado.results || [])
       .map(oferta => {
         const d = parseFecha(oferta.fecha_publicacion);
-        // Si la fecha venía en formato antiguo DD/MM/YYYY, sanearla en D1 silenciosamente
         if (d && String(oferta.fecha_publicacion).includes('/')) {
           try {
             env.DB.prepare("UPDATE ofertas SET fecha_publicacion = ? WHERE id = ?")
@@ -78,14 +98,17 @@ export async function onRequestGet({ request, env }) {
               .run();
           } catch(e) {}
         }
+        const ts = d ? d.getTime() : 0;
+        const diasTranscurridos = ts ? Math.floor((ahora.getTime() - ts) / (1000 * 60 * 60 * 24)) : 0;
         return {
           ...oferta,
           fecha_publicacion: d ? d.toISOString() : oferta.fecha_publicacion,
-          _timestamp: d ? d.getTime() : 0
+          dias_transcurridos: Math.max(0, diasTranscurridos),
+          _timestamp: ts
         };
       })
       .filter(oferta => {
-        return oferta._timestamp && oferta._timestamp >= limite.getTime() && oferta._timestamp <= (ahora.getTime() + 86400000);
+        return oferta._timestamp && oferta._timestamp >= limite.getTime();
       })
       .sort((a, b) => b._timestamp - a._timestamp)
       .map(({ _timestamp, ...resto }) => resto);

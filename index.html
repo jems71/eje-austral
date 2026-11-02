@@ -1233,12 +1233,55 @@
 
   <section id="view-ofertas" class="hidden">
     <div class="toolbar-wrap">
+      <div class="toolbar-row toolbar-search-row">
+        <input type="text" id="ofertas-search" placeholder="Buscar oferta por cargo, empresa, ciudad o requisitos..." class="search-input" oninput="filtrarOfertasPublicas()" />
+        <div class="view-switcher">
+          <button class="view-btn active" id="btn-of-view-tabla" onclick="switchOfertasView('tabla')" title="Vista Tabla">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Tabla
+          </button>
+          <button class="view-btn" id="btn-of-view-tarjetas" onclick="switchOfertasView('tarjetas')" title="Vista Tarjetas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Tarjetas
+          </button>
+        </div>
+      </div>
       <div class="toolbar-row toolbar-filter-row">
-        <span class="filter-label" style="min-width:auto;">Ofertas laborales publicadas en el grupo · se eliminan solas a los 15 días</span>
-        <button class="add-btn hidden" id="btn-publicar-oferta" onclick="openOfertaModal()">+ Publicar oferta laboral</button>
+        <span class="filter-label" style="min-width:auto;">ZONA:</span>
+        <div class="filter-group">
+          <button class="chip-sm filter-of-zona active" data-zona="todas" onclick="filtrarOfertasPorZona('todas', this)">Todas</button>
+          <button class="chip-sm filter-of-zona" data-zona="valdivia" onclick="filtrarOfertasPorZona('valdivia', this)">Valdivia / Los Ríos</button>
+          <button class="chip-sm filter-of-zona" data-zona="osorno" onclick="filtrarOfertasPorZona('osorno', this)">Osorno</button>
+          <button class="chip-sm filter-of-zona" data-zona="llanquihue" onclick="filtrarOfertasPorZona('llanquihue', this)">Llanquihue / Pto. Montt / Varas</button>
+          <button class="chip-sm filter-of-zona" data-zona="araucania" onclick="filtrarOfertasPorZona('araucania', this)">Temuco / Araucanía</button>
+        </div>
+        <button class="add-btn hidden" id="btn-publicar-oferta" onclick="openOfertaModal()" style="margin-left: auto;">+ Publicar oferta laboral</button>
       </div>
     </div>
-    <div class="grid" id="grid-ofertas">
+
+    <!-- Vista Tabla de Ofertas -->
+    <div id="wrap-tabla-ofertas" class="admin-table-card" style="margin: 0 0 24px 0; border-radius: 10px;">
+      <div style="overflow-x: auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th style="width: 110px;">Fecha</th>
+              <th>Cargo / Vacante & Empresa</th>
+              <th>Ciudad / Faena</th>
+              <th>Requisitos / Experiencia</th>
+              <th>Aportado por</th>
+              <th style="text-align: center; width: 190px;">Postulación / Contacto</th>
+            </tr>
+          </thead>
+          <tbody id="ofertas-tabla-tbody">
+            <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando ofertas laborales...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Vista Tarjetas de Ofertas -->
+    <div class="grid hidden" id="grid-ofertas">
       <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>
     </div>
   </section>
@@ -1283,6 +1326,9 @@
       </button>
       <button id="subtab-btn-colegas" class="admin-subtab-btn" onclick="cambiarSubTabAdmin('colegas')">
         <span>🎓</span> Difusión Colegas UACh <span class="badge" style="background:#e0f2fe; color:#0369a1;" id="cnt-colegas-total">286</span>
+      </button>
+      <button id="subtab-btn-ofertas-admin" class="admin-subtab-btn" onclick="cambiarSubTabAdmin('ofertas-admin')">
+        <span>💼</span> Vigencia Ofertas (5D) <span class="badge badge-amber" id="cnt-ofertas-vigencia-badge">0</span>
       </button>
       <button id="btn-instalar-admin-panel" class="hidden" onclick="abrirModalInstalarEAA()" style="margin-left: auto; padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; border: 1.5px solid #fde68a; background: #fffbeb; color: #92400e; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
         🖥️ Crear acceso directo EAA
@@ -1580,6 +1626,60 @@
         </div>
       </div>
     </div> <!-- /admin-sec-colegas -->
+
+    <!-- SUB-CONTENIDO 5: SEGUIMIENTO DE VIGENCIA DE OFERTAS LABORALES (5 DÍAS) -->
+    <div id="admin-sec-ofertas" class="hidden">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div>
+          <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 6px 0; font-size: 24px;">💼 Seguimiento de Vigencia de Ofertas (Control 5 Días)</h2>
+          <p style="margin: 0; color: var(--text-muted); font-size: 14px;">A los 5 días de publicado un aviso, pregúntale por WhatsApp al colega que lo aportó si la vacante sigue disponible para mantener la red 100% confiable.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-primary" onclick="loadOfertasAdmin()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar Ofertas</button>
+          <button class="btn-secondary" onclick="openOfertaModal()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">+ Publicar Oferta</button>
+        </div>
+      </div>
+
+      <!-- Tarjetas Resumen Vigencia -->
+      <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 20px;">
+        <div class="kpi-card">
+          <div class="kpi-card-header"><span class="kpi-card-label">Ofertas Activas</span><div class="kpi-card-icon kpi-icon-blue">💼</div></div>
+          <div class="kpi-card-value text-blue" id="stat-of-total">0</div>
+          <div class="kpi-card-sub">Publicadas en el portal</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-header"><span class="kpi-card-label">Requieren Confirmación</span><div class="kpi-card-icon kpi-icon-amber">⚠️</div></div>
+          <div class="kpi-card-value text-amber" id="stat-of-requieren">0</div>
+          <div class="kpi-card-sub">Llevan 5 o más días</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-header"><span class="kpi-card-label">Recientes / Frescas</span><div class="kpi-card-icon kpi-icon-green">🟢</div></div>
+          <div class="kpi-card-value text-green" id="stat-of-frescas">0</div>
+          <div class="kpi-card-sub">Menos de 5 días</div>
+        </div>
+      </div>
+
+      <!-- Tabla Seguimiento Ofertas -->
+      <div class="admin-table-card">
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 130px;">Vigencia</th>
+                <th>Cargo / Vacante & Empresa</th>
+                <th>Ciudad</th>
+                <th>Aportado por (Colega)</th>
+                <th style="text-align: center; width: 220px;">Consultar por WhatsApp</th>
+                <th style="text-align: center; width: 170px;">Acción de Estado</th>
+              </tr>
+            </thead>
+            <tbody id="ofertas-admin-tbody">
+              <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">Cargando ofertas laborales...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div> <!-- /admin-sec-ofertas -->
   </section>
 
   <!-- === FOOTER === -->
@@ -1954,16 +2054,105 @@
   </div>
 
   <!-- === MODAL: Publicar oferta === -->
-  <div id="modal-add-oferta" class="modal-bg hidden">
-    <div class="modal">
+  <div id="modal-add-oferta" class="modal-bg hidden" onclick="if(event.target===this) closeOfertaModal()">
+    <div class="modal" style="max-width: 540px;">
       <button class="modal-close" onclick="closeOfertaModal()">×</button>
-      <h3 class="serif">Nueva oferta laboral</h3>
-      <p class="sub">Pega el texto tal como se publicó en el grupo.</p>
-      <label>Texto</label>
-      <textarea id="of-texto" rows="8" placeholder="Pega acá el mensaje completo..."></textarea>
-      <div class="modal-actions">
+      <h3 class="serif" style="color: var(--uach-blue); margin: 0 0 6px 0;">Nueva Oferta Laboral</h3>
+      <p class="sub" style="margin-bottom: 14px;">Pega el texto del aviso de WhatsApp y organiza los datos para la tabla pública.</p>
+
+      <label>Texto completo del aviso de WhatsApp *</label>
+      <textarea id="of-texto" rows="5" placeholder="Pega acá el mensaje tal como llegó al grupo..." oninput="autoDetectarCamposOferta()"></textarea>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 4px; margin-bottom: 12px;">
+        <button type="button" onclick="autoDetectarCamposOferta(true)" style="background: transparent; border: 1px dashed var(--uach-blue); color: var(--uach-blue); border-radius: 6px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer;">✨ Auto-detectar datos del texto</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 10px;">
+        <div>
+          <label>Cargo / Vacante *</label>
+          <input type="text" id="of-cargo" placeholder="Ej: Encargado de Calidad" required>
+        </div>
+        <div>
+          <label>Ciudad / Faena *</label>
+          <input type="text" id="of-ciudad" placeholder="Ej: Osorno" required>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label>Empresa u Obra</label>
+          <input type="text" id="of-empresa" placeholder="Ej: Condominio Santa Flora">
+        </div>
+        <div>
+          <label>Experiencia / Requisitos</label>
+          <input type="text" id="of-experiencia" placeholder="Ej: 2+ años en edificación">
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 12px; color: var(--uach-blue);">Canal Oficial de Postulación</div>
+      <div style="display: grid; grid-template-columns: 1.1fr 1fr; gap: 10px;">
+        <div>
+          <label>Tipo de postulación</label>
+          <select id="of-tipo-postulacion" style="width: 100%; padding: 9px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13px; background: #fff;">
+            <option value="interno">💬 Por interno con quien publicó</option>
+            <option value="whatsapp_tercero">📲 WhatsApp directo de contacto</option>
+            <option value="correo">✉️ Enviar CV por correo electrónico</option>
+            <option value="mixto">🔄 Correo y WhatsApp</option>
+          </select>
+        </div>
+        <div>
+          <label>Nombre de contacto</label>
+          <input type="text" id="of-contacto-nombre" placeholder="Ej: Daniela Serón / Viviana S.">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px;">
+        <div>
+          <label>WhatsApp de contacto</label>
+          <input type="tel" id="of-contacto-fono" placeholder="+56 9 ...">
+        </div>
+        <div>
+          <label>Correo para recibir CVs</label>
+          <input type="email" id="of-contacto-email" placeholder="postulacion@empresa.cl">
+        </div>
+      </div>
+
+      <div class="section-title" style="margin-top: 12px; color: var(--uach-blue);">Seguimiento de Vigencia (Admin)</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div>
+          <label>Colega que aportó el aviso</label>
+          <input type="text" id="of-publicado-por" value="Juan Carlos García" placeholder="Nombre del colega">
+        </div>
+        <div>
+          <label>WhatsApp del colega (para consultar a los 5D)</label>
+          <input type="tel" id="of-publicado-fono" placeholder="+56 9 ...">
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 18px;">
         <button class="btn-secondary" onclick="closeOfertaModal()">Cancelar</button>
-        <button class="btn-primary" id="btn-oferta-submit" onclick="publicarOferta()">Publicar</button>
+        <button class="btn-primary" id="btn-oferta-submit" onclick="publicarOferta()">Publicar en Tabla Oficial</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === MODAL: Detalle Completo de Oferta Laboral === -->
+  <div id="modal-oferta-detail" class="modal-bg hidden" onclick="if(event.target===this) closeOfertaDetailModal()">
+    <div class="modal" style="max-width: 580px;">
+      <button class="modal-close" onclick="closeOfertaDetailModal()">×</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span style="font-size: 24px;">💼</span>
+        <h3 class="serif" id="of-det-cargo" style="margin: 0; color: var(--uach-blue); font-size: 20px;">Oferta Laboral</h3>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;" id="of-det-badges"></div>
+
+      <div style="padding: 12px 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 16px; font-size: 13.5px; line-height: 1.65; white-space: pre-wrap; color: var(--text);" id="of-det-texto"></div>
+
+      <div id="of-det-canales" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"></div>
+
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button class="btn-secondary" onclick="closeOfertaDetailModal()">Cerrar</button>
+        <button class="btn-primary" id="btn-compartir-oferta" onclick="compartirOfertaActual()" style="display: inline-flex; align-items: center; gap: 6px;">📲 Compartir en WhatsApp</button>
       </div>
     </div>
   </div>
@@ -3355,210 +3544,369 @@
       });
     });
 
-    // === OFERTAS ===
+    // === OFERTAS LABORALES Y SEGUIMIENTO DE VIGENCIA ===
     let OFERTAS = [];
     let OFERTAS_CARGADAS = false;
+    let OFERTA_DETALLE_ACTUAL = null;
+    let OFERTAS_FILTRO_ZONA = 'todas';
+    let OFERTAS_VIEW = 'tabla';
 
-    function esAdmin() {
-      return !!getAdminToken();
-    }
+    function switchOfertasView(view) {
+      OFERTAS_VIEW = view;
+      const btnT = document.getElementById('btn-of-view-tabla');
+      const btnC = document.getElementById('btn-of-view-tarjetas');
+      const wrapT = document.getElementById('wrap-tabla-ofertas');
+      const grid = document.getElementById('grid-ofertas');
 
-    function solicitarAccesoAdmin() {
-      if (esAdmin()) {
-        alert('Ya estás en modo administrador.');
-        return;
+      if (btnT && btnC && wrapT && grid) {
+        btnT.classList.toggle('active', view === 'tabla');
+        btnC.classList.toggle('active', view === 'tarjetas');
+        wrapT.classList.toggle('hidden', view !== 'tabla');
+        grid.classList.toggle('hidden', view !== 'tarjetas');
       }
-      abrirModalAdminLogin();
     }
 
-    function abrirModalAdminLogin(msg) {
-      const err = document.getElementById('admin-login-err');
-      if (err) {
-        if (msg) { err.textContent = msg; err.classList.remove('hidden'); }
-        else { err.classList.add('hidden'); }
+    function filtrarOfertasPorZona(zona, btn) {
+      OFERTAS_FILTRO_ZONA = zona;
+      document.querySelectorAll('.filter-of-zona').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderOfertas();
+    }
+
+    function filtrarOfertasPublicas() {
+      renderOfertas();
+    }
+
+    function parsearCamposOferta(o) {
+      const txt = String(o.texto || '');
+      let cargo = o.cargo || '';
+      let ciudad = o.ciudad || '';
+      let empresa = o.empresa || '';
+      let experiencia = o.experiencia || '';
+      let tipoPost = o.tipo_postulacion || 'interno';
+      let fono = o.contacto_fono || '';
+      let email = o.contacto_email || '';
+      let nombre = o.contacto_nombre || '';
+
+      // Si no vienen los campos estructurados, inferirlos del texto automáticamente
+      if (!cargo) {
+        const mCargo = txt.match(/(?:cargo|busca|necesita|solicita|puesto|vacante|oferta laboral)\s*:?[\s*]*([^\n\r,.;]{4,45})/i);
+        if (mCargo) cargo = mCargo[1].replace(/[*_~]/g, '').trim();
+        else cargo = 'Profesional / Técnico de Construcción';
       }
-      const pwd = document.getElementById('admin-login-pwd');
-      if (pwd) pwd.value = '';
-      document.getElementById('modal-admin-login').classList.remove('hidden');
-      setTimeout(() => { if (pwd) pwd.focus(); }, 100);
-    }
 
-    function cancelarAdminLogin() {
-      document.getElementById('modal-admin-login').classList.add('hidden');
-      try {
-        const u = new URL(window.location);
-        if (u.searchParams.has('admin')) {
-          u.searchParams.delete('admin');
-          window.history.replaceState({}, '', u);
+      if (!ciudad) {
+        if (/valdivia/i.test(txt)) ciudad = 'Valdivia';
+        else if (/osorno/i.test(txt)) ciudad = 'Osorno';
+        else if (/puerto varas|pto varas/i.test(txt)) ciudad = 'Puerto Varas';
+        else if (/puerto montt|pto montt/i.test(txt)) ciudad = 'Puerto Montt';
+        else if (/temuco|collipulli|araucan[ií]a/i.test(txt)) ciudad = 'Temuco / Araucanía';
+        else if (/futrono/i.test(txt)) ciudad = 'Futrono';
+        else if (/puc[oó]n|villarrica/i.test(txt)) ciudad = 'Pucón';
+        else if (/nueva braunau|llanquihue/i.test(txt)) ciudad = 'Nueva Braunau';
+        else if (/chilo[eé]|castro|ancud/i.test(txt)) ciudad = 'Chiloé';
+        else ciudad = 'Zona Sur';
+      }
+
+      if (!empresa) {
+        const mEmp = txt.match(/(?:constructora|empresa|proyecto)\s+([A-ZÁÉÍÓÚ][\w\s]{3,35})/);
+        if (mEmp) empresa = mEmp[0].replace(/[*_~]/g, '').trim();
+        else empresa = 'Constructora / Obra';
+      }
+
+      if (!experiencia) {
+        if (/pr[aá]ctica/i.test(txt)) experiencia = 'Práctica profesional';
+        else if (/reci[eé]n titulado/i.test(txt)) experiencia = 'Recién titulado';
+        else if (/(\d+)\s*a[ñn]os?/i.test(txt)) {
+          const m = txt.match(/(\d+)\s*a[ñn]os?/i);
+          experiencia = m ? `${m[1]}+ años exp.` : 'Con experiencia';
+        } else {
+          experiencia = 'Experiencia en obra';
         }
-      } catch(e) {}
-    }
-
-    async function doAdminLogin() {
-      const pwdInput = document.getElementById('admin-login-pwd');
-      const err = document.getElementById('admin-login-err');
-      const btn = document.getElementById('btn-admin-login');
-      const pwd = (pwdInput?.value || '').trim();
-
-      if (!pwd) {
-        err.textContent = 'Ingresa la clave de administrador.';
-        err.classList.remove('hidden');
-        return;
       }
 
-      btn.disabled = true;
-      btn.textContent = 'Verificando...';
-      err.classList.add('hidden');
-
-      try {
-        const r = await fetch('/api/admin-login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: pwd })
-        });
-        const out = await r.json();
-        if (!r.ok || !out.ok || !out.token) {
-          throw new Error(out.error || 'Clave de administrador incorrecta');
-        }
-
-        setAdminToken(out.token);
-        document.getElementById('modal-admin-login').classList.add('hidden');
-
-        try {
-          const u = new URL(window.location);
-          u.searchParams.set('admin', '1');
-          window.history.replaceState({}, '', u);
-        } catch(e) {}
-
-        actualizarEstadoAdminUI();
-
-        const tabStats = document.querySelector('.tab[data-tab="estadisticas"]');
-        if (tabStats) tabStats.click();
-
-        renderContactos();
-        if (OFERTAS_CARGADAS) renderOfertas();
-        alert('🔓 Modo Administrador desbloqueado correctamente.');
-      } catch(e) {
-        err.textContent = e.message || 'Error al autenticar administrador';
-        err.classList.remove('hidden');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Desbloquear';
+      if (!email) {
+        const mMail = txt.match(/[\w.-]+@[\w.-]+\.\w+/);
+        if (mMail) email = mMail[0];
       }
-    }
 
-    window.solicitarAccesoAdmin = solicitarAccesoAdmin;
-    window.abrirModalAdminLogin = abrirModalAdminLogin;
-    window.cancelarAdminLogin = cancelarAdminLogin;
-    window.doAdminLogin = doAdminLogin;
-
-    function actualizarEstadoAdminUI() {
-      const admin = esAdmin();
-      const tabStats = document.getElementById('tab-stats');
-      if (tabStats) tabStats.classList.toggle('hidden', !admin);
-      const chipSinZona = document.getElementById('chip-zona-sin-asignar');
-      if (chipSinZona) chipSinZona.classList.toggle('hidden', !admin);
-      const btnInstalarAdmin = document.getElementById('btn-instalar-admin');
-      if (btnInstalarAdmin) btnInstalarAdmin.classList.toggle('hidden', !admin);
-      const btnInstalarAdminPanel = document.getElementById('btn-instalar-admin-panel');
-      if (btnInstalarAdminPanel) btnInstalarAdminPanel.classList.toggle('hidden', !admin);
-      if (admin) {
-        cargarRecomendacionesPendientesAdmin();
+      if (!fono) {
+        const mFono = txt.match(/(?:\+?56)?\s*9\s*\d{3,4}\s*\d{4}/);
+        if (mFono) fono = mFono[0].replace(/\s+/g, '');
       }
-    }
 
-    function abrirModalInstalarEAA() {
-      const m = document.getElementById('modal-instalar-eaa');
-      if (m) m.classList.remove('hidden');
-    }
-
-    function cerrarModalInstalarEAA() {
-      const m = document.getElementById('modal-instalar-eaa');
-      if (m) m.classList.add('hidden');
-    }
-
-    function descargarAccesoDirectoEAA() {
-      // Descarga un pequeño instalador (.cmd) que crea en el Escritorio el acceso "EAA"
-      // abriendo Chrome/Edge en modo ventana de aplicación (sin barra de direcciones) directo en modo administrador.
-      const contenido = [
-        '@echo off',
-        'echo Creando acceso directo EAA en el Escritorio...',
-        String.raw`powershell -NoProfile -ExecutionPolicy Bypass -Command "$c=@('%ProgramFiles%\Google\Chrome\Application\chrome.exe','%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe','%LocalAppData%\Google\Chrome\Application\chrome.exe','%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe') | Where-Object { Test-Path $_ } | Select-Object -First 1; if (-not $c) { Write-Host 'No se encontro Chrome ni Edge.'; exit 1 }; $d=[Environment]::GetFolderPath('Desktop'); $s=(New-Object -ComObject WScript.Shell).CreateShortcut(\"$d\EAA.lnk\"); $s.TargetPath=$c; $s.Arguments='--app=https://eje-austral.jems.cl/?admin=1'; $s.IconLocation=\"$c,0\"; $s.Description='Eje Austral - Modo Administrador (EAA)'; $s.Save()"`,
-        'echo Listo: ya tienes el icono EAA en tu Escritorio.',
-        'pause'
-      ].join('\r\n') + '\r\n';
-      const blob = new Blob([contenido], { type: 'application/octet-stream' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'Crear acceso EAA.cmd';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    window.actualizarEstadoAdminUI = actualizarEstadoAdminUI;
-    window.abrirModalInstalarEAA = abrirModalInstalarEAA;
-    window.cerrarModalInstalarEAA = cerrarModalInstalarEAA;
-    window.descargarAccesoDirectoEAA = descargarAccesoDirectoEAA;
-
-    function formatFechaOferta(iso) {
-      if (!iso) return '';
-      try {
-        const d = parsearFechaFlexible(iso);
-        if (!d) return String(iso).slice(0, 10);
-        return d.toLocaleDateString('es-CL', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-          timeZone: 'America/Santiago'
-        });
-      } catch (e) {
-        return String(iso || '');
-      }
+      return { ...o, cargo, ciudad, empresa, experiencia, tipo_postulacion: tipoPost, contacto_fono: fono, contacto_email: email, contacto_nombre: nombre };
     }
 
     async function loadOfertas() {
+      const tbody = document.getElementById('ofertas-tabla-tbody');
       const grid = document.getElementById('grid-ofertas');
-      grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando ofertas laborales...</td></tr>';
+      if (grid) grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>';
       try {
         const r = await apiFetch('/api/ofertas');
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
-        OFERTAS = out.ofertas || [];
+        OFERTAS = (out.ofertas || []).map(parsearCamposOferta);
         OFERTAS_CARGADAS = true;
-        document.getElementById('cnt-ofertas').textContent = OFERTAS.length;
+        const cntEl = document.getElementById('cnt-ofertas');
+        if (cntEl) cntEl.textContent = OFERTAS.length;
         renderOfertas();
+        actualizarBadgesVigenciaAdmin();
       } catch (e) {
         console.error(e);
-        grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se pudieron cargar las ofertas.</div>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 24px; text-align: center; color: #ef4444;">No se pudieron cargar las ofertas.</td></tr>';
+        if (grid) grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se pudieron cargar las ofertas.</div>';
       }
     }
 
     function renderOfertas() {
+      const tbody = document.getElementById('ofertas-tabla-tbody');
       const grid = document.getElementById('grid-ofertas');
-      const btn = document.getElementById('btn-publicar-oferta');
-      if (btn) btn.classList.toggle('hidden', !esAdmin());
+      const btnAdd = document.getElementById('btn-publicar-oferta');
+      if (btnAdd) btnAdd.classList.toggle('hidden', !esAdmin());
 
-      if (OFERTAS.length === 0) {
-        grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No hay ofertas vigentes por ahora.</div>';
+      const q = (document.getElementById('ofertas-search')?.value || '').toLowerCase().trim();
+      const z = OFERTAS_FILTRO_ZONA;
+
+      const filtradas = OFERTAS.filter(o => {
+        if (z !== 'todas') {
+          const cNorm = (o.ciudad || '').toLowerCase();
+          if (z === 'valdivia' && !cNorm.includes('valdivia') && !cNorm.includes('futrono') && !cNorm.includes('ríos')) return false;
+          if (z === 'osorno' && !cNorm.includes('osorno')) return false;
+          if (z === 'llanquihue' && !cNorm.includes('llanquihue') && !cNorm.includes('puerto') && !cNorm.includes('varas') && !cNorm.includes('braunau')) return false;
+          if (z === 'araucania' && !cNorm.includes('temuco') && !cNorm.includes('collipulli') && !cNorm.includes('pucón') && !cNorm.includes('villarrica')) return false;
+        }
+        if (q) {
+          const matchTxt = (o.texto || '').toLowerCase().includes(q);
+          const matchCargo = (o.cargo || '').toLowerCase().includes(q);
+          const matchCiu = (o.ciudad || '').toLowerCase().includes(q);
+          const matchEmp = (o.empresa || '').toLowerCase().includes(q);
+          if (!matchTxt && !matchCargo && !matchCiu && !matchEmp) return false;
+        }
+        return true;
+      });
+
+      if (filtradas.length === 0) {
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 28px; text-align: center; color: var(--text-muted);">No hay ofertas laborales disponibles con los filtros seleccionados.</td></tr>';
+        if (grid) grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No hay ofertas laborales que coincidan.</div>';
         return;
       }
-      grid.innerHTML = OFERTAS.map(o => `
-        <div class="card" style="position:relative;">
-          <div class="card-fecha" style="display:flex; justify-content:space-between; align-items:center;">
-            <span>${esc(formatFechaOferta(o.fecha_publicacion))}</span>
-            ${esAdmin() ? `<button onclick="eliminarOferta('${esc(o.id)}')" style="background:#ef4444; color:#fff; border:none; padding:4px 10px; border-radius:4px; font-size:12px; cursor:pointer; font-weight:600; display:inline-flex; align-items:center; gap:4px;">🗑️ Borrar</button>` : ''}
-          </div>
-          <div style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; color: var(--text);">${esc(o.texto)}</div>
-          ${o.publicado_por ? `<div class="info-row" style="margin-top:12px;"><div class="label">Publica</div><div class="value">${esc(o.publicado_por)}</div></div>` : ''}
-        </div>
-      `).join('');
+
+      // Render Tabla
+      if (tbody) {
+        tbody.innerHTML = filtradas.map(o => {
+          const fechaFmt = formatFechaOferta(o.fecha_publicacion);
+          const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
+          const esVerificada = o.fecha_verificacion || (Number(o.dias_transcurridos) <= 3);
+
+          // Generación de botones inteligentes de postulación
+          let btnsAccion = '';
+          if (o.contacto_email) {
+            const asunto = encodeURIComponent(`Postulación: ${o.cargo || 'Oferta Laboral'} - Eje Austral`);
+            btnsAccion += `<a href="mailto:${esc(o.contacto_email)}?subject=${asunto}" target="_blank" onclick="event.stopPropagation();" class="btn-postular-mail" style="display:inline-flex; align-items:center; gap:5px; padding:6px 11px; background:#0284c7; color:#fff; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; margin:2px;" title="Enviar CV al correo ${esc(o.contacto_email)}">✉️ Enviar CV</a>`;
+          }
+          if (fonoLimpio && fonoLimpio.length >= 8) {
+            const msgWa = encodeURIComponent(`Hola! Vi la oferta de "${o.cargo}" para ${o.ciudad} publicada en la red Eje Austral. Me interesa postular y conocer los antecedentes. Saludos!`);
+            const labelWa = o.tipo_postulacion === 'interno' ? '💬 Por interno' : '💬 WhatsApp';
+            btnsAccion += `<a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" onclick="event.stopPropagation();" class="btn-postular-wa" style="display:inline-flex; align-items:center; gap:5px; padding:6px 11px; background:var(--green); color:#fff; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; margin:2px;" title="Postular vía WhatsApp">📲 ${labelWa}</a>`;
+          }
+
+          return `
+            <tr style="border-bottom: 1px solid var(--border); cursor:pointer;" onclick="openOfertaDetailModal('${esc(o.id)}')">
+              <td style="padding: 12px 14px; white-space: nowrap;">
+                <div style="font-weight: 600; color: var(--text); font-size: 13px;">${esc(fechaFmt)}</div>
+                ${esVerificada ? `<span style="display:inline-block; font-size:10.5px; padding:1px 6px; background:#ecfdf5; color:#047857; border-radius:10px; font-weight:700; margin-top:2px;">🛡️ Vigente</span>` : `<span style="font-size:10.5px; color:var(--text-muted);">${Number(o.dias_transcurridos || 0)}d activa</span>`}
+              </td>
+              <td style="padding: 12px 14px;">
+                <div style="font-weight: 700; color: var(--uach-blue); font-size: 14px;">${esc(o.cargo)}</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">🏢 ${esc(o.empresa || 'Empresa Constructora')}</div>
+              </td>
+              <td style="padding: 12px 14px; font-size: 13px; color: var(--text); white-space: nowrap;">
+                📍 <strong>${esc(o.ciudad)}</strong>
+              </td>
+              <td style="padding: 12px 14px;">
+                <span style="display:inline-block; font-size:12px; padding:3px 9px; border-radius:12px; background:#f1f5f9; color:#334155; font-weight:600;">${esc(o.experiencia)}</span>
+              </td>
+              <td style="padding: 12px 14px; font-size: 12.5px; color: var(--text-muted);">
+                👤 ${esc(o.publicado_por || 'Colega UACh')}
+              </td>
+              <td style="padding: 12px 14px; text-align: center;">
+                <div style="display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:4px;">
+                  ${btnsAccion || `<button onclick="event.stopPropagation(); openOfertaDetailModal('${esc(o.id)}')" style="padding:6px 12px; background:var(--card); border:1px solid var(--border); border-radius:6px; font-size:12px; font-weight:600; cursor:pointer;">👁️ Ver detalle</button>`}
+                  ${esAdmin() ? `<button onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" title="Borrar aviso" style="padding:5px 8px; background:transparent; border:1px solid #fca5a5; color:#ef4444; border-radius:6px; cursor:pointer; font-size:11.5px; margin-left:4px;">🗑️</button>` : ''}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
+
+      // Render Tarjetas
+      if (grid) {
+        grid.innerHTML = filtradas.map(o => {
+          const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
+          return `
+            <div class="card" style="position:relative; cursor:pointer;" onclick="openOfertaDetailModal('${esc(o.id)}')">
+              <div class="card-fecha" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <span style="font-weight:700; color:var(--uach-blue);">${esc(formatFechaOferta(o.fecha_publicacion))}</span>
+                ${esAdmin() ? `<button onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" style="background:#ef4444; color:#fff; border:none; padding:4px 9px; border-radius:4px; font-size:11.5px; cursor:pointer; font-weight:600;">🗑️ Borrar</button>` : ''}
+              </div>
+              <h3 class="serif" style="margin:0 0 4px 0; font-size:16px; color:var(--text);">${esc(o.cargo)}</h3>
+              <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:8px;">🏢 ${esc(o.empresa)} · 📍 ${esc(o.ciudad)}</div>
+              <div style="display:inline-block; font-size:11.5px; padding:2px 8px; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; margin-bottom:10px;">${esc(o.experiencia)}</div>
+              <div style="font-size:13px; line-height:1.55; color:var(--text); max-height:85px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;">
+                ${esc(o.texto)}
+              </div>
+              <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:10px;">
+                <span style="font-size:11.5px; color:var(--text-muted);">👤 ${esc(o.publicado_por)}</span>
+                <span style="color:var(--uach-blue); font-weight:600; font-size:12.5px;">Ver más →</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function openOfertaDetailModal(id) {
+      const o = OFERTAS.find(x => x.id === id);
+      if (!o) return;
+      OFERTA_DETALLE_ACTUAL = o;
+
+      document.getElementById('of-det-cargo').textContent = o.cargo || 'Oferta Laboral';
+      document.getElementById('of-det-texto').textContent = o.texto || '';
+
+      const badgesEl = document.getElementById('of-det-badges');
+      if (badgesEl) {
+        badgesEl.innerHTML = `
+          <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 9px; background:#eff6ff; color:#1e40af; border-radius:12px; font-size:12px; font-weight:600;">📍 ${esc(o.ciudad)}</span>
+          <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 9px; background:#f8fafc; border:1px solid #cbd5e1; color:#334155; border-radius:12px; font-size:12px; font-weight:600;">🏢 ${esc(o.empresa || 'Empresa')}</span>
+          <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 9px; background:#fef3c7; color:#92400e; border-radius:12px; font-size:12px; font-weight:600;">🎓 ${esc(o.experiencia)}</span>
+          <span style="display:inline-flex; align-items:center; gap:4px; padding:3px 9px; background:#f1f5f9; color:#475569; border-radius:12px; font-size:12px;">📅 Publicada: ${esc(formatFechaOferta(o.fecha_publicacion))}</span>
+        `;
+      }
+
+      const canalesEl = document.getElementById('of-det-canales');
+      if (canalesEl) {
+        let canalHtml = '<div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px;">Canales de Postulación:</div>';
+        const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
+
+        if (o.contacto_email) {
+          const asunto = encodeURIComponent(`Postulación: ${o.cargo} - Eje Austral`);
+          canalHtml += `
+            <a href="mailto:${esc(o.contacto_email)}?subject=${asunto}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:#0284c7; color:#fff; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">
+              ✉️ Enviar CV por Correo (${esc(o.contacto_email)})
+            </a>
+          `;
+        }
+        if (fonoLimpio && fonoLimpio.length >= 8) {
+          const msgWa = encodeURIComponent(`Hola! Vi la oferta de "${o.cargo}" para ${o.ciudad} en la red Eje Austral. Me interesa postular y presentar mis antecedentes. Saludos!`);
+          const nombreTxt = o.contacto_nombre ? ` (${o.contacto_nombre})` : '';
+          canalHtml += `
+            <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:var(--green); color:#fff; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">
+              📲 Postular por WhatsApp${esc(nombreTxt)}
+            </a>
+          `;
+        }
+        if (!o.contacto_email && (!fonoLimpio || fonoLimpio.length < 8)) {
+          canalHtml += `<div style="font-size:12.5px; color:var(--text-muted);">Revisa las indicaciones en el texto del aviso para contactar al empleador.</div>`;
+        }
+        canalesEl.innerHTML = canalHtml;
+      }
+
+      document.getElementById('modal-oferta-detail').classList.remove('hidden');
+    }
+
+    function closeOfertaDetailModal() {
+      document.getElementById('modal-oferta-detail').classList.add('hidden');
+      OFERTA_DETALLE_ACTUAL = null;
+    }
+
+    function compartirOfertaActual() {
+      if (!OFERTA_DETALLE_ACTUAL) return;
+      const o = OFERTA_DETALLE_ACTUAL;
+      const textoCompartir = `💼 *OFERTA LABORAL | Eje Austral (Red UACh)*\n\n` +
+        `📌 *Cargo:* ${o.cargo}\n` +
+        `📍 *Lugar:* ${o.ciudad}\n` +
+        `🏢 *Empresa / Obra:* ${o.empresa}\n` +
+        `🎓 *Requisitos:* ${o.experiencia}\n\n` +
+        `📲 Revisa todos los detalles y postula directo en:\n` +
+        `https://eje-austral.jems.cl/?tab=ofertas`;
+
+      window.open(`https://wa.me/?text=${encodeURIComponent(textoCompartir)}`, '_blank');
+    }
+
+    // Auto-detección inteligente al pegar texto en el modal de nueva oferta
+    function autoDetectarCamposOferta(manual = false) {
+      const txt = (document.getElementById('of-texto')?.value || '').trim();
+      if (!txt) return;
+
+      const cargoInput = document.getElementById('of-cargo');
+      const ciuInput = document.getElementById('of-ciudad');
+      const empInput = document.getElementById('of-empresa');
+      const expInput = document.getElementById('of-experiencia');
+      const fonoInput = document.getElementById('of-contacto-fono');
+      const mailInput = document.getElementById('of-contacto-email');
+      const tipoSelect = document.getElementById('of-tipo-postulacion');
+
+      if (cargoInput && (!cargoInput.value || manual)) {
+        const mCargo = txt.match(/(?:cargo|busca|necesita|solicita|puesto|vacante|oferta laboral)\s*:?[\s*]*([^\n\r,.;]{4,45})/i);
+        if (mCargo) cargoInput.value = mCargo[1].replace(/[*_~]/g, '').trim();
+      }
+
+      if (ciuInput && (!ciuInput.value || manual)) {
+        if (/valdivia/i.test(txt)) ciuInput.value = 'Valdivia';
+        else if (/osorno/i.test(txt)) ciuInput.value = 'Osorno';
+        else if (/puerto varas|pto varas/i.test(txt)) ciuInput.value = 'Puerto Varas';
+        else if (/puerto montt|pto montt/i.test(txt)) ciuInput.value = 'Puerto Montt';
+        else if (/temuco|collipulli/i.test(txt)) ciuInput.value = 'Temuco';
+        else if (/futrono/i.test(txt)) ciuInput.value = 'Futrono';
+        else if (/puc[oó]n|villarrica/i.test(txt)) ciuInput.value = 'Pucón';
+        else if (/nueva braunau|llanquihue/i.test(txt)) ciuInput.value = 'Nueva Braunau';
+        else if (/chilo[eé]/i.test(txt)) ciuInput.value = 'Chiloé';
+      }
+
+      if (empInput && (!empInput.value || manual)) {
+        const mEmp = txt.match(/(?:constructora|empresa|proyecto)\s+([A-ZÁÉÍÓÚ][\w\s]{3,30})/);
+        if (mEmp) empInput.value = mEmp[0].replace(/[*_~]/g, '').trim();
+      }
+
+      if (expInput && (!expInput.value || manual)) {
+        if (/pr[aá]ctica/i.test(txt)) expInput.value = 'Práctica profesional';
+        else if (/reci[eé]n titulado/i.test(txt)) expInput.value = 'Recién titulado';
+        else if (/(\d+)\s*a[ñn]os?/i.test(txt)) {
+          const m = txt.match(/(\d+)\s*a[ñn]os?/i);
+          if (m) expInput.value = `${m[1]}+ años de experiencia`;
+        }
+      }
+
+      if (mailInput && (!mailInput.value || manual)) {
+        const mMail = txt.match(/[\w.-]+@[\w.-]+\.\w+/);
+        if (mMail) {
+          mailInput.value = mMail[0];
+          if (tipoSelect) tipoSelect.value = 'correo';
+        }
+      }
+
+      if (fonoInput && (!fonoInput.value || manual)) {
+        const mFono = txt.match(/(?:\+?56)?\s*9\s*\d{3,4}\s*\d{4}/);
+        if (mFono) {
+          fonoInput.value = mFono[0].replace(/\s+/g, '');
+          if (tipoSelect && !mailInput.value) tipoSelect.value = 'whatsapp_tercero';
+        }
+      }
     }
 
     function openOfertaModal() {
       document.getElementById('of-texto').value = '';
+      document.getElementById('of-cargo').value = '';
+      document.getElementById('of-ciudad').value = '';
+      document.getElementById('of-empresa').value = '';
+      document.getElementById('of-experiencia').value = '';
+      document.getElementById('of-contacto-nombre').value = '';
+      document.getElementById('of-contacto-fono').value = '';
+      document.getElementById('of-contacto-email').value = '';
+      document.getElementById('of-publicado-fono').value = '';
       document.getElementById('modal-add-oferta').classList.remove('hidden');
     }
     function closeOfertaModal() { document.getElementById('modal-add-oferta').classList.add('hidden'); }
@@ -3566,24 +3914,52 @@
     async function publicarOferta() {
       const texto = document.getElementById('of-texto').value.trim();
       if (!texto) { alert('Pega el texto de la oferta'); return; }
+
+      const cargo = (document.getElementById('of-cargo')?.value || '').trim() || 'Profesional de Construcción';
+      const ciudad = (document.getElementById('of-ciudad')?.value || '').trim() || 'Zona Sur';
+      const empresa = (document.getElementById('of-empresa')?.value || '').trim();
+      const experiencia = (document.getElementById('of-experiencia')?.value || '').trim();
+      const tipo_postulacion = document.getElementById('of-tipo-postulacion')?.value || 'interno';
+      const contacto_nombre = (document.getElementById('of-contacto-nombre')?.value || '').trim();
+      const contacto_fono = (document.getElementById('of-contacto-fono')?.value || '').trim();
+      const contacto_email = (document.getElementById('of-contacto-email')?.value || '').trim();
+      const publicado_por = (document.getElementById('of-publicado-por')?.value || 'Juan Carlos García').trim();
+      const publicado_por_fono = (document.getElementById('of-publicado-fono')?.value || '').trim();
+
       const btn = document.getElementById('btn-oferta-submit');
       btn.disabled = true; btn.textContent = 'Publicando...';
+
+      const payload = {
+        texto,
+        cargo,
+        ciudad,
+        empresa,
+        experiencia,
+        tipo_postulacion,
+        contacto_nombre,
+        contacto_fono,
+        contacto_email,
+        publicado_por,
+        publicado_por_fono
+      };
+
       try {
         const r = await apiFetch('/api/agregar-oferta', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ texto, publicado_por: 'Juan Carlos García' })
+          body: JSON.stringify(payload)
         });
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
         closeOfertaModal();
         OFERTAS_CARGADAS = false;
         await loadOfertas();
+        alert('✅ Oferta laboral publicada exitosamente en la tabla oficial.');
       } catch (e) {
         console.error(e);
         alert('Error al publicar: ' + e.message);
       } finally {
-        btn.disabled = false; btn.textContent = 'Publicar';
+        btn.disabled = false; btn.textContent = 'Publicar en Tabla Oficial';
       }
     }
 
@@ -3598,18 +3974,176 @@
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
         OFERTAS = OFERTAS.filter(o => o.id !== id);
-        document.getElementById('cnt-ofertas').textContent = OFERTAS.length;
+        const cntEl = document.getElementById('cnt-ofertas');
+        if (cntEl) cntEl.textContent = OFERTAS.length;
         renderOfertas();
+        if (typeof renderOfertasAdminTable === 'function') renderOfertasAdminTable();
       } catch (e) {
         console.error(e);
         alert('Error al eliminar oferta: ' + e.message);
       }
     }
 
+    // =====================================================
+    // PANEL ADMIN: SEGUIMIENTO DE VIGENCIA DE OFERTAS (5 DÍAS)
+    // =====================================================
+    async function loadOfertasAdmin() {
+      const tbody = document.getElementById('ofertas-admin-tbody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando seguimiento de ofertas...</td></tr>';
+      try {
+        // Ejecutar backfill silencioso si hace falta
+        try {
+          await apiFetch('/api/admin-ofertas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accion: 'backfill' })
+          });
+        } catch(e) {}
+
+        const r = await apiFetch('/api/ofertas');
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        OFERTAS = (out.ofertas || []).map(parsearCamposOferta);
+        renderOfertasAdminTable();
+        actualizarBadgesVigenciaAdmin();
+      } catch(e) {
+        console.error(e);
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 24px; text-align: center; color: #ef4444;">Error cargando ofertas: ' + esc(e.message) + '</td></tr>';
+      }
+    }
+
+    function actualizarBadgesVigenciaAdmin() {
+      const total = OFERTAS.length;
+      const requieren = OFERTAS.filter(o => Number(o.dias_transcurridos || 0) >= 5).length;
+      const frescas = total - requieren;
+
+      const badgeNav = document.getElementById('cnt-ofertas-vigencia-badge');
+      if (badgeNav) {
+        badgeNav.textContent = requieren;
+        badgeNav.style.display = requieren > 0 ? 'inline-block' : 'none';
+      }
+
+      const elTot = document.getElementById('stat-of-total');
+      const elReq = document.getElementById('stat-of-requieren');
+      const elFres = document.getElementById('stat-of-frescas');
+
+      if (elTot) elTot.textContent = total;
+      if (elReq) elReq.textContent = requieren;
+      if (elFres) elFres.textContent = frescas;
+    }
+
+    function renderOfertasAdminTable() {
+      const tbody = document.getElementById('ofertas-admin-tbody');
+      if (!tbody) return;
+
+      if (OFERTAS.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);">No hay ofertas activas registradas en este momento.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = OFERTAS.map(o => {
+        const dias = Number(o.dias_transcurridos || 0);
+        const tocaConsultar = dias >= 5;
+        const semaforoBadge = tocaConsultar
+          ? `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#fef3c7; color:#92400e;">⚠️ ${dias} días (Consultar)</span>`
+          : `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#ecfdf5; color:#065f46;">🟢 ${dias}d activa (Vigente)</span>`;
+
+        const fonoColega = String(o.publicado_por_fono || o.contacto_fono || '').replace(/\D/g, '');
+        const nombreColega = o.publicado_por || 'Colega';
+
+        const btnWaMsg = encodeURIComponent(
+          `Hola ${nombreColega}, te escribo desde la red Eje Austral respecto a la oferta de "${o.cargo}" para ${o.ciudad} que compartiste en el grupo. ¿La vacante sigue disponible o ya se cerró el proceso? Saludos cordiales, Juan Carlos García.`
+        );
+
+        const btnConsultarWa = (fonoColega && fonoColega.length >= 8)
+          ? `<a href="https://wa.me/${fonoColega}?text=${btnWaMsg}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; background:var(--green); color:#fff; border-radius:6px; font-weight:600; font-size:12px; text-decoration:none;" title="Enviar WhatsApp a ${esc(nombreColega)} (+${fonoColega})">
+              📲 Preguntar Vigencia (+569...)
+            </a>`
+          : `<span style="font-size:11.5px; color:var(--text-muted);">Sin fono registrado</span>`;
+
+        return `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 12px 14px;">${semaforoBadge}</td>
+            <td style="padding: 12px 14px;">
+              <div style="font-weight:700; color:var(--uach-blue); font-size:13.5px;">${esc(o.cargo)}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">🏢 ${esc(o.empresa || 'Empresa')}</div>
+            </td>
+            <td style="padding: 12px 14px; font-size:13px; color:var(--text); white-space:nowrap;">
+              📍 ${esc(o.ciudad)}
+            </td>
+            <td style="padding: 12px 14px; font-size:12.5px; color:var(--text);">
+              <div><strong>${esc(nombreColega)}</strong></div>
+              ${fonoColega ? `<div style="font-size:11.5px; color:var(--text-muted);">📞 +${fonoColega}</div>` : ''}
+            </td>
+            <td style="padding: 12px 14px; text-align: center;">
+              ${btnConsultarWa}
+            </td>
+            <td style="padding: 12px 14px; text-align: center;">
+              <div style="display:inline-flex; gap:6px; align-items:center;">
+                <button onclick="renovarVigenciaOferta('${esc(o.id)}')" style="padding:6px 10px; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Confirma que sigue en pie y extiende vigencia 5 días">
+                  🔄 Renovar
+                </button>
+                <button onclick="cubrirOferta('${esc(o.id)}')" style="padding:6px 10px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Puesto ocupado: retirar de la vista pública">
+                  ✅ Cubierta
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function renovarVigenciaOferta(id) {
+      try {
+        const r = await apiFetch('/api/admin-ofertas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'renovar', id })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        alert('✅ Oferta renovada exitosamente. Se mantiene activa y vigente en el portal.');
+        await loadOfertasAdmin();
+      } catch(e) {
+        console.error(e);
+        alert('Error al renovar oferta: ' + e.message);
+      }
+    }
+
+    async function cubrirOferta(id) {
+      if (!confirm('¿Confirmas que el puesto ya fue cubierto? La oferta saldrá del directorio público para que los colegas no sigan enviando antecedentes.')) return;
+      try {
+        const r = await apiFetch('/api/admin-ofertas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'cubrir', id })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        alert('✅ Oferta marcada como cubierta y retirada del listado público.');
+        await loadOfertasAdmin();
+        OFERTAS_CARGADAS = false;
+        await loadOfertas();
+      } catch(e) {
+        console.error(e);
+        alert('Error al cerrar oferta: ' + e.message);
+      }
+    }
+
+    window.switchOfertasView = switchOfertasView;
+    window.filtrarOfertasPorZona = filtrarOfertasPorZona;
+    window.filtrarOfertasPublicas = filtrarOfertasPublicas;
+    window.openOfertaDetailModal = openOfertaDetailModal;
+    window.closeOfertaDetailModal = closeOfertaDetailModal;
+    window.compartirOfertaActual = compartirOfertaActual;
+    window.autoDetectarCamposOferta = autoDetectarCamposOferta;
     window.openOfertaModal = openOfertaModal;
     window.closeOfertaModal = closeOfertaModal;
-    window.eliminarOferta = eliminarOferta;
     window.publicarOferta = publicarOferta;
+    window.eliminarOferta = eliminarOferta;
+    window.loadOfertasAdmin = loadOfertasAdmin;
+    window.renovarVigenciaOferta = renovarVigenciaOferta;
+    window.cubrirOferta = cubrirOferta;
 
     async function doLogin() {
       const pwd = document.getElementById('login-password').value;
@@ -4300,12 +4834,15 @@
       const btnDesp = document.getElementById('subtab-btn-despacho');
       const btnRecs = document.getElementById('subtab-btn-recs');
       const btnCol = document.getElementById('subtab-btn-colegas');
+      const btnOfAdmin = document.getElementById('subtab-btn-ofertas-admin');
+
       const secStats = document.getElementById('admin-sec-stats');
       const secDesp = document.getElementById('admin-sec-despacho');
       const secRecs = document.getElementById('admin-sec-recs');
       const secCol = document.getElementById('admin-sec-colegas');
+      const secOfAdmin = document.getElementById('admin-sec-ofertas');
 
-      [btnStats, btnDesp, btnRecs, btnCol].forEach(b => {
+      [btnStats, btnDesp, btnRecs, btnCol, btnOfAdmin].forEach(b => {
         if (b) {
           b.classList.remove('active');
           b.style.background = '';
@@ -4313,7 +4850,7 @@
           b.style.borderColor = '';
         }
       });
-      [secStats, secDesp, secRecs, secCol].forEach(s => {
+      [secStats, secDesp, secRecs, secCol, secOfAdmin].forEach(s => {
         if (s) s.classList.add('hidden');
       });
 
@@ -4333,6 +4870,10 @@
         if (secCol) secCol.classList.remove('hidden');
         if (btnCol) btnCol.classList.add('active');
         loadColegasGrupo();
+      } else if (tab === 'ofertas-admin') {
+        if (secOfAdmin) secOfAdmin.classList.remove('hidden');
+        if (btnOfAdmin) btnOfAdmin.classList.add('active');
+        loadOfertasAdmin();
       }
     }
 
