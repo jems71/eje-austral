@@ -4521,6 +4521,7 @@
         }
 
         const fonoColega = String(o.publicado_por_fono || o.contacto_fono || '').replace(/\D/g, '');
+        const nombreColega = o.publicado_por || 'Colega UACh';
         const ubicacionTexto = o.ciudad ? ` en ${o.ciudad}` : '';
         const empresaTexto = o.empresa ? ` (${o.empresa})` : '';
 
