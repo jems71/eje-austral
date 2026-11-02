@@ -32,6 +32,17 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ error: "No autorizado. Solo el administrador puede gestionar ofertas." }, { status: 401 });
     }
 
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN cargo TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN ciudad TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN empresa TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN experiencia TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN tipo_postulacion TEXT DEFAULT 'interno'").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN contacto_nombre TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN contacto_fono TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN contacto_email TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN publicado_por_fono TEXT DEFAULT ''").run(); } catch(e) {}
+    try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN fecha_verificacion TEXT DEFAULT ''").run(); } catch(e) {}
+
     const body = await request.json().catch(() => ({}));
     const accion = String(body.accion || '').trim();
     const id = String(body.id || '').trim();
