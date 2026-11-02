@@ -1,6 +1,6 @@
+// functions/api/ofertas.js — Cloudflare Pages Function con D1
 async function crearToken(password) {
   const encoder = new TextEncoder();
-
   const key = await crypto.subtle.importKey(
     "raw",
     encoder.encode(password),
@@ -22,16 +22,17 @@ async function crearToken(password) {
 
 function parseFecha(fecha) {
   if (!fecha) return null;
-  const d = new Date(fecha);
+  const s = String(fecha).trim();
+  const d = new Date(s);
   if (!isNaN(d.getTime())) return d;
 
-  const match = String(fecha).match(
-    /^(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?$/
+  const match = s.match(
+    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?$/
   );
   if (!match) return null;
 
-  const [, dia, mes, anio, hora = "00", minuto = "00"] = match;
-  const custom = new Date(Number(anio), Number(mes) - 1, Number(dia), Number(hora), Number(minuto));
+  const [, dia, mes, anio, hora = "12", minuto = "00", segundo = "00"] = match;
+  const custom = new Date(Number(anio), Number(mes) - 1, Number(dia), Number(hora), Number(minuto), Number(segundo));
   return isNaN(custom.getTime()) ? null : custom;
 }
 
@@ -63,23 +64,35 @@ export async function onRequestGet({ request, env }) {
     `).all();
 
     const ahora = new Date();
-    const limite = new Date(ahora.getTime() - 15 * 24 * 60 * 60 * 1000);
+    // Ampliar vigencia a 30 días para no perder ofertas recientes del grupo
+    const limite = new Date(ahora.getTime() - 30 * 24 * 60 * 60 * 1000);
 
     const ofertas = (resultado.results || [])
-      .filter(oferta => {
-        const fecha = parseFecha(oferta.fecha_publicacion);
-        return fecha && fecha >= limite && fecha <= ahora;
+      .map(oferta => {
+        const d = parseFecha(oferta.fecha_publicacion);
+        // Si la fecha venía en formato antiguo DD/MM/YYYY, sanearla en D1 silenciosamente
+        if (d && String(oferta.fecha_publicacion).includes('/')) {
+          try {
+            env.DB.prepare("UPDATE ofertas SET fecha_publicacion = ? WHERE id = ?")
+              .bind(d.toISOString(), oferta.id)
+              .run();
+          } catch(e) {}
+        }
+        return {
+          ...oferta,
+          fecha_publicacion: d ? d.toISOString() : oferta.fecha_publicacion,
+          _timestamp: d ? d.getTime() : 0
+        };
       })
-      .sort((a, b) => {
-        const fb = parseFecha(b.fecha_publicacion) || 0;
-        const fa = parseFecha(a.fecha_publicacion) || 0;
-        return fb - fa;
-      });
+      .filter(oferta => {
+        return oferta._timestamp && oferta._timestamp >= limite.getTime() && oferta._timestamp <= (ahora.getTime() + 86400000);
+      })
+      .sort((a, b) => b._timestamp - a._timestamp)
+      .map(({ _timestamp, ...resto }) => resto);
 
-    return Response.json({ ok: true, ofertas });
+    return Response.json({ ok: true, ofertas }, { status: 200 });
   } catch (error) {
     console.error("Error consultando ofertas:", error);
-
     return Response.json(
       { error: "Error al consultar las ofertas", detail: error.message },
       { status: 500 }

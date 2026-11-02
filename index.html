@@ -2147,11 +2147,37 @@
     // Recibe el campo fecha_ingreso que viene de Airtable
     // (puede ser ISO 8601 o string de fecha simple)
     // =====================================================
+    function parsearFechaFlexible(val) {
+      if (!val) return null;
+      if (val instanceof Date) return isNaN(val.getTime()) ? null : val;
+      const s = String(val).trim();
+      if (!s) return null;
+
+      // 1. Detectar formato chileno/latino DD/MM/YYYY o DD-MM-YYYY (con o sin hora HH:mm)
+      const matchLatino = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+      if (matchLatino) {
+        const dia = parseInt(matchLatino[1], 10);
+        const mes = parseInt(matchLatino[2], 10) - 1;
+        const anio = parseInt(matchLatino[3], 10);
+        const hora = matchLatino[4] ? parseInt(matchLatino[4], 10) : 12;
+        const min = matchLatino[5] ? parseInt(matchLatino[5], 10) : 0;
+        const sec = matchLatino[6] ? parseInt(matchLatino[6], 10) : 0;
+        const d = new Date(anio, mes, dia, hora, min, sec);
+        if (!isNaN(d.getTime())) return d;
+      }
+
+      // 2. Intentar parseo estándar (ISO 8601, YYYY-MM-DD, etc.)
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) return d;
+
+      return null;
+    }
+
     function formatFecha(iso) {
       if (!iso) return null;
       try {
-        const d = new Date(iso);
-        if (isNaN(d.getTime())) return null;
+        const d = parsearFechaFlexible(iso);
+        if (!d) return null;
         return d.toLocaleDateString('es-CL', {
           day: 'numeric',
           month: 'short',
@@ -3480,9 +3506,17 @@
     function formatFechaOferta(iso) {
       if (!iso) return '';
       try {
-        const d = new Date(iso);
-        return d.toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Santiago' });
-      } catch (e) { return ''; }
+        const d = parsearFechaFlexible(iso);
+        if (!d) return String(iso).slice(0, 10);
+        return d.toLocaleDateString('es-CL', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          timeZone: 'America/Santiago'
+        });
+      } catch (e) {
+        return String(iso || '');
+      }
     }
 
     async function loadOfertas() {
