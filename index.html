@@ -3544,6 +3544,151 @@
       });
     });
 
+    function esAdmin() {
+      return !!getAdminToken();
+    }
+
+    function solicitarAccesoAdmin() {
+      if (esAdmin()) {
+        alert('Ya estás en modo administrador.');
+        return;
+      }
+      abrirModalAdminLogin();
+    }
+
+    function abrirModalAdminLogin(msg) {
+      const err = document.getElementById('admin-login-err');
+      if (err) {
+        if (msg) { err.textContent = msg; err.classList.remove('hidden'); }
+        else { err.classList.add('hidden'); }
+      }
+      const pwd = document.getElementById('admin-login-pwd');
+      if (pwd) pwd.value = '';
+      document.getElementById('modal-admin-login').classList.remove('hidden');
+      setTimeout(() => { if (pwd) pwd.focus(); }, 100);
+    }
+
+    function cancelarAdminLogin() {
+      document.getElementById('modal-admin-login').classList.add('hidden');
+      try {
+        const u = new URL(window.location);
+        if (u.searchParams.has('admin')) {
+          u.searchParams.delete('admin');
+          window.history.replaceState({}, '', u);
+        }
+      } catch(e) {}
+    }
+
+    async function doAdminLogin() {
+      const pwdInput = document.getElementById('admin-login-pwd');
+      const err = document.getElementById('admin-login-err');
+      const btn = document.getElementById('btn-admin-login');
+      const pwd = (pwdInput?.value || '').trim();
+
+      if (!pwd) {
+        err.textContent = 'Ingresa la clave de administrador.';
+        err.classList.remove('hidden');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Verificando...';
+      err.classList.add('hidden');
+
+      try {
+        const r = await fetch('/api/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok || !out.token) {
+          throw new Error(out.error || 'Clave de administrador incorrecta');
+        }
+
+        setAdminToken(out.token);
+        document.getElementById('modal-admin-login').classList.add('hidden');
+
+        try {
+          const u = new URL(window.location);
+          u.searchParams.set('admin', '1');
+          window.history.replaceState({}, '', u);
+        } catch(e) {}
+
+        actualizarEstadoAdminUI();
+
+        const tabStats = document.querySelector('.tab[data-tab="estadisticas"]');
+        if (tabStats) tabStats.click();
+
+        renderContactos();
+        if (OFERTAS_CARGADAS) renderOfertas();
+        alert('🔓 Modo Administrador desbloqueado correctamente.');
+      } catch(e) {
+        err.textContent = e.message || 'Error al autenticar administrador';
+        err.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Desbloquear';
+      }
+    }
+
+    window.solicitarAccesoAdmin = solicitarAccesoAdmin;
+    window.abrirModalAdminLogin = abrirModalAdminLogin;
+    window.cancelarAdminLogin = cancelarAdminLogin;
+    window.doAdminLogin = doAdminLogin;
+
+    function actualizarEstadoAdminUI() {
+      const admin = esAdmin();
+      const tabStats = document.getElementById('tab-stats');
+      if (tabStats) tabStats.classList.toggle('hidden', !admin);
+      const chipSinZona = document.getElementById('chip-zona-sin-asignar');
+      if (chipSinZona) chipSinZona.classList.toggle('hidden', !admin);
+      const btnInstalarAdmin = document.getElementById('btn-instalar-admin');
+      if (btnInstalarAdmin) btnInstalarAdmin.classList.toggle('hidden', !admin);
+      const btnInstalarAdminPanel = document.getElementById('btn-instalar-admin-panel');
+      if (btnInstalarAdminPanel) btnInstalarAdminPanel.classList.toggle('hidden', !admin);
+      if (admin) {
+        cargarRecomendacionesPendientesAdmin();
+      }
+    }
+
+    function abrirModalInstalarEAA() {
+      const m = document.getElementById('modal-instalar-eaa');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function cerrarModalInstalarEAA() {
+      const m = document.getElementById('modal-instalar-eaa');
+      if (m) m.classList.add('hidden');
+    }
+
+    function descargarAccesoDirectoEAA() {
+      // Descarga un pequeño instalador (.cmd) que crea en el Escritorio el acceso "EAA"
+      // abriendo Chrome/Edge en modo ventana de aplicación (sin barra de direcciones) directo en modo administrador.
+      const contenido = [
+        '@echo off',
+        'echo Creando acceso directo EAA en el Escritorio...',
+        String.raw`powershell -NoProfile -ExecutionPolicy Bypass -Command "$c=@('%ProgramFiles%\Google\Chrome\Application\chrome.exe','%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe','%LocalAppData%\Google\Chrome\Application\chrome.exe','%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe') | Where-Object { Test-Path $_ } | Select-Object -First 1; if (-not $c) { Write-Host 'No se encontro Chrome ni Edge.'; exit 1 }; $d=[Environment]::GetFolderPath('Desktop'); $s=(New-Object -ComObject WScript.Shell).CreateShortcut(\"$d\EAA.lnk\"); $s.TargetPath=$c; $s.Arguments='--app=https://eje-austral.jems.cl/?admin=1'; $s.IconLocation=\"$c,0\"; $s.Description='Eje Austral - Modo Administrador (EAA)'; $s.Save()"`,
+        'echo Listo: ya tienes el icono EAA en tu Escritorio.',
+        'pause'
+      ].join('\r\n') + '\r\n';
+      const blob = new Blob([contenido], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Crear acceso EAA.cmd';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    window.actualizarEstadoAdminUI = actualizarEstadoAdminUI;
+    window.abrirModalInstalarEAA = abrirModalInstalarEAA;
+    window.cerrarModalInstalarEAA = cerrarModalInstalarEAA;
+    window.descargarAccesoDirectoEAA = descargarAccesoDirectoEAA;
+
+
     // === OFERTAS LABORALES Y SEGUIMIENTO DE VIGENCIA ===
     let OFERTAS = [];
     let OFERTAS_CARGADAS = false;
