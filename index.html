@@ -1104,23 +1104,51 @@
           <div class="avatar">TU</div>
         </div>
       </div>
-      <div class="feria" id="aviso-feria">
-        <div class="feria-text">
-          <div class="encuentro-eyebrow">Aviso</div>
-          <h3>🎓 IV Feria de Empleabilidad Alumni Ingeniería UACh 2026</h3>
-          <div class="encuentro-meta">📅 Jueves 29 de octubre · 📍 Espacio 14K, Campus Miraflores</div>
-          <p>De parte de Alumni UACh, les invitamos a participar en la IV Feria de Empleabilidad Alumni Ingeniería UACh 2026, que se realizará el próximo jueves 29 de octubre, en el Espacio 14K del Campus Miraflores.</p>
-        </div>
-        <button class="feria-btn" onclick="openProgramaModal()">📋 Ver programa de actividades</button>
-      </div>
+      <!-- AVISO PRINCIPAL: 1er Encuentro de Egresados y Egresadas FCI UACh (92 Años) -->
       <div class="encuentro" id="aviso-encuentro">
-        <img class="encuentro-img" src="/assets/encuentro-exalumnos.jpg" alt="1er Encuentro de Exalumnos FCI · 92 años construyendo redes · 5 de diciembre, Campus Miraflores" loading="lazy">
+        <div class="encuentro-img-wrap" style="position:relative; cursor:pointer;" onclick="openEncuentroInfoModal()">
+          <img class="encuentro-img" src="/assets/encuentro/slide1.jpg" alt="1er Encuentro de Egresados y Egresadas FCI · 92 años construyendo redes · 5 de diciembre, Campus Miraflores" loading="lazy">
+          <div style="position:absolute; bottom:12px; left:12px; right:12px; display:flex; justify-content:space-between; align-items:center; background:rgba(15,23,42,0.85); backdrop-filter:blur(6px); padding:6px 12px; border-radius:6px; border:1px solid rgba(255,255,255,0.15); font-size:11.5px; color:#f8fafc; font-weight:600;">
+            <span>📸 4 Láminas Oficiales + Tarjeta</span>
+            <span style="color:var(--uach-gold); font-weight:700;">Ver afiches →</span>
+          </div>
+        </div>
         <div class="encuentro-text">
-          <div class="encuentro-eyebrow">Aviso</div>
-          <h3>🏛️ 1er Encuentro de Exalumnos · Facultad de Ciencias de la Ingeniería (92 Años)</h3>
-          <div class="encuentro-meta">📅 Sábado 5 de Diciembre · 📍 Campus Miraflores, Valdivia</div>
-          <p>Una oportunidad para reencontrarse, compartir experiencias, fortalecer vínculos y generar redes de colaboración entre distintas promociones de la Escuela.</p>
-          <p class="encuentro-info">ℹ️ Durante el transcurso del mes se entregará mayor información sobre este encuentro.</p>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <div class="encuentro-eyebrow" style="color:var(--uach-gold); letter-spacing:1.5px; font-weight:800;">CONVOCATORIA OFICIAL · 92 AÑOS CAMPUS MIRAFLORES</div>
+            <span style="display:inline-block; font-size:11px; padding:3px 8px; border-radius:12px; background:#fef3c7; color:#92400e; font-weight:800;">⏳ Preventa hasta 15 Nov</span>
+          </div>
+          <h3 style="margin:2px 0; color:#fff; font-family:'Fraunces', serif; font-size:21px; line-height:1.25;">🏛️ 1er Encuentro de Egresados y Egresadas de Ingeniería UACh</h3>
+          <div class="encuentro-meta" style="font-size:13.5px; font-weight:700; color:var(--uach-gold-light);">📅 Sábado 5 de Diciembre · 📍 Campus Miraflores, Valdivia</div>
+          <p style="font-size:13px; line-height:1.55; opacity:0.92; margin:0; color:#e2e8f0;">
+            Celebremos juntos los 92 años de nuestra escuela en una jornada de camaradería, reencuentro y networking entre distintas promociones.
+          </p>
+
+          <!-- Tarjetas de valores de adhesión -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:4px 0;">
+            <div style="background:rgba(255,255,255,0.08); border:1px solid rgba(245,158,11,0.4); border-radius:8px; padding:8px 12px;">
+              <div style="font-size:11px; color:var(--uach-gold-light); font-weight:700; text-transform:uppercase;">Adhesión Anticipada</div>
+              <div style="font-size:18px; font-weight:800; color:#fff; line-height:1.2;">$20.000 <span style="font-size:11px; font-weight:400; color:#cbd5e1;">(hasta 15 nov)</span></div>
+            </div>
+            <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:8px; padding:8px 12px;">
+              <div style="font-size:11px; color:#94a3b8; font-weight:700; text-transform:uppercase;">Adhesión Regular</div>
+              <div style="font-size:18px; font-weight:800; color:#e2e8f0; line-height:1.2;">$30.000 <span style="font-size:11px; font-weight:400; color:#94a3b8;">(16 a 25 nov)</span></div>
+            </div>
+          </div>
+
+          <div style="font-size:12px; color:var(--uach-gold-light); display:flex; align-items:center; gap:6px;">
+            <span>🍽️</span> <strong>Incluye cóctel de bienvenida, almuerzo de camaradería y recuerdo conmemorativo.</strong>
+          </div>
+
+          <!-- Botones de Acción -->
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+            <a href="https://forms.cloud.microsoft/r/JDE2nbSbkA?origin=lprLink" target="_blank" rel="noopener" style="flex:1 1 200px; display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:11px 16px; background:#f59e0b; color:#0f172a; border-radius:6px; font-size:13px; font-weight:800; text-decoration:none; box-shadow:0 2px 6px rgba(245,158,11,0.35); transition:all 0.15s;" onmouseover="this.style.background='#fbbf24'" onmouseout="this.style.background='#f59e0b'">
+              📝 Inscribirme en Formulario Oficial (Forms)
+            </a>
+            <button type="button" onclick="openEncuentroInfoModal()" style="display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:11px 16px; background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; backdrop-filter:blur(4px); transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+              📋 Ver Afiches y Datos de Pago
+            </button>
+          </div>
         </div>
       </div>
       <div class="hero-content">
@@ -2284,12 +2312,60 @@
     </div>
   </div>
 
-  <!-- === MODAL: Programa Feria de Empleabilidad === -->
-  <div id="modal-programa" class="modal-bg hidden" onclick="if (event.target === this) closeProgramaModal()">
-    <div class="modal modal-programa">
-      <button class="modal-close" onclick="closeProgramaModal()">×</button>
-      <img src="/assets/programa-feria-empleabilidad.png" alt="Programa IV Feria de Empleabilidad Alumni Ingeniería UACh 2026, jueves 29 de octubre, Espacio 14K, Campus Miraflores">
-      <a class="programa-link" href="/assets/programa-feria-empleabilidad.png" target="_blank" rel="noopener">Abrir imagen en pestaña nueva</a>
+  <!-- === MODAL: Información y Afiches Oficiales del 1er Encuentro de Exalumnos === -->
+  <div id="modal-encuentro-info" class="modal-bg hidden" onclick="if (event.target === this) closeEncuentroInfoModal()">
+    <div class="modal" style="max-width: 680px; max-height: 92vh; overflow-y: auto; padding: 22px;">
+      <button class="modal-close" onclick="closeEncuentroInfoModal()">×</button>
+
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span style="font-size: 24px;">🏛️</span>
+        <h3 class="serif" style="margin: 0; color: var(--uach-blue); font-size: 21px;">1er Encuentro de Egresados y Egresadas FCI UACh</h3>
+      </div>
+      <p class="sub" style="margin-bottom: 14px;">Celebración de los 92 Años del Campus Miraflores · Valdivia</p>
+
+      <!-- Selector de láminas oficiales -->
+      <div style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px;">
+        <button type="button" class="chip-sm btn-slide-tab active" id="btn-slide-1" onclick="cambiarSlideEncuentro(1, this)">Afiche 1: Convocatoria</button>
+        <button type="button" class="chip-sm btn-slide-tab" id="btn-slide-2" onclick="cambiarSlideEncuentro(2, this)">Afiche 2: Programa</button>
+        <button type="button" class="chip-sm btn-slide-tab" id="btn-slide-3" onclick="cambiarSlideEncuentro(3, this)">Afiche 3: Valores</button>
+        <button type="button" class="chip-sm btn-slide-tab" id="btn-slide-4" onclick="cambiarSlideEncuentro(4, this)">Afiche 4: Inscripción</button>
+        <button type="button" class="chip-sm btn-slide-tab" id="btn-slide-5" onclick="cambiarSlideEncuentro(5, this)">Tarjeta Protocolar</button>
+      </div>
+
+      <!-- Visor de imagen seleccionada -->
+      <div style="position: relative; background: #0f172a; border-radius: 8px; overflow: hidden; text-align: center; border: 1px solid var(--border);">
+        <img id="img-slide-actual" src="/assets/encuentro/slide1.jpg" alt="Afiche Oficial Encuentro Exalumnos" style="width: 100%; max-height: 480px; object-fit: contain; display: block; margin: 0 auto;">
+        <div style="padding: 8px 12px; background: #f8fafc; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+          <span id="txt-slide-caption" style="font-weight: 600; color: var(--text);">Lámina Oficial 1 de 4 · Convocatoria General</span>
+          <a id="link-slide-zoom" href="/assets/encuentro/slide1.jpg" target="_blank" rel="noopener" style="color: var(--uach-blue); font-weight: 700; text-decoration: none;">🔍 Ver en tamaño completo</a>
+        </div>
+      </div>
+
+      <!-- Resumen Oficial y Datos de Transferencia -->
+      <div style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-top: 16px;">
+        <div style="font-weight: 800; color: var(--uach-blue); font-size: 14px; margin-bottom: 6px;">📋 Datos Clave y Proceso de Inscripción:</div>
+        <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #1e3a8a;">
+          <li><strong>Fecha del Evento:</strong> Sábado 5 de Diciembre de 2026 en Campus Miraflores, Valdivia.</li>
+          <li><strong>Adhesión Anticipada:</strong> <strong>$20.000</strong> (válida hasta el 15 de noviembre).</li>
+          <li><strong>Adhesión Regular:</strong> <strong>$30.000</strong> (del 16 al 25 de noviembre).</li>
+          <li><strong>Qué incluye:</strong> Cóctel de bienvenida, almuerzo de camaradería y recuerdo conmemorativo.</li>
+          <li><strong>Plazo final impostergable:</strong> 25 de noviembre.</li>
+          <li><strong>Envío de comprobante de pago:</strong> Enviar comprobante de transferencia a <strong>agonzale@uach.cl</strong> con copia a <strong>alumnifci@uach.cl</strong>.</li>
+          <li><strong>Comentario transferencia:</strong> <em>“Encuentro Egresados – [Nombre del participante]”</em>.</li>
+        </ul>
+      </div>
+
+      <div class="modal-actions" style="margin-top: 18px; display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap;">
+        <button class="btn-secondary" onclick="closeEncuentroInfoModal()">Cerrar</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-secondary" onclick="compartirEncuentroWa()" style="display: inline-flex; align-items: center; gap: 6px; border-color: var(--green); color: var(--green);">
+            📲 Compartir en WhatsApp
+          </button>
+          <a href="https://forms.cloud.microsoft/r/JDE2nbSbkA?origin=lprLink" target="_blank" rel="noopener" class="btn-primary" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none;">
+            📝 Inscribirme en Formulario Oficial
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -4695,6 +4771,81 @@
     window.openOfertaModal = openOfertaModal;
     window.closeOfertaModal = closeOfertaModal;
     window.publicarOferta = publicarOferta;
+    // =====================================================
+    // MODAL Y GALERÍA DEL 1er ENCUENTRO DE EXALUMNOS
+    // =====================================================
+    const SLIDES_ENCUENTRO = [
+      { num: 1, src: '/assets/encuentro/slide1.jpg', caption: 'Lámina Oficial 1 · Convocatoria General (92 Años FCI)' },
+      { num: 2, src: '/assets/encuentro/slide2.jpg', caption: 'Lámina Oficial 2 · Programa y Cronograma de Actividades' },
+      { num: 3, src: '/assets/encuentro/slide3.jpg', caption: 'Lámina Oficial 3 · Valores de Adhesión ($20.000 preventa / $30.000 general)' },
+      { num: 4, src: '/assets/encuentro/slide4.jpg', caption: 'Lámina Oficial 4 · Instrucciones de Pago y Registro de Transferencia' },
+      { num: 5, src: '/assets/encuentro/tarjeta_protocolar.jpg', caption: 'Tarjeta Protocolar · Invitación Institucional Conmemorativa' }
+    ];
+
+    function openEncuentroInfoModal() {
+      cambiarSlideEncuentro(1);
+      const m = document.getElementById('modal-encuentro-info');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function closeEncuentroInfoModal() {
+      const m = document.getElementById('modal-encuentro-info');
+      if (m) m.classList.add('hidden');
+    }
+
+    function cambiarSlideEncuentro(num, btn) {
+      const slide = SLIDES_ENCUENTRO.find(s => s.num === num) || SLIDES_ENCUENTRO[0];
+      const img = document.getElementById('img-slide-actual');
+      const cap = document.getElementById('txt-slide-caption');
+      const link = document.getElementById('link-slide-zoom');
+
+      if (img) img.src = slide.src;
+      if (cap) cap.textContent = slide.caption;
+      if (link) link.href = slide.src;
+
+      document.querySelectorAll('.btn-slide-tab').forEach(b => b.classList.remove('active'));
+      const activeBtn = btn || document.getElementById(`btn-slide-${num}`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function compartirEncuentroWa() {
+      const txt = encodeURIComponent(
+        `🏛️ *¡Colegas! Invitación al 1er Encuentro de Egresados y Egresadas de Ingeniería UACh*
+
+` +
+        `Celebrando los 92 años del Campus Miraflores.
+` +
+        `📅 *Fecha:* Sábado 5 de Diciembre
+` +
+        `📍 *Lugar:* Campus Miraflores, Valdivia
+
+` +
+        `🎟️ *Valores de Adhesión:*
+` +
+        `• Preventa Anticipada: $20.000 (hasta el 15 de noviembre)
+` +
+        `• Regular: $30.000 (del 16 al 25 de noviembre)
+` +
+        `*(Incluye cóctel de bienvenida, almuerzo de camaradería y recuerdo conmemorativo)*
+
+` +
+        `📝 *Inscripciones en formulario oficial:*
+` +
+        `https://forms.cloud.microsoft/r/JDE2nbSbkA?origin=lprLink
+
+` +
+        `📲 Revisa todas las gráficas y datos de pago en:
+` +
+        `https://eje-austral.jems.cl`
+      );
+      window.open(`https://wa.me/?text=${txt}`, '_blank');
+    }
+
+    window.openEncuentroInfoModal = openEncuentroInfoModal;
+    window.closeEncuentroInfoModal = closeEncuentroInfoModal;
+    window.cambiarSlideEncuentro = cambiarSlideEncuentro;
+    window.compartirEncuentroWa = compartirEncuentroWa;
+
     window.eliminarOferta = eliminarOferta;
     window.loadOfertasAdmin = loadOfertasAdmin;
     window.abrirModalAdminEditarOferta = abrirModalAdminEditarOferta;
