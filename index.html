@@ -1669,7 +1669,7 @@
                 <th>Ciudad</th>
                 <th>Aportado por (Colega)</th>
                 <th style="text-align: center; width: 220px;">Consultar por WhatsApp</th>
-                <th style="text-align: center; width: 170px;">Acción de Estado</th>
+                <th style="text-align: center; width: 235px;">Acciones Admin</th>
               </tr>
             </thead>
             <tbody id="ofertas-admin-tbody">
@@ -2149,9 +2149,106 @@
 
       <div id="of-det-canales" style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;"></div>
 
+      <div id="of-det-admin-bar"></div>
+
       <div class="modal-actions" style="margin-top: 20px;">
         <button class="btn-secondary" onclick="closeOfertaDetailModal()">Cerrar</button>
         <button class="btn-primary" id="btn-compartir-oferta" onclick="compartirOfertaActual()" style="display: inline-flex; align-items: center; gap: 6px;">📲 Compartir en WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === MODAL: Edición de Oferta Laboral (Solo Admin) === -->
+  <div id="modal-admin-edit-oferta" class="modal-bg hidden" style="z-index: 120;" onclick="if (event.target === this) closeAdminEditOfertaModal()">
+    <div class="modal" style="max-width: 620px; max-height: 90vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeAdminEditOfertaModal()">×</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span style="font-size: 22px;">✏️</span>
+        <h3 class="serif" style="margin: 0; color: var(--uach-blue);">Editar Oferta Laboral (Admin)</h3>
+      </div>
+      <p class="sub" style="margin-bottom: 16px;">Modifica el cargo, empresa, ciudad, requisitos o canales de postulación de esta vacante.</p>
+
+      <input type="hidden" id="admin-edit-of-id">
+
+      <label style="font-weight: 700; color: var(--text);">Cargo / Puesto Vacante *</label>
+      <input type="text" id="admin-edit-of-cargo" placeholder="Ej: Encargado de Calidad, Supervisor de Obra" required>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div>
+          <label style="font-weight: 700;">Empresa / Proyecto / Faena</label>
+          <input type="text" id="admin-edit-of-empresa" placeholder="Ej: Constructora Baquedano Sur">
+        </div>
+        <div>
+          <label style="font-weight: 700;">📍 Ciudad / Ubicación</label>
+          <input type="text" id="admin-edit-of-ciudad" placeholder="Ej: Valdivia, Osorno, Pucón">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px; margin-top: 10px;">
+        <div>
+          <label style="font-weight: 700;">Requisitos / Experiencia solicitada</label>
+          <input type="text" id="admin-edit-of-experiencia" placeholder="Ej: 2+ años en edificación / Recién titulado">
+        </div>
+        <div>
+          <label style="font-weight: 700;">Tipo de Postulación</label>
+          <select id="admin-edit-of-tipo-postulacion" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13.5px; background: #fff;">
+            <option value="correo">✉️ Enviar CV por Correo</option>
+            <option value="whatsapp_tercero">📲 Postular WhatsApp (Contacto directo)</option>
+            <option value="interno">💬 Por interno (Colega del grupo)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div>
+          <label style="font-weight: 700;">✉️ Correo de Postulación (si aplica)</label>
+          <input type="email" id="admin-edit-of-contacto-email" placeholder="postulaciones@empresa.cl">
+        </div>
+        <div>
+          <label style="font-weight: 700;">📲 WhatsApp / Fono Contacto Empleador</label>
+          <input type="tel" id="admin-edit-of-contacto-fono" placeholder="+56 9 ...">
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div>
+          <label style="font-weight: 700;">Nombre Persona Contacto / RRHH</label>
+          <input type="text" id="admin-edit-of-contacto-nombre" placeholder="Ej: Miguel Cea, Viviana Silva">
+        </div>
+        <div>
+          <label style="font-weight: 700;">Estado de la Oferta</label>
+          <select id="admin-edit-of-estado" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13.5px; background: #fff;">
+            <option value="publicada">🟢 Publicada (Activa en el portal)</option>
+            <option value="cubierta">⚪ Cubierta / Cerrada (Oculta al público)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px dashed var(--border); border-radius: 8px; padding: 12px; margin-top: 14px;">
+        <div style="font-size: 12px; font-weight: 700; color: var(--uach-blue); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Seguimiento Interno (Red UACh)</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 600;">Colega que compartió en WhatsApp</label>
+            <input type="text" id="admin-edit-of-publicado-por" placeholder="Nombre colega">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600;">Fono WhatsApp Colega (para alertas a 5 días)</label>
+            <input type="tel" id="admin-edit-of-publicado-por-fono" placeholder="+56 9 ...">
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 12px;">
+        <label style="font-weight: 700;">Texto Completo / Detalle del Aviso</label>
+        <textarea id="admin-edit-of-texto" rows="5" style="width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 13px; line-height: 1.5; resize: vertical;" placeholder="Pega o edita el texto completo del aviso de trabajo..."></textarea>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px;">
+        <button type="button" onclick="eliminarOfertaAdmin()" style="background: transparent; color: #ef4444; border: 1px solid #fca5a5; padding: 9px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">🗑️ Eliminar permanente</button>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn-secondary" onclick="closeAdminEditOfertaModal()" style="padding: 9px 16px; border-radius: 6px;">Cancelar</button>
+          <button type="button" class="btn-primary" id="btn-save-admin-edit-of" onclick="guardarEdicionOfertaAdmin()" style="padding: 9px 18px; border-radius: 6px; display: inline-flex; align-items: center; gap: 6px;">💾 Guardar Cambios</button>
+        </div>
       </div>
     </div>
   </div>
@@ -3895,7 +3992,12 @@
                     👁️ Ver detalles
                   </button>
                   ${btnsAccion}
-                  ${esAdmin() ? `<button type="button" onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" title="Borrar aviso" style="padding:6px 9px; background:transparent; border:1px solid #fca5a5; color:#ef4444; border-radius:6px; cursor:pointer; font-size:12px;">🗑️</button>` : ''}
+                  ${esAdmin() ? `
+                    <button type="button" onclick="event.stopPropagation(); abrirModalAdminEditarOferta('${esc(o.id)}')" title="Editar oferta (Admin)" style="display:inline-flex; align-items:center; gap:4px; padding:6px 10px; background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">
+                      ✏️ Editar
+                    </button>
+                    <button type="button" onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" title="Borrar aviso" style="padding:6px 9px; background:transparent; border:1px solid #fca5a5; color:#ef4444; border-radius:6px; cursor:pointer; font-size:12px;">🗑️</button>
+                  ` : ''}
                 </div>
               </td>
             </tr>
@@ -3911,7 +4013,12 @@
             <div class="card" style="position:relative; cursor:pointer;" onclick="openOfertaDetailModal('${esc(o.id)}')">
               <div class="card-fecha" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <span style="font-weight:700; color:var(--uach-blue);">${esc(formatFechaOferta(o.fecha_publicacion))}</span>
-                ${esAdmin() ? `<button onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" style="background:#ef4444; color:#fff; border:none; padding:4px 9px; border-radius:4px; font-size:11.5px; cursor:pointer; font-weight:600;">🗑️ Borrar</button>` : ''}
+                ${esAdmin() ? `
+                  <div style="display:inline-flex; gap:4px; align-items:center;">
+                    <button onclick="event.stopPropagation(); abrirModalAdminEditarOferta('${esc(o.id)}')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:4px 8px; border-radius:4px; font-size:11.5px; cursor:pointer; font-weight:600;">✏️ Editar</button>
+                    <button onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11.5px; cursor:pointer; font-weight:600;">🗑️</button>
+                  </div>
+                ` : ''}
               </div>
               <h3 class="serif" style="margin:0 0 4px 0; font-size:16px; color:var(--text);">${esc(o.cargo)}</h3>
               <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:8px;">🏢 ${esc(o.empresa)} · 📍 ${esc(o.ciudad)}</div>
@@ -3973,6 +4080,22 @@
           canalHtml += `<div style="font-size:12.5px; color:var(--text-muted);">Revisa las indicaciones en el texto del aviso para contactar al empleador.</div>`;
         }
         canalesEl.innerHTML = canalHtml;
+      }
+
+      const adminBar = document.getElementById('of-det-admin-bar');
+      if (adminBar) {
+        if (esAdmin()) {
+          adminBar.style.display = 'block';
+          adminBar.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:10px 14px; margin-top:14px;">
+              <div style="font-size:12.5px; color:#0369a1; font-weight:600;">🔒 Modo Administrador Activo</div>
+              <button type="button" onclick="abrirModalAdminEditarOferta('${esc(o.id)}')" style="display:inline-flex; align-items:center; gap:5px; padding:7px 14px; background:#0284c7; color:#fff; border:none; border-radius:6px; font-size:12.5px; font-weight:700; cursor:pointer;">✏️ Editar antecedentes de esta oferta</button>
+            </div>
+          `;
+        } else {
+          adminBar.style.display = 'none';
+          adminBar.innerHTML = '';
+        }
       }
 
       document.getElementById('modal-oferta-detail').classList.remove('hidden');
@@ -4152,15 +4275,6 @@
       const tbody = document.getElementById('ofertas-admin-tbody');
       if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando seguimiento de ofertas...</td></tr>';
       try {
-        // Ejecutar backfill silencioso si hace falta
-        try {
-          await apiFetch('/api/admin-ofertas', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accion: 'backfill' })
-          });
-        } catch(e) {}
-
         const r = await apiFetch('/api/ofertas');
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
@@ -4241,6 +4355,9 @@
             </td>
             <td style="padding: 12px 14px; text-align: center;">
               <div style="display:inline-flex; gap:6px; align-items:center;">
+                <button onclick="abrirModalAdminEditarOferta('${esc(o.id)}')" style="padding:6px 10px; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Editar cargo, faena, contacto o texto completo">
+                  ✏️ Editar
+                </button>
                 <button onclick="renovarVigenciaOferta('${esc(o.id)}')" style="padding:6px 10px; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Confirma que sigue en pie y extiende vigencia 5 días">
                   🔄 Renovar
                 </button>
@@ -4291,6 +4408,134 @@
       }
     }
 
+    // =====================================================
+    // EDICIÓN DE OFERTAS LABORALES (MODO ADMINISTRADOR)
+    // =====================================================
+    function abrirModalAdminEditarOferta(id) {
+      if (!esAdmin()) {
+        alert('Función reservada exclusivamente para el administrador.');
+        return;
+      }
+      const o = OFERTAS.find(x => x.id === id);
+      if (!o) {
+        alert('No se encontró la oferta seleccionada.');
+        return;
+      }
+
+      document.getElementById('admin-edit-of-id').value = o.id;
+      document.getElementById('admin-edit-of-cargo').value = o.cargo || '';
+      document.getElementById('admin-edit-of-empresa').value = o.empresa || '';
+      document.getElementById('admin-edit-of-ciudad').value = o.ciudad || '';
+      document.getElementById('admin-edit-of-experiencia').value = o.experiencia || '';
+      document.getElementById('admin-edit-of-tipo-postulacion').value = o.tipo_postulacion || 'interno';
+      document.getElementById('admin-edit-of-contacto-email').value = o.contacto_email || '';
+      document.getElementById('admin-edit-of-contacto-fono').value = o.contacto_fono || '';
+      document.getElementById('admin-edit-of-contacto-nombre').value = o.contacto_nombre || '';
+      document.getElementById('admin-edit-of-estado').value = o.estado || 'publicada';
+      document.getElementById('admin-edit-of-publicado-por').value = o.publicado_por || '';
+      document.getElementById('admin-edit-of-publicado-por-fono').value = o.publicado_por_fono || '';
+      document.getElementById('admin-edit-of-texto').value = o.texto || '';
+
+      // Si el modal de detalle público estaba abierto, cerrarlo primero
+      closeOfertaDetailModal();
+
+      document.getElementById('modal-admin-edit-oferta').classList.remove('hidden');
+    }
+
+    function closeAdminEditOfertaModal() {
+      const m = document.getElementById('modal-admin-edit-oferta');
+      if (m) m.classList.add('hidden');
+    }
+
+    async function guardarEdicionOfertaAdmin() {
+      const id = document.getElementById('admin-edit-of-id').value;
+      const cargo = document.getElementById('admin-edit-of-cargo').value.trim();
+      if (!cargo) {
+        alert('El cargo o puesto es obligatorio.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-admin-edit-of');
+      const txtOriginal = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = 'Guardando...';
+
+      const payload = {
+        accion: 'editar',
+        id,
+        cargo,
+        empresa: document.getElementById('admin-edit-of-empresa').value.trim(),
+        ciudad: document.getElementById('admin-edit-of-ciudad').value.trim(),
+        experiencia: document.getElementById('admin-edit-of-experiencia').value.trim(),
+        tipo_postulacion: document.getElementById('admin-edit-of-tipo-postulacion').value,
+        contacto_email: document.getElementById('admin-edit-of-contacto-email').value.trim(),
+        contacto_fono: document.getElementById('admin-edit-of-contacto-fono').value.trim(),
+        contacto_nombre: document.getElementById('admin-edit-of-contacto-nombre').value.trim(),
+        estado: document.getElementById('admin-edit-of-estado').value,
+        publicado_por: document.getElementById('admin-edit-of-publicado-por').value.trim(),
+        publicado_por_fono: document.getElementById('admin-edit-of-publicado-por-fono').value.trim(),
+        texto: document.getElementById('admin-edit-of-texto').value.trim()
+      };
+
+      try {
+        const r = await apiFetch('/api/admin-ofertas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+
+        alert('✅ Oferta actualizada con éxito.');
+        closeAdminEditOfertaModal();
+
+        // Actualizar datos en memoria
+        const idx = OFERTAS.findIndex(x => x.id === id);
+        if (idx !== -1) {
+          OFERTAS[idx] = { ...OFERTAS[idx], ...payload };
+        }
+
+        // Refrescar ambas vistas (pública y panel admin)
+        renderOfertas();
+        if (typeof renderOfertasAdminTable === 'function') renderOfertasAdminTable();
+        if (typeof actualizarBadgesVigenciaAdmin === 'function') actualizarBadgesVigenciaAdmin();
+      } catch(e) {
+        console.error(e);
+        alert('Error al guardar cambios de la oferta: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = txtOriginal;
+      }
+    }
+
+    async function eliminarOfertaAdmin() {
+      const id = document.getElementById('admin-edit-of-id').value;
+      if (!confirm('¿Estás seguro de que deseas ELIMINAR PERMANENTEMENTE esta oferta laboral? Esta acción no se puede deshacer.')) return;
+
+      try {
+        const r = await apiFetch('/api/eliminar-oferta', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+
+        alert('🗑️ Oferta eliminada definitivamente.');
+        closeAdminEditOfertaModal();
+
+        OFERTAS = OFERTAS.filter(x => x.id !== id);
+        const cntEl = document.getElementById('cnt-ofertas');
+        if (cntEl) cntEl.textContent = OFERTAS.length;
+        renderOfertas();
+        if (typeof renderOfertasAdminTable === 'function') renderOfertasAdminTable();
+        if (typeof actualizarBadgesVigenciaAdmin === 'function') actualizarBadgesVigenciaAdmin();
+      } catch(e) {
+        console.error(e);
+        alert('Error al eliminar oferta: ' + e.message);
+      }
+    }
+
     window.switchOfertasView = switchOfertasView;
     window.filtrarOfertasPorZona = filtrarOfertasPorZona;
     window.filtrarOfertasPublicas = filtrarOfertasPublicas;
@@ -4303,6 +4548,10 @@
     window.publicarOferta = publicarOferta;
     window.eliminarOferta = eliminarOferta;
     window.loadOfertasAdmin = loadOfertasAdmin;
+    window.abrirModalAdminEditarOferta = abrirModalAdminEditarOferta;
+    window.closeAdminEditOfertaModal = closeAdminEditOfertaModal;
+    window.guardarEdicionOfertaAdmin = guardarEdicionOfertaAdmin;
+    window.eliminarOfertaAdmin = eliminarOfertaAdmin;
     window.renovarVigenciaOferta = renovarVigenciaOferta;
     window.cubrirOferta = cubrirOferta;
 

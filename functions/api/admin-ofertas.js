@@ -76,22 +76,35 @@ export async function onRequestPost({ request, env }) {
         UPDATE ofertas
         SET cargo = ?, ciudad = ?, empresa = ?, experiencia = ?,
             tipo_postulacion = ?, contacto_nombre = ?, contacto_fono = ?,
-            contacto_email = ?, publicado_por_fono = ?
+            contacto_email = ?, publicado_por_fono = ?,
+            publicado_por = ?, texto = ?, estado = ?
         WHERE id = ?
       `).bind(
-        String(body.cargo || ''),
-        String(body.ciudad || ''),
-        String(body.empresa || ''),
-        String(body.experiencia || ''),
-        String(body.tipo_postulacion || 'interno'),
-        String(body.contacto_nombre || ''),
-        String(body.contacto_fono || ''),
-        String(body.contacto_email || ''),
-        String(body.publicado_por_fono || ''),
+        String(body.cargo || '').trim(),
+        String(body.ciudad || '').trim(),
+        String(body.empresa || '').trim(),
+        String(body.experiencia || '').trim(),
+        String(body.tipo_postulacion || 'interno').trim(),
+        String(body.contacto_nombre || '').trim(),
+        String(body.contacto_fono || '').trim(),
+        String(body.contacto_email || '').trim(),
+        String(body.publicado_por_fono || '').trim(),
+        String(body.publicado_por || '').trim(),
+        String(body.texto || '').trim(),
+        String(body.estado || 'publicada').trim(),
         id
       ).run();
 
-      return Response.json({ ok: true, mensaje: "Datos de oferta actualizados." });
+      return Response.json({ ok: true, mensaje: "Oferta actualizada exitosamente." });
+    }
+
+    // ACCIÓN: ELIMINAR OFERTA PERMANENTEMENTE
+    if (accion === 'eliminar' && id) {
+      await env.DB.prepare(`
+        DELETE FROM ofertas WHERE id = ?
+      `).bind(id).run();
+
+      return Response.json({ ok: true, mensaje: "Oferta eliminada permanentemente de la base de datos." });
     }
 
     // 4. ACCIÓN: BACKFILL / POBLADO INTELIGENTE DE LAS 10 OFERTAS EXISTENTES
