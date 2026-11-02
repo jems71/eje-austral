@@ -3805,6 +3805,22 @@
       }
     }
 
+    function formatFechaOferta(iso) {
+      if (!iso) return '';
+      try {
+        const d = parsearFechaFlexible(iso);
+        if (!d) return String(iso).slice(0, 10);
+        return d.toLocaleDateString('es-CL', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          timeZone: 'America/Santiago'
+        });
+      } catch (e) {
+        return String(iso || '');
+      }
+    }
+
     function renderOfertas() {
       const tbody = document.getElementById('ofertas-tabla-tbody');
       const grid = document.getElementById('grid-ofertas');
