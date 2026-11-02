@@ -3659,19 +3659,20 @@
     async function apiFetch(url, options = {}) {
       const opts = { ...options };
       opts.headers = { ...(options.headers || {}) };
-      const adminEndpoints = [
-        '/api/admin-editar-contacto',
+      const esAdminEndpoint = url.startsWith('/api/admin-') || [
         '/api/eliminar-contacto',
         '/api/eliminar-oferta',
         '/api/estadisticas',
         '/api/despacho-fichas',
-        '/api/marcar-envio-ficha',
-        '/api/admin-recomendaciones',
-        '/api/admin-colegas',
-        '/api/admin-reset-estadisticas'
-      ];
-      const esAdminEndpoint = adminEndpoints.some(ep => url.startsWith(ep));
-      const token = (esAdminEndpoint && getAdminToken()) ? getAdminToken() : getToken();
+        '/api/marcar-envio-ficha'
+      ].some(ep => url.startsWith(ep));
+
+      if (esAdminEndpoint && !getAdminToken()) {
+        abrirModalAdminLogin('Ingresa tu clave de administrador (jems2026) para realizar esta acción.');
+        throw new Error('Se requiere clave de administrador');
+      }
+
+      const token = esAdminEndpoint ? getAdminToken() : (getAdminToken() || getToken());
       if (token) opts.headers['Authorization'] = `Bearer ${token}`;
       const r = await fetch(url, opts);
       if (r.status === 401) {
