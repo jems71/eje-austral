@@ -1269,12 +1269,11 @@
               <th>Cargo / Vacante & Empresa</th>
               <th>Ciudad / Faena</th>
               <th>Requisitos / Experiencia</th>
-              <th>Aportado por</th>
-              <th style="text-align: center; width: 190px;">Postulación / Contacto</th>
+              <th style="text-align: center; width: 220px;">Postulación / Contacto</th>
             </tr>
           </thead>
           <tbody id="ofertas-tabla-tbody">
-            <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando ofertas laborales...</td></tr>
+            <tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando ofertas laborales...</td></tr>
           </tbody>
         </table>
       </div>
@@ -3786,7 +3785,7 @@
     async function loadOfertas() {
       const tbody = document.getElementById('ofertas-tabla-tbody');
       const grid = document.getElementById('grid-ofertas');
-      if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando ofertas laborales...</td></tr>';
+      if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando ofertas laborales...</td></tr>';
       if (grid) grid.innerHTML = '<div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando ofertas...</div></div>';
       try {
         const r = await apiFetch('/api/ofertas');
@@ -3800,7 +3799,7 @@
         actualizarBadgesVigenciaAdmin();
       } catch (e) {
         console.error(e);
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 24px; text-align: center; color: #ef4444;">No se pudieron cargar las ofertas.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 24px; text-align: center; color: #ef4444;">No se pudieron cargar las ofertas.</td></tr>';
         if (grid) grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se pudieron cargar las ofertas.</div>';
       }
     }
@@ -3849,7 +3848,7 @@
       });
 
       if (filtradas.length === 0) {
-        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 28px; text-align: center; color: var(--text-muted);">No hay ofertas laborales disponibles con los filtros seleccionados.</td></tr>';
+        if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 28px; text-align: center; color: var(--text-muted);">No hay ofertas laborales disponibles con los filtros seleccionados.</td></tr>';
         if (grid) grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No hay ofertas laborales que coincidan.</div>';
         return;
       }
@@ -3889,9 +3888,7 @@
               <td style="padding: 12px 14px;">
                 <span style="display:inline-block; font-size:12px; padding:3px 9px; border-radius:12px; background:#f1f5f9; color:#334155; font-weight:600;">${esc(o.experiencia)}</span>
               </td>
-              <td style="padding: 12px 14px; font-size: 12.5px; color: var(--text-muted);">
-                👤 ${esc(o.publicado_por || 'Colega UACh')}
-              </td>
+
               <td style="padding: 10px 14px; text-align: center; white-space: nowrap;">
                 <div style="display:inline-flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
                   <button type="button" onclick="event.stopPropagation(); openOfertaDetailModal('${esc(o.id)}')" style="display:inline-flex; align-items:center; gap:5px; padding:7px 13px; background:var(--uach-blue); color:#fff; border:none; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.08); transition:all .15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" title="Ver requisitos completos y postular">
