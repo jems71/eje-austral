@@ -59,7 +59,7 @@ export async function onRequestPost({ request, env }) {
       return Response.json({ ok: true, mensaje: "Oferta renovada exitosamente." });
     }
 
-    // 2. ACCIÓN: MARCAR COMO CUBIERTA / CERRADA
+    // 2. ACCIÓN: MARCAR COMO CUBIERTA / BLOQUEADA (SE CONSERVA PARA ESTADÍSTICAS)
     if (accion === 'cubrir' && id) {
       await env.DB.prepare(`
         UPDATE ofertas
@@ -67,7 +67,19 @@ export async function onRequestPost({ request, env }) {
         WHERE id = ?
       `).bind(id).run();
 
-      return Response.json({ ok: true, mensaje: "Oferta marcada como cubierta y retirada de la vista pública." });
+      return Response.json({ ok: true, mensaje: "Oferta bloqueada y marcada como cubierta. Se mantiene para estadísticas y al final de la lista." });
+    }
+
+    // ACCIÓN: REACTIVAR OFERTA CUBIERTA
+    if (accion === 'reactivar' && id) {
+      const ahoraIso = new Date().toISOString();
+      await env.DB.prepare(`
+        UPDATE ofertas
+        SET estado = 'publicada', fecha_verificacion = ?
+        WHERE id = ?
+      `).bind(ahoraIso, id).run();
+
+      return Response.json({ ok: true, mensaje: "Oferta reactivada y movida a las ofertas vigentes." });
     }
 
     // 3. ACCIÓN: ACTUALIZAR DATOS ESTRUCTURADOS DE OFERTA

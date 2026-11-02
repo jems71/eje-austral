@@ -1232,9 +1232,40 @@
   </section>
 
   <section id="view-ofertas" class="hidden">
+    <!-- Panel de Impacto y Métricas Laborales UACh -->
+    <div class="ofertas-stats-banner" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+      <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 24px; line-height: 1; padding: 8px; border-radius: 8px; background: #eff6ff;">💼</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Total Gestionadas</div>
+          <div style="font-size: 20px; font-weight: 800; color: var(--uach-blue); line-height: 1.1;" id="kpi-of-total">0</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 24px; line-height: 1; padding: 8px; border-radius: 8px; background: #ecfdf5;">🟢</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Vacantes Activas</div>
+          <div style="font-size: 20px; font-weight: 800; color: #059669; line-height: 1.1;" id="kpi-of-activas">0</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 24px; line-height: 1; padding: 8px; border-radius: 8px; background: #f8fafc;">🔒</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Puestos Cubiertos</div>
+          <div style="font-size: 20px; font-weight: 800; color: #475569; line-height: 1.1;" id="kpi-of-cubiertas">0</div>
+        </div>
+      </div>
+      <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 12px;">
+        <div style="font-size: 24px; line-height: 1; padding: 8px; border-radius: 8px; background: #fef3c7;">🔍</div>
+        <div>
+          <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Consultas en Buscador</div>
+          <div style="font-size: 20px; font-weight: 800; color: #b45309; line-height: 1.1;" id="kpi-of-busquedas">28</div>
+        </div>
+      </div>
+    </div>
     <div class="toolbar-wrap">
       <div class="toolbar-row toolbar-search-row">
-        <input type="text" id="ofertas-search" placeholder="Buscar oferta por cargo, empresa, ciudad o requisitos..." class="search-input" oninput="filtrarOfertasPublicas()" />
+        <input type="text" id="ofertas-search" placeholder="Buscar oferta por cargo, empresa, ciudad o requisitos..." class="search-input" oninput="filtrarOfertasPublicas(); registrarInteraccionBuscadorOfertas();" onfocus="registrarInteraccionBuscadorOfertas()" />
         <div class="view-switcher">
           <button class="view-btn active" id="btn-of-view-tabla" onclick="switchOfertasView('tabla')" title="Vista Tabla">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
@@ -3812,6 +3843,7 @@
       document.querySelectorAll('.filter-of-zona').forEach(b => b.classList.remove('active'));
       if (btn) btn.classList.add('active');
       renderOfertas();
+      registrarInteraccionBuscadorOfertas();
     }
 
     function filtrarOfertasPublicas() {
@@ -3890,8 +3922,10 @@
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
         OFERTAS = (out.ofertas || []).map(parsearCamposOferta);
         OFERTAS_CARGADAS = true;
+        const activasCnt = OFERTAS.filter(o => !o.estado || o.estado === 'publicada').length;
         const cntEl = document.getElementById('cnt-ofertas');
-        if (cntEl) cntEl.textContent = OFERTAS.length;
+        if (cntEl) cntEl.textContent = activasCnt;
+        actualizarKpisOfertas(out.stats);
         renderOfertas();
         actualizarBadgesVigenciaAdmin();
       } catch (e) {
@@ -3899,6 +3933,39 @@
         if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 24px; text-align: center; color: #ef4444;">No se pudieron cargar las ofertas.</td></tr>';
         if (grid) grid.innerHTML = '<div class="empty" style="grid-column: 1/-1;">No se pudieron cargar las ofertas.</div>';
       }
+    }
+
+    let ULTIMO_TRACK_BUSQUEDA_OFERTAS = 0;
+    function registrarInteraccionBuscadorOfertas() {
+      const ahora = Date.now();
+      if (ahora - ULTIMO_TRACK_BUSQUEDA_OFERTAS < 20000) return; // máximo 1 ping cada 20 segundos
+      ULTIMO_TRACK_BUSQUEDA_OFERTAS = ahora;
+
+      apiFetch('/api/busqueda-ofertas', { method: 'POST' })
+        .then(r => r.json())
+        .then(d => {
+          if (d && d.total_busquedas) {
+            const el = document.getElementById('kpi-of-busquedas');
+            if (el) el.textContent = d.total_busquedas;
+          }
+        })
+        .catch(() => {});
+    }
+
+    function actualizarKpisOfertas(s) {
+      const total = OFERTAS.length;
+      const activas = OFERTAS.filter(o => !o.estado || o.estado === 'publicada').length;
+      const cubiertas = OFERTAS.filter(o => o.estado === 'cubierta' || o.estado === 'bloqueada').length;
+
+      const elTot = document.getElementById('kpi-of-total');
+      const elAct = document.getElementById('kpi-of-activas');
+      const elCub = document.getElementById('kpi-of-cubiertas');
+      const elBus = document.getElementById('kpi-of-busquedas');
+
+      if (elTot) elTot.textContent = (s && s.total !== undefined) ? s.total : total;
+      if (elAct) elAct.textContent = (s && s.activas !== undefined) ? s.activas : activas;
+      if (elCub) elCub.textContent = (s && s.cubiertas !== undefined) ? s.cubiertas : cubiertas;
+      if (elBus && s && s.busquedas) elBus.textContent = s.busquedas;
     }
 
     function formatFechaOferta(iso) {
@@ -3950,33 +4017,55 @@
         return;
       }
 
+      // ORDEN: ACTIVAS SIEMPRE ARRIBA, CUBIERTAS / BLOQUEADAS SIEMPRE AL FINAL
+      filtradas.sort((a, b) => {
+        const aActiva = (!a.estado || a.estado === 'publicada') ? 1 : 0;
+        const bActiva = (!b.estado || b.estado === 'publicada') ? 1 : 0;
+        if (aActiva !== bActiva) return bActiva - aActiva;
+
+        const dateA = parsearFechaFlexible(a.fecha_publicacion) || new Date(0);
+        const dateB = parsearFechaFlexible(b.fecha_publicacion) || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+
       // Render Tabla
       if (tbody) {
         tbody.innerHTML = filtradas.map(o => {
           const fechaFmt = formatFechaOferta(o.fecha_publicacion);
           const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
           const esVerificada = o.fecha_verificacion || (Number(o.dias_transcurridos) <= 3);
+          const esCubierta = (o.estado === 'cubierta' || o.estado === 'bloqueada');
+          const tieneEmail = !!(o.contacto_email && o.contacto_email.trim());
+          const tieneFono = (fonoLimpio.length >= 8);
+          const pideCorreo = (o.tipo_postulacion === 'correo') || (tieneEmail && o.tipo_postulacion !== 'whatsapp_tercero');
 
-          // Generación de botones inteligentes de postulación
+          // Generación de botones de postulación: Si pide correo, NO MOSTRAR WHATSAPP DE POSTULACIÓN
           let btnsAccion = '';
-          if (o.contacto_email) {
+          if (esCubierta) {
+            btnsAccion = `<span style="display:inline-block; font-size:11.5px; font-weight:700; color:#64748b; background:#f1f5f9; padding:5px 10px; border-radius:6px; border:1px solid #cbd5e1;">🔒 Puesto Cubierto</span>`;
+          } else if (pideCorreo && tieneEmail) {
             const asunto = encodeURIComponent(`Postulación: ${o.cargo || 'Oferta Laboral'} - Eje Austral`);
-            btnsAccion += `<a href="mailto:${esc(o.contacto_email)}?subject=${asunto}" target="_blank" onclick="event.stopPropagation();" class="btn-postular-mail" style="display:inline-flex; align-items:center; gap:5px; padding:6px 11px; background:#0284c7; color:#fff; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; margin:2px;" title="Enviar CV al correo ${esc(o.contacto_email)}">✉️ Enviar CV</a>`;
-          }
-          if (fonoLimpio && fonoLimpio.length >= 8) {
+            btnsAccion = `<a href="mailto:${esc(o.contacto_email)}?subject=${asunto}" target="_blank" onclick="event.stopPropagation();" class="btn-postular-mail" style="display:inline-flex; align-items:center; gap:5px; padding:6px 12px; background:#0284c7; color:#fff; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; margin:2px; box-shadow:0 1px 3px rgba(2,132,199,0.2);" title="Enviar CV al correo ${esc(o.contacto_email)}">✉️ Enviar CV</a>`;
+          } else if (o.tipo_postulacion === 'whatsapp_tercero' && tieneFono) {
             const msgWa = encodeURIComponent(`Hola! Vi la oferta de "${o.cargo}" para ${o.ciudad} publicada en la red Eje Austral. Me interesa postular y conocer los antecedentes. Saludos!`);
-            const labelWa = o.tipo_postulacion === 'interno' ? '💬 Por interno' : '💬 WhatsApp';
-            btnsAccion += `<a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" onclick="event.stopPropagation();" class="btn-postular-wa" style="display:inline-flex; align-items:center; gap:5px; padding:6px 11px; background:var(--green); color:#fff; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; margin:2px;" title="Postular vía WhatsApp">📲 ${labelWa}</a>`;
+            btnsAccion = `<a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" onclick="event.stopPropagation();" class="btn-postular-wa" style="display:inline-flex; align-items:center; gap:5px; padding:6px 12px; background:var(--green); color:#fff; border-radius:6px; font-size:12px; font-weight:600; text-decoration:none; margin:2px; box-shadow:0 1px 3px rgba(34,197,94,0.2);" title="Postular vía WhatsApp">📲 Postular WhatsApp</a>`;
+          } else {
+            btnsAccion = `<span style="display:inline-flex; align-items:center; gap:4px; padding:5px 9px; background:#f8fafc; border:1px solid #e2e8f0; color:#475569; border-radius:6px; font-size:11.5px; font-weight:600;" title="Revisar indicaciones en los detalles">💬 Por interno</span>`;
           }
+
+          const trStyle = esCubierta ? 'border-bottom: 1px solid var(--border); background: #fbfcfd; opacity: 0.85; cursor:pointer;' : 'border-bottom: 1px solid var(--border); cursor:pointer;';
+          const badgeCubierta = esCubierta ? `<span style="display:inline-block; margin-left:6px; font-size:10.5px; padding:2px 7px; border-radius:8px; background:#e2e8f0; color:#475569; font-weight:700;">🔒 Cubierta</span>` : '';
 
           return `
-            <tr style="border-bottom: 1px solid var(--border); cursor:pointer;" onclick="openOfertaDetailModal('${esc(o.id)}')">
+            <tr style="${trStyle}" onclick="openOfertaDetailModal('${esc(o.id)}')">
               <td style="padding: 12px 14px; white-space: nowrap;">
                 <div style="font-weight: 600; color: var(--text); font-size: 13px;">${esc(fechaFmt)}</div>
-                ${esVerificada ? `<span style="display:inline-block; font-size:10.5px; padding:1px 6px; background:#ecfdf5; color:#047857; border-radius:10px; font-weight:700; margin-top:2px;">🛡️ Vigente</span>` : `<span style="font-size:10.5px; color:var(--text-muted);">${Number(o.dias_transcurridos || 0)}d activa</span>`}
+                ${esCubierta ? `<span style="display:inline-block; font-size:10.5px; padding:1px 6px; background:#f1f5f9; color:#64748b; border-radius:10px; font-weight:700; margin-top:2px;">Cerrada</span>` : (esVerificada ? `<span style="display:inline-block; font-size:10.5px; padding:1px 6px; background:#ecfdf5; color:#047857; border-radius:10px; font-weight:700; margin-top:2px;">🛡️ Vigente</span>` : `<span style="font-size:10.5px; color:var(--text-muted);">${Number(o.dias_transcurridos || 0)}d activa</span>`)}
               </td>
               <td style="padding: 12px 14px;">
-                <div style="font-weight: 700; color: var(--uach-blue); font-size: 14px;">${esc(o.cargo)}</div>
+                <div style="font-weight: 700; color: ${esCubierta ? '#475569' : 'var(--uach-blue)'}; font-size: 14px; display:flex; align-items:center; flex-wrap:wrap;">
+                  ${esc(o.cargo)} ${badgeCubierta}
+                </div>
                 <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">🏢 ${esc(o.empresa || 'Empresa Constructora')}</div>
               </td>
               <td style="padding: 12px 14px; font-size: 13px; color: var(--text); white-space: nowrap;">
@@ -3988,7 +4077,7 @@
 
               <td style="padding: 10px 14px; text-align: center; white-space: nowrap;">
                 <div style="display:inline-flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
-                  <button type="button" onclick="event.stopPropagation(); openOfertaDetailModal('${esc(o.id)}')" style="display:inline-flex; align-items:center; gap:5px; padding:7px 13px; background:var(--uach-blue); color:#fff; border:none; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.08); transition:all .15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" title="Ver requisitos completos y postular">
+                  <button type="button" onclick="event.stopPropagation(); openOfertaDetailModal('${esc(o.id)}')" style="display:inline-flex; align-items:center; gap:5px; padding:7px 13px; background:${esCubierta ? '#64748b' : 'var(--uach-blue)'}; color:#fff; border:none; border-radius:6px; font-size:12.5px; font-weight:600; cursor:pointer; box-shadow:0 1px 3px rgba(0,0,0,0.08); transition:all .15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" title="Ver requisitos completos">
                     👁️ Ver detalles
                   </button>
                   ${btnsAccion}
@@ -3996,7 +4085,6 @@
                     <button type="button" onclick="event.stopPropagation(); abrirModalAdminEditarOferta('${esc(o.id)}')" title="Editar oferta (Admin)" style="display:inline-flex; align-items:center; gap:4px; padding:6px 10px; background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">
                       ✏️ Editar
                     </button>
-                    <button type="button" onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" title="Borrar aviso" style="padding:6px 9px; background:transparent; border:1px solid #fca5a5; color:#ef4444; border-radius:6px; cursor:pointer; font-size:12px;">🗑️</button>
                   ` : ''}
                 </div>
               </td>
@@ -4008,26 +4096,25 @@
       // Render Tarjetas
       if (grid) {
         grid.innerHTML = filtradas.map(o => {
-          const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
+          const esCubierta = (o.estado === 'cubierta' || o.estado === 'bloqueada');
           return `
-            <div class="card" style="position:relative; cursor:pointer;" onclick="openOfertaDetailModal('${esc(o.id)}')">
+            <div class="card" style="position:relative; cursor:pointer; ${esCubierta ? 'opacity:0.85; background:#fafbfc; border:1.5px dashed #cbd5e1;' : ''}" onclick="openOfertaDetailModal('${esc(o.id)}')">
               <div class="card-fecha" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-weight:700; color:var(--uach-blue);">${esc(formatFechaOferta(o.fecha_publicacion))}</span>
+                ${esCubierta ? `<span style="font-size:11px; padding:2px 8px; border-radius:8px; background:#e2e8f0; color:#475569; font-weight:700;">🔒 Proceso Finalizado</span>` : `<span style="font-weight:700; color:var(--uach-blue);">${esc(formatFechaOferta(o.fecha_publicacion))}</span>`}
                 ${esAdmin() ? `
                   <div style="display:inline-flex; gap:4px; align-items:center;">
                     <button onclick="event.stopPropagation(); abrirModalAdminEditarOferta('${esc(o.id)}')" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; padding:4px 8px; border-radius:4px; font-size:11.5px; cursor:pointer; font-weight:600;">✏️ Editar</button>
-                    <button onclick="event.stopPropagation(); eliminarOferta('${esc(o.id)}')" style="background:#ef4444; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:11.5px; cursor:pointer; font-weight:600;">🗑️</button>
                   </div>
                 ` : ''}
               </div>
-              <h3 class="serif" style="margin:0 0 4px 0; font-size:16px; color:var(--text);">${esc(o.cargo)}</h3>
+              <h3 class="serif" style="margin:0 0 4px 0; font-size:16px; color:${esCubierta ? '#475569' : 'var(--text)'};">${esc(o.cargo)}</h3>
               <div style="font-size:12.5px; color:var(--text-muted); margin-bottom:8px;">🏢 ${esc(o.empresa)} · 📍 ${esc(o.ciudad)}</div>
               <div style="display:inline-block; font-size:11.5px; padding:2px 8px; border-radius:10px; background:#f1f5f9; color:#475569; font-weight:600; margin-bottom:10px;">${esc(o.experiencia)}</div>
               <div style="font-size:13px; line-height:1.55; color:var(--text); max-height:85px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;">
                 ${esc(o.texto)}
               </div>
               <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:10px;">
-                <span style="font-size:11.5px; color:var(--text-muted);">👤 ${esc(o.publicado_por)}</span>
+                <span style="font-size:11.5px; color:var(--text-muted);">${esCubierta ? '🔒 Puesto Cubierto' : `👤 ${esc(o.publicado_por)}`}</span>
                 <span style="color:var(--uach-blue); font-weight:600; font-size:12.5px;">Ver más →</span>
               </div>
             </div>
@@ -4054,30 +4141,48 @@
         `;
       }
 
+      const esCubierta = (o.estado === 'cubierta' || o.estado === 'bloqueada');
+      const tieneEmail = !!(o.contacto_email && o.contacto_email.trim());
+      const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
+      const tieneFono = (fonoLimpio.length >= 8);
+      const pideCorreo = (o.tipo_postulacion === 'correo') || (tieneEmail && o.tipo_postulacion !== 'whatsapp_tercero');
+
       const canalesEl = document.getElementById('of-det-canales');
       if (canalesEl) {
-        let canalHtml = '<div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px;">Canales de Postulación:</div>';
-        const fonoLimpio = String(o.contacto_fono || o.publicado_por_fono || '').replace(/\D/g, '');
-
-        if (o.contacto_email) {
-          const asunto = encodeURIComponent(`Postulación: ${o.cargo} - Eje Austral`);
-          canalHtml += `
-            <a href="mailto:${esc(o.contacto_email)}?subject=${asunto}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:#0284c7; color:#fff; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">
-              ✉️ Enviar CV por Correo (${esc(o.contacto_email)})
-            </a>
+        let canalHtml = '';
+        if (esCubierta) {
+          canalHtml = `
+            <div style="padding:14px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:8px; text-align:center;">
+              <div style="font-size:14px; font-weight:800; color:#334155;">🔒 Proceso Finalizado / Puesto Cubierto</div>
+              <div style="font-size:12.5px; color:#64748b; margin-top:4px;">Esta vacante ya fue cubierta y el proceso de postulación se encuentra cerrado. Se mantiene en el registro como antecedente histórico y estadístico.</div>
+            </div>
           `;
-        }
-        if (fonoLimpio && fonoLimpio.length >= 8) {
-          const msgWa = encodeURIComponent(`Hola! Vi la oferta de "${o.cargo}" para ${o.ciudad} en la red Eje Austral. Me interesa postular y presentar mis antecedentes. Saludos!`);
-          const nombreTxt = o.contacto_nombre ? ` (${o.contacto_nombre})` : '';
-          canalHtml += `
-            <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:var(--green); color:#fff; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none;">
-              📲 Postular por WhatsApp${esc(nombreTxt)}
-            </a>
-          `;
-        }
-        if (!o.contacto_email && (!fonoLimpio || fonoLimpio.length < 8)) {
-          canalHtml += `<div style="font-size:12.5px; color:var(--text-muted);">Revisa las indicaciones en el texto del aviso para contactar al empleador.</div>`;
+        } else {
+          canalHtml = '<div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:4px;">Canal Oficial de Postulación:</div>';
+          if (pideCorreo && tieneEmail) {
+            // SI INDICA CORREO, SOLO SE MUESTRA EL BOTÓN DE CORREO (NO WHATSAPP DE POSTULACIÓN)
+            const asunto = encodeURIComponent(`Postulación: ${o.cargo} - Eje Austral`);
+            canalHtml += `
+              <a href="mailto:${esc(o.contacto_email)}?subject=${asunto}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:#0284c7; color:#fff; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none; box-shadow:0 2px 4px rgba(2,132,199,0.25);">
+                ✉️ Enviar CV por Correo (${esc(o.contacto_email)})
+              </a>
+              <div style="font-size:12px; color:var(--text-muted); text-align:center; margin-top:6px;">El oferente indicó recibir antecedentes exclusivamente vía correo electrónico.</div>
+            `;
+          } else if (o.tipo_postulacion === 'whatsapp_tercero' && tieneFono) {
+            const msgWa = encodeURIComponent(`Hola! Vi la oferta de "${o.cargo}" para ${o.ciudad} en la red Eje Austral. Me interesa postular y presentar mis antecedentes. Saludos!`);
+            const nombreTxt = o.contacto_nombre ? ` (${o.contacto_nombre})` : '';
+            canalHtml += `
+              <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:12px; background:var(--green); color:#fff; border-radius:8px; font-weight:700; font-size:14px; text-decoration:none; box-shadow:0 2px 4px rgba(34,197,94,0.25);">
+                📲 Postular por WhatsApp${esc(nombreTxt)}
+              </a>
+            `;
+          } else {
+            canalHtml += `
+              <div style="padding:10px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:12.5px; color:#475569;">
+                💬 <strong>Postulación por interno:</strong> Revisa el texto del aviso o consulta directamente a través de los colegas del grupo UACh.
+              </div>
+            `;
+          }
         }
         canalesEl.innerHTML = canalHtml;
       }
@@ -4316,12 +4421,28 @@
         return;
       }
 
-      tbody.innerHTML = OFERTAS.map(o => {
+      const ordenadasAdmin = [...OFERTAS].sort((a, b) => {
+        const aActiva = (!a.estado || a.estado === 'publicada') ? 1 : 0;
+        const bActiva = (!b.estado || b.estado === 'publicada') ? 1 : 0;
+        if (aActiva !== bActiva) return bActiva - aActiva;
+        const dateA = parsearFechaFlexible(a.fecha_publicacion) || new Date(0);
+        const dateB = parsearFechaFlexible(b.fecha_publicacion) || new Date(0);
+        return dateB.getTime() - dateA.getTime();
+      });
+
+      tbody.innerHTML = ordenadasAdmin.map(o => {
+        const esCubierta = (o.estado === 'cubierta' || o.estado === 'bloqueada');
         const dias = Number(o.dias_transcurridos || 0);
         const tocaConsultar = dias >= 5;
-        const semaforoBadge = tocaConsultar
-          ? `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#fef3c7; color:#92400e;">⚠️ ${dias} días (Consultar)</span>`
-          : `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#ecfdf5; color:#065f46;">🟢 ${dias}d activa (Vigente)</span>`;
+
+        let semaforoBadge = '';
+        if (esCubierta) {
+          semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#f1f5f9; color:#475569;">🔒 Cubierta / Cerrada</span>`;
+        } else if (tocaConsultar) {
+          semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#fef3c7; color:#92400e;">⚠️ ${dias} días (Consultar)</span>`;
+        } else {
+          semaforoBadge = `<span style="display:inline-block; padding:4px 9px; border-radius:12px; font-size:12px; font-weight:700; background:#ecfdf5; color:#065f46;">🟢 ${dias}d activa (Vigente)</span>`;
+        }
 
         const fonoColega = String(o.publicado_por_fono || o.contacto_fono || '').replace(/\D/g, '');
         const nombreColega = o.publicado_por || 'Colega';
@@ -4330,17 +4451,19 @@
           `Hola ${nombreColega}, te escribo desde la red Eje Austral respecto a la oferta de "${o.cargo}" para ${o.ciudad} que compartiste en el grupo. ¿La vacante sigue disponible o ya se cerró el proceso? Saludos cordiales, Juan Carlos García.`
         );
 
-        const btnConsultarWa = (fonoColega && fonoColega.length >= 8)
-          ? `<a href="https://wa.me/${fonoColega}?text=${btnWaMsg}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; background:var(--green); color:#fff; border-radius:6px; font-weight:600; font-size:12px; text-decoration:none;" title="Enviar WhatsApp a ${esc(nombreColega)} (+${fonoColega})">
-              📲 Preguntar Vigencia (+569...)
-            </a>`
-          : `<span style="font-size:11.5px; color:var(--text-muted);">Sin fono registrado</span>`;
+        const btnConsultarWa = (esCubierta)
+          ? `<span style="font-size:11.5px; color:#64748b;">Proceso finalizado</span>`
+          : ((fonoColega && fonoColega.length >= 8)
+            ? `<a href="https://wa.me/${fonoColega}?text=${btnWaMsg}" target="_blank" style="display:inline-flex; align-items:center; gap:6px; padding:7px 12px; background:var(--green); color:#fff; border-radius:6px; font-weight:600; font-size:12px; text-decoration:none;" title="Enviar WhatsApp a ${esc(nombreColega)} (+${fonoColega})">
+                📲 Preguntar Vigencia (+569...)
+              </a>`
+            : `<span style="font-size:11.5px; color:var(--text-muted);">Sin fono registrado</span>`);
 
         return `
-          <tr style="border-bottom: 1px solid var(--border);">
+          <tr style="border-bottom: 1px solid var(--border); ${esCubierta ? 'background:#fafbfc; opacity:0.85;' : ''}">
             <td style="padding: 12px 14px;">${semaforoBadge}</td>
             <td style="padding: 12px 14px;">
-              <div style="font-weight:700; color:var(--uach-blue); font-size:13.5px;">${esc(o.cargo)}</div>
+              <div style="font-weight:700; color:${esCubierta ? '#475569' : 'var(--uach-blue)'}; font-size:13.5px;">${esc(o.cargo)}</div>
               <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">🏢 ${esc(o.empresa || 'Empresa')}</div>
             </td>
             <td style="padding: 12px 14px; font-size:13px; color:var(--text); white-space:nowrap;">
@@ -4358,12 +4481,18 @@
                 <button onclick="abrirModalAdminEditarOferta('${esc(o.id)}')" style="padding:6px 10px; background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Editar cargo, faena, contacto o texto completo">
                   ✏️ Editar
                 </button>
-                <button onclick="renovarVigenciaOferta('${esc(o.id)}')" style="padding:6px 10px; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Confirma que sigue en pie y extiende vigencia 5 días">
-                  🔄 Renovar
-                </button>
-                <button onclick="cubrirOferta('${esc(o.id)}')" style="padding:6px 10px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Puesto ocupado: retirar de la vista pública">
-                  ✅ Cubierta
-                </button>
+                ${esCubierta ? `
+                  <button onclick="reactivarOferta('${esc(o.id)}')" style="padding:6px 10px; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Reactivar vacante y volver a publicar en vigentes">
+                    🔄 Reactivar
+                  </button>
+                ` : `
+                  <button onclick="renovarVigenciaOferta('${esc(o.id)}')" style="padding:6px 10px; background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Confirma que sigue en pie y extiende vigencia 5 días">
+                    🔄 Renovar
+                  </button>
+                  <button onclick="cubrirOferta('${esc(o.id)}')" style="padding:6px 10px; background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:6px; font-weight:600; font-size:11.5px; cursor:pointer;" title="Puesto ocupado: bloquear vacante y mantener para estadísticas">
+                    🔒 Cubierta
+                  </button>
+                `}
               </div>
             </td>
           </tr>
@@ -4389,7 +4518,7 @@
     }
 
     async function cubrirOferta(id) {
-      if (!confirm('¿Confirmas que el puesto ya fue cubierto? La oferta saldrá del directorio público para que los colegas no sigan enviando antecedentes.')) return;
+      if (!confirm('¿Confirmas que el puesto ya fue cubierto? La oferta quedará bloqueada y pasará al final de la lista, manteniéndose en el registro para demostrar estadísticas de empleo.')) return;
       try {
         const r = await apiFetch('/api/admin-ofertas', {
           method: 'POST',
@@ -4398,13 +4527,33 @@
         });
         const out = await r.json();
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
-        alert('✅ Oferta marcada como cubierta y retirada del listado público.');
+        alert('✅ Oferta marcada como cubierta. Se mantiene en estadísticas y al final de la lista.');
         await loadOfertasAdmin();
         OFERTAS_CARGADAS = false;
         await loadOfertas();
       } catch(e) {
         console.error(e);
-        alert('Error al cerrar oferta: ' + e.message);
+        alert('Error al marcar oferta: ' + e.message);
+      }
+    }
+
+    async function reactivarOferta(id) {
+      if (!confirm('¿Deseas reactivar esta oferta para que vuelva a estar entre las vacantes vigentes?')) return;
+      try {
+        const r = await apiFetch('/api/admin-ofertas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'reactivar', id })
+        });
+        const out = await r.json();
+        if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
+        alert('✅ Oferta reactivada exitosamente. Vuelve a aparecer en la parte superior de vacantes activas.');
+        await loadOfertasAdmin();
+        OFERTAS_CARGADAS = false;
+        await loadOfertas();
+      } catch(e) {
+        console.error(e);
+        alert('Error al reactivar oferta: ' + e.message);
       }
     }
 
@@ -4552,6 +4701,9 @@
     window.closeAdminEditOfertaModal = closeAdminEditOfertaModal;
     window.guardarEdicionOfertaAdmin = guardarEdicionOfertaAdmin;
     window.eliminarOfertaAdmin = eliminarOfertaAdmin;
+    window.reactivarOferta = reactivarOferta;
+    window.registrarInteraccionBuscadorOfertas = registrarInteraccionBuscadorOfertas;
+    window.actualizarKpisOfertas = actualizarKpisOfertas;
     window.renovarVigenciaOferta = renovarVigenciaOferta;
     window.cubrirOferta = cubrirOferta;
 

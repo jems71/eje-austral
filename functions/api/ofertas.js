@@ -55,7 +55,7 @@ export async function onRequestGet({ request, env }) {
     );
   }
 
-  // Migraciones automáticas idempotentes para campos estructurados de ofertas
+  // Migraciones automáticas idempotentes
   try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN cargo TEXT DEFAULT ''").run(); } catch(e) {}
   try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN ciudad TEXT DEFAULT ''").run(); } catch(e) {}
   try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN empresa TEXT DEFAULT ''").run(); } catch(e) {}
@@ -68,6 +68,19 @@ export async function onRequestGet({ request, env }) {
   try { await env.DB.prepare("ALTER TABLE ofertas ADD COLUMN fecha_verificacion TEXT DEFAULT ''").run(); } catch(e) {}
 
   try {
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS metricas_ofertas (
+        clave TEXT PRIMARY KEY,
+        valor INTEGER DEFAULT 0
+      )
+    `).run();
+    await env.DB.prepare(`
+      INSERT OR IGNORE INTO metricas_ofertas (clave, valor) VALUES ('total_busquedas', 28)
+    `).run();
+  } catch(e) {}
+
+  try {
+    // Obtenemos todas las ofertas que no hayan sido eliminadas físicamente
     const resultado = await env.DB.prepare(`
       SELECT id, texto, fecha_publicacion, publicado_por, estado,
              COALESCE(cargo, '') as cargo,
@@ -81,12 +94,16 @@ export async function onRequestGet({ request, env }) {
              COALESCE(publicado_por_fono, '') as publicado_por_fono,
              COALESCE(fecha_verificacion, '') as fecha_verificacion
       FROM ofertas
-      WHERE (estado IS NULL OR estado = 'publicada')
-      ORDER BY fecha_publicacion DESC
+      WHERE (estado IS NULL OR estado != 'eliminada')
     `).all();
 
+    let totalBusquedas = 28;
+    try {
+      const mRow = await env.DB.prepare("SELECT valor FROM metricas_ofertas WHERE clave = 'total_busquedas'").first();
+      if (mRow && mRow.valor !== undefined) totalBusquedas = Number(mRow.valor);
+    } catch(e) {}
+
     const ahora = new Date();
-    const limite = new Date(ahora.getTime() - 35 * 24 * 60 * 60 * 1000);
 
     const ofertas = (resultado.results || [])
       .map(oferta => {
@@ -107,13 +124,29 @@ export async function onRequestGet({ request, env }) {
           _timestamp: ts
         };
       })
-      .filter(oferta => {
-        return oferta._timestamp && oferta._timestamp >= limite.getTime();
+      // Orden: ACTIVAS PRIMERO (estado 'publicada' o null), luego las CUBIERTAS/BLOQUEADAS abajo.
+      // Dentro de cada grupo, orden por fecha más reciente.
+      .sort((a, b) => {
+        const aActiva = (!a.estado || a.estado === 'publicada') ? 1 : 0;
+        const bActiva = (!b.estado || b.estado === 'publicada') ? 1 : 0;
+        if (aActiva !== bActiva) return bActiva - aActiva;
+        return (b._timestamp || 0) - (a._timestamp || 0);
       })
-      .sort((a, b) => b._timestamp - a._timestamp)
       .map(({ _timestamp, ...resto }) => resto);
 
-    return Response.json({ ok: true, ofertas }, { status: 200 });
+    const activas = ofertas.filter(o => !o.estado || o.estado === 'publicada').length;
+    const cubiertas = ofertas.filter(o => o.estado === 'cubierta' || o.estado === 'bloqueada').length;
+
+    return Response.json({
+      ok: true,
+      ofertas,
+      stats: {
+        total: ofertas.length,
+        activas,
+        cubiertas,
+        busquedas: totalBusquedas
+      }
+    }, { status: 200 });
   } catch (error) {
     console.error("Error consultando ofertas:", error);
     return Response.json(
