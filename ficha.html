@@ -254,9 +254,52 @@
         const estado = d.estado_disponibilidad || 'Disponible';
         document.querySelectorAll('input[name="estado"]').forEach(r => { r.checked = (r.value === estado); });
 
+        try {
+          localStorage.setItem('eje_austral_ficha_cache_' + token, JSON.stringify(d));
+        } catch(err) {}
         $('loading').classList.add('hidden');
         $('app').classList.remove('hidden');
+        sincronizarFichaOffline();
       } catch (e) {
+        // Modo Faena Offline: intentar rescatar desde el almacenamiento local del teléfono
+        let dCache = null;
+        try {
+          const raw = localStorage.getItem('eje_austral_ficha_cache_' + token);
+          if (raw) dCache = JSON.parse(raw);
+        } catch(err) {}
+
+        if (dCache) {
+          CONTACTO_DATOS = dCache;
+          $('titulo').textContent = dCache.nombre ? 'Hola, ' + dCache.nombre : 'Actualiza tu ficha';
+          $('f-whatsapp').value = dCache.whatsapp || '';
+          $('f-ciudad').value = dCache.ciudad || '';
+          $('f-web').value = dCache.sitio_web || '';
+          const wrapWeb = $('wrap-f-web');
+          if (wrapWeb) {
+            const admiteWeb = ['Proveedor', 'Subcontrato', 'Arriendo'].includes(dCache.tipo);
+            wrapWeb.style.display = admiteWeb ? 'block' : 'none';
+          }
+          $('f-rubro').value = dCache.rubro || '';
+          const rubroInicial = (dCache.rubro || '').trim();
+          LISTA_RUBROS = rubroInicial ? rubroInicial.split(/[,/•;]+/).map(s => s.trim()).filter(Boolean) : [];
+          renderRubrosChips();
+
+          $('f-certificaciones').value = dCache.certificaciones || '';
+          const certInicial = (dCache.certificaciones || '').trim();
+          LISTA_CERTIFICACIONES = certInicial ? certInicial.split(/[,/•;]+/).map(s => s.trim()).filter(Boolean) : [];
+          renderCertificacionesChips();
+          const estado = dCache.estado_disponibilidad || 'Disponible';
+          document.querySelectorAll('input[name="estado"]').forEach(r => { r.checked = (r.value === estado); });
+
+          $('loading').classList.add('hidden');
+          $('app').classList.remove('hidden');
+          const msg = $('msg');
+          if (msg) {
+            msg.className = 'msg ok';
+            msg.innerHTML = '📶 <strong>Modo Faena Offline:</strong> Estás sin cobertura celular. Mostrando datos guardados en tu teléfono. Los cambios que guardes se sincronizarán al recuperar señal.';
+          }
+          return;
+        }
         mostrarInvalido();
       }
     }
@@ -302,6 +345,25 @@
           `;
         }
       } catch (e) {
+        console.warn('Error guardando ficha en red:', e);
+        if (!navigator.onLine || e.message?.includes('fetch')) {
+          try {
+            const payloadOffline = {
+              token,
+              estado_disponibilidad: sel ? sel.value : 'Disponible',
+              whatsapp: $('f-whatsapp').value,
+              ciudad: $('f-ciudad').value,
+              rubro: $('f-rubro').value,
+              sitio_web: ($('f-web').value || '').trim(),
+              certificaciones: ($('f-certificaciones').value || '').trim(),
+              _offlineAt: new Date().toISOString()
+            };
+            localStorage.setItem('eje_austral_ficha_offline_' + token, JSON.stringify(payloadOffline));
+            msg.className = 'msg ok';
+            msg.innerHTML = '📶 <strong>Modo Faena Offline:</strong> Cambios guardados de forma segura en tu teléfono. Se sincronizarán automáticamente con la red apenas recuperes cobertura celular.';
+            return;
+          } catch(err) {}
+        }
         msg.classList.add('err');
         msg.textContent = 'No se pudo guardar. Intenta de nuevo.';
       } finally {
@@ -499,6 +561,35 @@
       window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
     }
     window.compartirMiFicha = compartirMiFicha;
+
+    async function sincronizarFichaOffline() {
+      if (!navigator.onLine) return;
+      try {
+        const raw = localStorage.getItem('eje_austral_ficha_offline_' + token);
+        if (!raw) return;
+        const payload = JSON.parse(raw);
+        delete payload._offlineAt;
+        const r = await fetch('/api/ficha', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (r.ok) {
+          localStorage.removeItem('eje_austral_ficha_offline_' + token);
+          const msg = $('msg');
+          if (msg) {
+            msg.className = 'msg ok';
+            msg.textContent = '✅ Cobertura recuperada: Tus cambios pendientes fueron sincronizados exitosamente con el directorio.';
+          }
+        }
+      } catch(e) {
+        console.warn('Fallo sincronizando ficha offline:', e);
+      }
+    }
+
+    window.addEventListener('online', () => {
+      sincronizarFichaOffline();
+    });
 
     cargar();
   </script>

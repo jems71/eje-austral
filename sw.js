@@ -1,7 +1,9 @@
-const CACHE_NAME = 'eje-austral-v5'; // Subimos a v5 para desplegar seguimiento de colegas y textos en chileno
+const CACHE_NAME = 'eje-austral-v6'; // Subimos a v6: Modo Faena Offline (Sync de recomendaciones y caché de fichas)
 
 const APP_SHELL = [
   '/',
+  '/index.html',
+  '/ficha.html',
   '/manifest.json',
   '/assets/icon-192.png',
   '/assets/icon-512.png',
@@ -35,11 +37,12 @@ self.addEventListener('fetch', (e) => {
     return; 
   }
 
-  // 2. Para el HTML (navegación, index, o cualquier URL que pida documento), SIEMPRE buscar en la red primero
+  // 2. Para el HTML (navegación, index, ficha o cualquier URL que pida documento), SIEMPRE buscar en la red primero
   const esHTML = e.request.mode === 'navigate' ||
                  e.request.destination === 'document' ||
                  (e.request.headers.get('accept') && e.request.headers.get('accept').includes('text/html')) ||
                  e.request.url.includes('index.html') ||
+                 e.request.url.includes('ficha.html') ||
                  e.request.url.includes('?admin') ||
                  e.request.url.endsWith('/');
 

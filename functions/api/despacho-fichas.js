@@ -35,6 +35,15 @@ export async function onRequestGet({ request, env }) {
     try {
       await env.DB.prepare("ALTER TABLE contactos ADD COLUMN fecha_envio_link TEXT").run();
     } catch(e) {}
+    try {
+      await env.DB.prepare("ALTER TABLE contactos ADD COLUMN creado_por TEXT DEFAULT 'colega_web'").run();
+    } catch(e) {}
+    try {
+      await env.DB.prepare("ALTER TABLE contactos ADD COLUMN creador_ciudad TEXT DEFAULT ''").run();
+    } catch(e) {}
+    try {
+      await env.DB.prepare("ALTER TABLE contactos ADD COLUMN creador_wa TEXT DEFAULT ''").run();
+    } catch(e) {}
 
     try {
       await env.DB.prepare(`
@@ -54,7 +63,10 @@ export async function onRequestGet({ request, env }) {
              COALESCE(estado_publicacion, 'publicado') as estado_publicacion,
              COALESCE(link_enviado, 0) as link_enviado,
              fecha_envio_link,
-             fecha_ultima_actualizacion_estado
+             fecha_ultima_actualizacion_estado,
+             COALESCE(creado_por, 'colega_web') as creado_por,
+             COALESCE(creador_ciudad, '') as creador_ciudad,
+             COALESCE(creador_wa, '') as creador_wa
       FROM contactos
       WHERE tipo IN ('Subcontrato', 'Mano de obra', 'Profesional')
       ORDER BY link_enviado ASC, nombre ASC
