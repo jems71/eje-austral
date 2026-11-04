@@ -60,8 +60,8 @@ export async function onRequestPost({ request, env }) {
         UPDATE pymes_colegas
         SET nombre_empresa = ?, nombre_titulado = ?, ano_titulacion = ?,
             rubro = ?, ciudad = ?, cobertura = ?, telefono = ?,
-            whatsapp = ?, email = ?, sitio_web = ?, descripcion = ?,
-            servicios_detalle = ?, estado = ?
+            whatsapp = ?, email = ?, sitio_web = ?, instagram = ?, facebook = ?,
+            descripcion = ?, servicios_detalle = ?, estado = ?
         WHERE id = ?
       `).bind(
         String(body.nombre_empresa || '').trim(),
@@ -74,6 +74,8 @@ export async function onRequestPost({ request, env }) {
         String(body.whatsapp || '').trim(),
         String(body.email || '').trim(),
         String(body.sitio_web || '').trim(),
+        String(body.instagram || '').trim(),
+        String(body.facebook || '').trim(),
         String(body.descripcion || '').trim(),
         String(body.servicios_detalle || '').trim(),
         String(body.estado || 'publicada').trim(),

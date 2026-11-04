@@ -2512,11 +2512,25 @@
             <input type="email" id="inp-pyme-email" placeholder="contacto@empresa.cl" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13.5px; box-sizing: border-box;">
           </div>
 
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px;">
+              🌐 Página Web o Catálogo
+            </label>
+            <input type="text" id="inp-pyme-web" placeholder="https://www.empresa.cl" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px;">
+              📸 Instagram
+            </label>
+            <input type="text" id="inp-pyme-ig" placeholder="@empresa o enlace" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; box-sizing: border-box;">
+          </div>
+
           <div style="grid-column: 1 / -1;">
             <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 4px;">
-              Sitio Web, Instagram o Catálogo Digital
+              👥 Facebook
             </label>
-            <input type="text" id="inp-pyme-web" placeholder="https://www.empresa.cl o @instagram" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13.5px; box-sizing: border-box;">
+            <input type="text" id="inp-pyme-fb" placeholder="facebook.com/tu_empresa o enlace" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13px; box-sizing: border-box;">
           </div>
 
           <div style="grid-column: 1 / -1;">
@@ -2576,6 +2590,20 @@
           <div>
             <label style="font-size: 12px; font-weight: 700;">Email</label>
             <input type="text" id="edit-pyme-email" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700;">🌐 Web</label>
+            <input type="text" id="edit-pyme-web" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700;">📸 Instagram</label>
+            <input type="text" id="edit-pyme-ig" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700;">👥 Facebook</label>
+            <input type="text" id="edit-pyme-fb" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box;">
           </div>
         </div>
         <div>
@@ -4267,8 +4295,18 @@
                   </a>
                 ` : ''}
                 ${p.sitio_web ? `
-                  <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Visitar web o catálogo" style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 11px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 13px;">
-                    🌐
+                  <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Visitar Página Web: ${esc(p.sitio_web)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 12px; font-weight: 600;">
+                    🌐 Web
+                  </a>
+                ` : ''}
+                ${p.instagram ? `
+                  <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Ver Instagram: ${esc(p.instagram)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none; font-size: 12px; font-weight: 600;">
+                    📸 Instagram
+                  </a>
+                ` : ''}
+                ${p.facebook ? `
+                  <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Ver Facebook: ${esc(p.facebook)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 600;">
+                    👥 Facebook
                   </a>
                 ` : ''}
               </div>
@@ -4302,6 +4340,8 @@
       const wa = (document.getElementById('inp-pyme-wa')?.value || '').trim();
       const email = (document.getElementById('inp-pyme-email')?.value || '').trim();
       const web = (document.getElementById('inp-pyme-web')?.value || '').trim();
+      const ig = (document.getElementById('inp-pyme-ig')?.value || '').trim();
+      const fb = (document.getElementById('inp-pyme-fb')?.value || '').trim();
       const desc = (document.getElementById('inp-pyme-desc')?.value || '').trim();
 
       if (!empresa || !titulado || !rubro || !ciudad || !wa || !desc) {
@@ -4325,6 +4365,8 @@
             telefono: wa,
             email: email,
             sitio_web: web,
+            instagram: ig,
+            facebook: fb,
             descripcion: desc
           })
         });
@@ -4356,6 +4398,9 @@
       document.getElementById('edit-pyme-ciudad').value = p.ciudad || '';
       document.getElementById('edit-pyme-wa').value = p.whatsapp || p.telefono || '';
       document.getElementById('edit-pyme-email').value = p.email || '';
+      document.getElementById('edit-pyme-web').value = p.sitio_web || '';
+      document.getElementById('edit-pyme-ig').value = p.instagram || '';
+      document.getElementById('edit-pyme-fb').value = p.facebook || '';
       document.getElementById('edit-pyme-desc').value = p.descripcion || '';
       document.getElementById('modal-admin-edit-pyme').classList.remove('hidden');
     }
@@ -4382,6 +4427,9 @@
             ciudad: document.getElementById('edit-pyme-ciudad').value,
             whatsapp: document.getElementById('edit-pyme-wa').value,
             email: document.getElementById('edit-pyme-email').value,
+            sitio_web: document.getElementById('edit-pyme-web').value,
+            instagram: document.getElementById('edit-pyme-ig').value,
+            facebook: document.getElementById('edit-pyme-fb').value,
             descripcion: document.getElementById('edit-pyme-desc').value
           })
         });

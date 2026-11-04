@@ -64,6 +64,8 @@ async function asegurarTablaPymes(env) {
       whatsapp TEXT NOT NULL,
       email TEXT DEFAULT '',
       sitio_web TEXT DEFAULT '',
+      instagram TEXT DEFAULT '',
+      facebook TEXT DEFAULT '',
       descripcion TEXT NOT NULL,
       servicios_detalle TEXT DEFAULT '',
       estado TEXT DEFAULT 'publicada',
@@ -71,6 +73,9 @@ async function asegurarTablaPymes(env) {
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `).run();
+
+  try { await env.DB.prepare("ALTER TABLE pymes_colegas ADD COLUMN instagram TEXT DEFAULT ''").run(); } catch(e) {}
+  try { await env.DB.prepare("ALTER TABLE pymes_colegas ADD COLUMN facebook TEXT DEFAULT ''").run(); } catch(e) {}
 }
 
 export async function onRequestGet({ request, env }) {
@@ -88,8 +93,8 @@ export async function onRequestGet({ request, env }) {
 
     const res = await env.DB.prepare(`
       SELECT id, nombre_empresa, nombre_titulado, ano_titulacion, rubro, ciudad,
-             cobertura, telefono, whatsapp, email, sitio_web, descripcion,
-             servicios_detalle, estado, fecha_registro
+             cobertura, telefono, whatsapp, email, sitio_web, instagram, facebook,
+             descripcion, servicios_detalle, estado, fecha_registro
       FROM pymes_colegas
       WHERE (estado IS NULL OR estado = 'publicada')
       ORDER BY fecha_registro DESC, nombre_empresa ASC
@@ -132,6 +137,8 @@ export async function onRequestPost({ request, env }) {
     const whatsapp = String(body.whatsapp || body.telefono || '').trim();
     const email = String(body.email || '').trim();
     const sitioWeb = String(body.sitio_web || '').trim();
+    const instagram = String(body.instagram || '').trim();
+    const facebook = String(body.facebook || '').trim();
     const descripcion = String(body.descripcion || '').trim();
     const serviciosDetalle = String(body.servicios_detalle || '').trim();
 
@@ -157,9 +164,9 @@ export async function onRequestPost({ request, env }) {
     await env.DB.prepare(`
       INSERT INTO pymes_colegas (
         id, nombre_empresa, nombre_titulado, ano_titulacion, rubro, ciudad,
-        cobertura, telefono, whatsapp, email, sitio_web, descripcion,
-        servicios_detalle, estado, fecha_registro
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicada', ?)
+        cobertura, telefono, whatsapp, email, sitio_web, instagram, facebook,
+        descripcion, servicios_detalle, estado, fecha_registro
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'publicada', ?)
     `).bind(
       id,
       nombreEmpresa,
@@ -172,6 +179,8 @@ export async function onRequestPost({ request, env }) {
       whatsapp,
       email,
       sitioWeb,
+      instagram,
+      facebook,
       descripcion,
       serviciosDetalle,
       ahoraIso
