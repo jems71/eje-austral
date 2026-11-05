@@ -2647,6 +2647,130 @@
     </div>
   </div>
 
+  
+  <!-- === MODAL: Editar mi Empresa (Colega Titular) === -->
+  <div id="modal-editar-mi-pyme" class="modal-bg hidden" onclick="if (event.target === this) closeEditarMiPymeModal()">
+    <div class="modal" style="max-width: 620px; max-height: 90vh; overflow-y: auto; padding: 24px;">
+      <button class="modal-close" onclick="closeEditarMiPymeModal()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </span>
+        <h3 class="serif" style="margin: 0; color: var(--uach-blue); font-size: 19px;">Editar mi Empresa o Servicio</h3>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted); margin: 0 0 14px 0;">Actualiza los datos de tu empresa. Los cambios se reflejarán de inmediato en la vitrina de colegas.</p>
+      
+      <div id="badge-titular-verificado" style="display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; font-size: 11.5px; color: #065f46; font-weight: 600; margin-bottom: 14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>Sesión verificada: Titular exclusivo de esta empresa</span>
+      </div>
+
+      <input type="hidden" id="mi-pyme-id">
+      <input type="hidden" id="mi-pyme-token">
+      
+      <div style="display: grid; gap: 11px;">
+        <div>
+          <label style="font-size: 12px; font-weight: 700; color: var(--text);">Nombre de Empresa o Razón Social *</label>
+          <input type="text" id="mi-pyme-empresa" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Colega Titulado UACh *</label>
+            <input type="text" id="mi-pyme-titulado" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Promoción / Carrera</label>
+            <input type="text" id="mi-pyme-ano" placeholder="Ej: Constructor Civil / 2018" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Rubro / Especialidad *</label>
+            <input type="text" id="mi-pyme-rubro" placeholder="Ej: Obra Gruesa, Maquinaria, etc." style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Ciudad Base *</label>
+            <input type="text" id="mi-pyme-ciudad" placeholder="Ej: Valdivia, Osorno, etc." style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">WhatsApp de Contacto Faena *</label>
+            <input type="text" id="mi-pyme-wa" placeholder="+56 9 ..." style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Email Corporativo</label>
+            <input type="email" id="mi-pyme-email" placeholder="contacto@empresa.cl" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Página Web o Catálogo</label>
+            <input type="text" id="mi-pyme-web" placeholder="empresa.cl" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Instagram</label>
+            <input type="text" id="mi-pyme-ig" placeholder="@empresa" style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 700; color: var(--text);">Facebook</label>
+            <input type="text" id="mi-pyme-fb" placeholder="facebook.com/..." style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px;">
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 700; color: var(--text);">Descripción de Servicios y Experiencia *</label>
+          <textarea id="mi-pyme-desc" rows="3" placeholder="Describe brevemente tus servicios, equipamiento, cuadrillas y principales faenas..." style="width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 13px; font-family: inherit;"></textarea>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <button type="button" class="btn-secondary" onclick="closeEditarMiPymeModal()" style="padding: 8px 16px; border-radius: 6px; font-size: 13px;">Cancelar</button>
+        <button type="button" class="btn-primary" id="btn-guardar-mi-pyme" onclick="guardarEdicionMiPyme()" style="padding: 8px 20px; border-radius: 6px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          Guardar Cambios
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- === MODAL: Validar Titularidad de Pyme === -->
+  <div id="modal-verificar-titular-pyme" class="modal-bg hidden" onclick="if (event.target === this) closeVerificarTitularPymeModal()">
+    <div class="modal" style="max-width: 440px; padding: 22px;">
+      <button class="modal-close" onclick="closeVerificarTitularPymeModal()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <span style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; background: #fef3c7; color: #b45309;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </span>
+        <h3 class="serif" style="margin: 0; color: var(--uach-blue); font-size: 17px;">Verificación de Titular</h3>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.45; margin: 0 0 14px 0;">
+        Por seguridad y privacidad de la red, solo el colega titular que inscribió <strong id="txt-nombre-empresa-verif" style="color: var(--text);">la empresa</strong> puede modificar su ficha.
+      </p>
+
+      <input type="hidden" id="verif-pyme-id">
+
+      <div style="margin-bottom: 14px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 5px;">
+          Ingresa el WhatsApp con el que inscribiste tu empresa:
+        </label>
+        <input type="tel" id="inp-verif-wa" placeholder="+56 9 ..." style="width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; box-sizing: border-box; font-weight: 600;">
+        <div id="msg-verif-error" style="display: none; color: #dc2626; font-size: 11.5px; font-weight: 600; margin-top: 6px;"></div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button type="button" class="btn-secondary" onclick="closeVerificarTitularPymeModal()" style="padding: 8px 14px; font-size: 12.5px;">Cancelar</button>
+        <button type="button" class="btn-primary" id="btn-submit-verif-titular" onclick="procesarVerificacionTitular()" style="padding: 8px 18px; font-size: 12.5px; font-weight: 700;">
+          Verificar y Editar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- === MODAL: Agregar Nuevo Colega al Padrón === -->
   <div id="modal-agregar-colega" class="modal-bg hidden" onclick="if (event.target === this) closeModalAgregarColega()">
     <div class="modal" style="max-width: 480px; padding: 22px;">
@@ -4278,6 +4402,36 @@
       }
     }
 
+    // === GESTIÓN Y RENDERIZADO DE PYMES CON SEGURIDAD DE TITULAR Y SVGs VECTORIALES ===
+    const PYME_ICONS = {
+      whatsapp: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:middle;"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.23 8.23 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.44.13-.14.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.35-.77-1.85-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.17-.48-.29"/></svg>`,
+      web: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`,
+      instagram: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`,
+      facebook: `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:middle;"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`,
+      email: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>`,
+      edit: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
+      delete: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+      lock: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`,
+      pin: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`,
+      briefcase: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`
+    };
+
+    function esTitularPyme(pymeId, pymeWa) {
+      if (!pymeId) return false;
+      // 1. Revisar si tiene el token secreto guardado en este navegador
+      const tokenGuardado = localStorage.getItem('ea_pyme_token_' + pymeId);
+      if (tokenGuardado) return true;
+
+      // 2. Revisar si la sesión actual del colega coincide con el fono
+      const colegaWa = localStorage.getItem('ea_colega_wa') || '';
+      if (colegaWa && pymeWa) {
+        const d1 = String(colegaWa).replace(/\D/g, '').slice(-8);
+        const d2 = String(pymeWa).replace(/\D/g, '').slice(-8);
+        if (d1 && d1.length >= 8 && d1 === d2) return true;
+      }
+      return false;
+    }
+
     function renderPymes() {
       const wrapL = document.getElementById('list-pymes');
       const gridT = document.getElementById('grid-pymes');
@@ -4304,9 +4458,8 @@
           const cNorm = normText((p.ciudad || '') + ' ' + (p.cobertura || ''));
           if (zonaFiltro === 'valdivia' && !cNorm.includes('valdivia') && !cNorm.includes('rios')) return false;
           if (zonaFiltro === 'osorno' && !cNorm.includes('osorno')) return false;
-          if (zonaFiltro === 'llanquihue' && !cNorm.includes('llanquihue') && !cNorm.includes('puerto') && !cNorm.includes('varas')) return false;
-          if (zonaFiltro === 'araucania' && !cNorm.includes('temuco') && !cNorm.includes('araucania')) return false;
-          if (zonaFiltro === 'nacional' && !cNorm.includes('chile') && !cNorm.includes('nacional') && !cNorm.includes('sur')) return false;
+          if (zonaFiltro === 'llanquihue' && !cNorm.includes('llanquihue') && !cNorm.includes('montt') && !cNorm.includes('varas') && !cNorm.includes('calbuco')) return false;
+          if (zonaFiltro === 'temuco' && !cNorm.includes('temuco') && !cNorm.includes('araucania') && !cNorm.includes('villarrica') && !cNorm.includes('angol')) return false;
         }
 
         if (tokens.length > 0) {
@@ -4329,10 +4482,10 @@
       if (filtradas.length === 0) {
         const vacioHtml = `
           <div style="text-align: center; padding: 48px 20px; background: #fff; border: 1.5px dashed var(--border); border-radius: 12px; margin-top: 10px;">
-            <div style="font-size: 36px; margin-bottom: 10px;">🏢</div>
+            <div style="font-size: 36px; margin-bottom: 10px;">🔍</div>
             <h3 style="font-size: 16px; font-weight: 700; color: var(--text); margin: 0 0 6px 0;">No se encontraron empresas con esos criterios</h3>
             <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Prueba seleccionando "Todos" o sé el primero en inscribir tu empresa en este rubro.</p>
-            <button type="button" onclick="abrirModalInscribirPyme()" class="btn-primary" style="padding: 8px 18px; border-radius: 6px; font-size: 13px;">➕ Inscribir mi Empresa</button>
+            <button type="button" onclick="abrirModalInscribirPyme()" class="btn-primary" style="padding: 8px 18px; border-radius: 6px; font-size: 13px;">+ Inscribir mi Empresa</button>
           </div>
         `;
         if (wrapL) wrapL.innerHTML = vacioHtml;
@@ -4350,17 +4503,40 @@
                 <th style="padding: 12px 14px;">ESPECIALIDAD</th>
                 <th style="padding: 12px 14px;">CIUDAD / ZONA</th>
                 <th style="padding: 12px 14px;">SERVICIOS & CAPACIDAD</th>
-                <th style="padding: 12px 16px; text-align: center;">CONTACTO & REDES</th>
+                <th style="padding: 12px 16px; text-align: center;">CONTACTO & ACCIONES</th>
               </tr>
             </thead>
             <tbody>
               ${filtradas.map(p => {
                 const fonoLimpio = String(p.whatsapp || p.telefono || '').replace(/\D/g, '');
                 const msgWa = encodeURIComponent(`Hola colega ${p.nombre_titulado}, te saluda un colega de la red UACh. Vi tu empresa "${p.nombre_empresa}" en Eje Austral y me gustaría cotizar / consultar por tus servicios.`);
-                const adminBtns = esAdmin() ? `
+                const soyTitular = esTitularPyme(p.id, p.whatsapp || p.telefono);
+                const esAd = esAdmin();
+
+                // Botón de titular o enlace para reclamar
+                let accionTitularHtml = '';
+                if (soyTitular) {
+                  accionTitularHtml = `
+                    <div style="margin-top: 6px;">
+                      <button onclick="abrirModalEditarMiPyme('${esc(p.id)}')" title="Editar datos de mi empresa" style="display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px; background: #eff6ff; border: 1.5px solid #93c5fd; color: #1d4ed8; border-radius: 6px; font-size: 11.5px; font-weight: 700; cursor: pointer; transition: all .15s;">
+                        ${PYME_ICONS.edit} Editar mi Ficha
+                      </button>
+                    </div>
+                  `;
+                } else if (!esAd) {
+                  accionTitularHtml = `
+                    <div style="margin-top: 4px;">
+                      <button onclick="solicitarAccesoTitularPyme('${esc(p.id)}', '${esc(p.nombre_empresa)}')" title="¿Eres el titular de esta empresa? Ingresa tu WhatsApp para editar" style="background: none; border: none; color: #64748b; font-size: 10.5px; text-decoration: underline; cursor: pointer; padding: 2px 4px;">
+                        ¿Eres el titular? Editar
+                      </button>
+                    </div>
+                  `;
+                }
+
+                const adminBtns = esAd ? `
                   <div style="display: flex; gap: 4px; justify-content: center; margin-top: 6px;">
-                    <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" title="Editar" style="padding: 4px 8px; font-size: 11px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">✏️</button>
-                    <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" title="Eliminar" style="padding: 4px 8px; font-size: 11px; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">🗑️</button>
+                    <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" title="Editar como Administrador" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">${PYME_ICONS.edit} Admin</button>
+                    <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" title="Eliminar Pyme" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 11px; font-weight: 600; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">${PYME_ICONS.delete}</button>
                   </div>
                 ` : '';
 
@@ -4377,48 +4553,56 @@
                     </td>
 
                     <td style="padding: 14px 14px; vertical-align: top; white-space: nowrap;">
-                      <span style="display: inline-block; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
-                        📌 ${esc(p.rubro)}
+                      <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+                        ${PYME_ICONS.briefcase} ${esc(p.rubro)}
                       </span>
                     </td>
 
                     <td style="padding: 14px 14px; vertical-align: top;">
-                      <div style="font-size: 12.5px; font-weight: 600; color: var(--text);">📍 ${esc(p.ciudad)}</div>
-                      ${p.cobertura ? `<div style="font-size: 11px; color: #7e22ce; margin-top: 2px;">🌐 ${esc(p.cobertura)}</div>` : ''}
+                      <div style="display: flex; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--text);">
+                        ${PYME_ICONS.pin} ${esc(p.ciudad)}
+                      </div>
+                      ${p.cobertura ? `<div style="font-size: 11px; color: #7e22ce; margin-top: 2px;">🌐 Cobertura: ${esc(p.cobertura)}</div>` : ''}
                     </td>
 
-                    <td style="padding: 14px 14px; vertical-align: top; font-size: 12.5px; color: #334155; line-height: 1.45; max-width: 340px;">
+                    <td style="padding: 14px 14px; vertical-align: top; font-size: 12.5px; color: #334155; line-height: 1.45; max-width: 320px;">
                       ${esc(p.descripcion)}
                     </td>
 
-                    <td style="padding: 14px 16px; vertical-align: top; text-align: center; white-space: nowrap;">
-                      <div style="display: inline-flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap;">
+                    <td style="padding: 14px 16px; vertical-align: top; text-align: center;">
+                      <div style="display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
                         ${fonoLimpio ? `
-                          <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: var(--green); color: #fff; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 3px rgba(34,197,94,0.2);">
-                            📲 WhatsApp
+                          <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; background: #10b981; color: #fff; border-radius: 6px; font-size: 11.5px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 2px rgba(16,185,129,0.25); transition: background .15s;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                            ${PYME_ICONS.whatsapp} WhatsApp
                           </a>
                         ` : ''}
+
                         ${p.sitio_web ? `
-                          <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Visitar Página Web" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 12px; font-weight: 600;">
-                            🌐 Web
+                          <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Visitar Sitio Web" style="display: inline-flex; align-items: center; gap: 4px; height: 30px; padding: 0 9px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: #1d4ed8; text-decoration: none; font-size: 11.5px; font-weight: 600;">
+                            ${PYME_ICONS.web} Web
                           </a>
                         ` : ''}
+
                         ${p.instagram ? `
-                          <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Instagram" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none; font-size: 12px; font-weight: 600;">
-                            📸
+                          <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Instagram" style="display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none;">
+                            ${PYME_ICONS.instagram}
                           </a>
                         ` : ''}
+
                         ${p.facebook ? `
-                          <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Facebook" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 600;">
-                            👥
+                          <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Facebook" style="display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none;">
+                            ${PYME_ICONS.facebook}
                           </a>
                         ` : ''}
+
                         ${p.email ? `
-                          <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: var(--text); text-decoration: none; font-size: 12px;">
-                            ✉️
+                          <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: #475569; text-decoration: none;">
+                            ${PYME_ICONS.email}
                           </a>
                         ` : ''}
                       </div>
+
+                      ${accionTitularHtml}
                       ${adminBtns}
                     </td>
                   </tr>
@@ -4429,15 +4613,41 @@
         `;
       }
 
-      // 2. RENDER VISTA TARJETAS (ESTILO CARDS)
+      // 2. RENDER VISTA TARJETAS
       if (gridT) {
         gridT.innerHTML = filtradas.map(p => {
           const fonoLimpio = String(p.whatsapp || p.telefono || '').replace(/\D/g, '');
           const msgWa = encodeURIComponent(`Hola colega ${p.nombre_titulado}, te saluda un colega de la red UACh. Vi tu empresa "${p.nombre_empresa}" en Eje Austral y me gustaría cotizar / consultar por tus servicios.`);
-          const adminTools = esAdmin() ? `
-            <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; justify-content: flex-end;">
-              <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" style="padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">✏️ Editar</button>
-              <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" style="padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">🗑️ Eliminar</button>
+          const soyTitular = esTitularPyme(p.id, p.whatsapp || p.telefono);
+          const esAd = esAdmin();
+
+          let accionTitularCard = '';
+          if (soyTitular) {
+            accionTitularCard = `
+              <div style="margin-top: 8px;">
+                <button onclick="abrirModalEditarMiPyme('${esc(p.id)}')" title="Editar datos de mi empresa" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 7px; background: #eff6ff; border: 1.5px solid #93c5fd; color: #1d4ed8; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer;">
+                  ${PYME_ICONS.edit} Editar mi Ficha
+                </button>
+              </div>
+            `;
+          } else if (!esAd) {
+            accionTitularCard = `
+              <div style="margin-top: 6px; text-align: center;">
+                <button onclick="solicitarAccesoTitularPyme('${esc(p.id)}', '${esc(p.nombre_empresa)}')" style="background: none; border: none; color: #64748b; font-size: 11px; text-decoration: underline; cursor: pointer; padding: 2px;">
+                  ¿Eres el titular de esta empresa? Editar
+                </button>
+              </div>
+            `;
+          }
+
+          const adminTools = esAd ? `
+            <div style="display: flex; gap: 6px; margin-top: 8px; border-top: 1px dashed var(--border); padding-top: 8px;">
+              <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 5px; font-size: 11px; font-weight: 600; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">
+                ${PYME_ICONS.edit} Editar (Admin)
+              </button>
+              <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; font-size: 11px; font-weight: 600; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">
+                ${PYME_ICONS.delete}
+              </button>
             </div>
           ` : '';
 
@@ -4460,11 +4670,11 @@
                 </div>
 
                 <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px;">
-                  <span style="display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #334155; font-weight: 600;">
-                    📌 ${esc(p.rubro)}
+                  <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #334155; font-weight: 600;">
+                    ${PYME_ICONS.briefcase} ${esc(p.rubro)}
                   </span>
-                  <span style="display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #ecfdf5; color: #047857; font-weight: 600;">
-                    📍 ${esc(p.ciudad)}
+                  <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #ecfdf5; color: #047857; font-weight: 600;">
+                    ${PYME_ICONS.pin} ${esc(p.ciudad)}
                   </span>
                   ${p.cobertura ? `<span style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #faf5ff; color: #7e22ce; font-weight: 500;">🌐 ${esc(p.cobertura)}</span>` : ''}
                 </div>
@@ -4477,31 +4687,32 @@
               <div>
                 <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--border); padding-top: 12px;">
                   ${fonoLimpio ? `
-                    <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="flex: 1; min-width: 130px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: var(--green); color: #fff; border-radius: 6px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 3px rgba(34,197,94,0.2);">
-                      📲 WhatsApp Colega
+                    <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="flex: 1; min-width: 130px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 32px; padding: 0 12px; background: #10b981; color: #fff; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 3px rgba(16,185,129,0.25);">
+                      ${PYME_ICONS.whatsapp} WhatsApp Colega
                     </a>
                   ` : ''}
                   ${p.sitio_web ? `
-                    <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Página Web" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 12px; font-weight: 600;">
-                      🌐 Web
+                    <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Página Web" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; height: 32px; padding: 0 10px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: #1d4ed8; text-decoration: none; font-size: 12px; font-weight: 600;">
+                      ${PYME_ICONS.web} Web
                     </a>
                   ` : ''}
                   ${p.instagram ? `
-                    <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Instagram" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 10px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none; font-size: 12px; font-weight: 600;">
-                      📸
+                    <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Instagram" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none;">
+                      ${PYME_ICONS.instagram}
                     </a>
                   ` : ''}
                   ${p.facebook ? `
-                    <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Facebook" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 10px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 600;">
-                      👥
+                    <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Facebook" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none;">
+                      ${PYME_ICONS.facebook}
                     </a>
                   ` : ''}
                   ${p.email ? `
-                    <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; padding: 7px 9px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: var(--text); text-decoration: none; font-size: 12px;">
-                      ✉️
+                    <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: #475569; text-decoration: none;">
+                      ${PYME_ICONS.email}
                     </a>
                   ` : ''}
                 </div>
+                ${accionTitularCard}
                 ${adminTools}
               </div>
             </div>
@@ -4536,6 +4747,7 @@
       const ig = (document.getElementById('inp-pyme-ig')?.value || '').trim();
       const fb = (document.getElementById('inp-pyme-fb')?.value || '').trim();
       const desc = (document.getElementById('inp-pyme-desc')?.value || '').trim();
+      const colegaId = localStorage.getItem('ea_colega_id') || '';
 
       if (!empresa || !titulado || !rubro || !ciudad || !wa || !desc) {
         alert('Por favor completa todos los campos obligatorios (*).');
@@ -4560,12 +4772,17 @@
             sitio_web: web,
             instagram: ig,
             facebook: fb,
-            descripcion: desc
+            descripcion: desc,
+            colega_id: colegaId
           })
         });
         const out = await r.json();
         if (r.ok && out.ok) {
-          alert('🎉 ¡Felicitaciones! Tu empresa ha sido publicada con éxito en la Vitrina de Colegas.');
+          // Guardar token de edición para que el creador sea reconocido como titular inmediato
+          if (out.id && out.token_edicion) {
+            localStorage.setItem('ea_pyme_token_' + out.id, out.token_edicion);
+          }
+          alert('🎓 ¡Felicitaciones! Tu empresa ha sido publicada con éxito en la Vitrina de Colegas.');
           closeInscribirPymeModal();
           document.getElementById('form-inscribir-pyme')?.reset();
           await loadPymes();
@@ -4579,6 +4796,166 @@
       }
     }
 
+    // =========================================================================
+    // ACCESO Y EDICIÓN EXCLUSIVA DEL COLEGA TITULAR
+    // =========================================================================
+    function solicitarAccesoTitularPyme(id, nombreEmpresa) {
+      document.getElementById('verif-pyme-id').value = id;
+      const txt = document.getElementById('txt-nombre-empresa-verif');
+      if (txt) txt.textContent = `"${nombreEmpresa}"`;
+      const inp = document.getElementById('inp-verif-wa');
+      if (inp) {
+        inp.value = localStorage.getItem('ea_colega_wa') || '';
+      }
+      const err = document.getElementById('msg-verif-error');
+      if (err) { err.style.display = 'none'; err.textContent = ''; }
+      document.getElementById('modal-verificar-titular-pyme')?.classList.remove('hidden');
+      setTimeout(() => inp?.focus(), 100);
+    }
+
+    function closeVerificarTitularPymeModal() {
+      document.getElementById('modal-verificar-titular-pyme')?.classList.add('hidden');
+    }
+
+    async function procesarVerificacionTitular() {
+      const id = document.getElementById('verif-pyme-id')?.value;
+      const wa = (document.getElementById('inp-verif-wa')?.value || '').trim();
+      const err = document.getElementById('msg-verif-error');
+      const btn = document.getElementById('btn-submit-verif-titular');
+
+      if (!wa) {
+        if (err) { err.style.display = 'block'; err.textContent = 'Por favor ingresa tu número de WhatsApp registrado.'; }
+        return;
+      }
+
+      try {
+        if (btn) { btn.disabled = true; btn.textContent = 'Verificando...'; }
+        const r = await apiFetch('/api/pymes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accion: 'verificar_titular',
+            id: id,
+            whatsapp: wa
+          })
+        });
+        const out = await r.json();
+        if (r.ok && out.ok && out.token_edicion) {
+          // Guardar token en este navegador
+          localStorage.setItem('ea_pyme_token_' + id, out.token_edicion);
+          localStorage.setItem('ea_colega_wa', wa);
+          closeVerificarTitularPymeModal();
+          // Abrir modal de edición para el titular
+          abrirModalEditarMiPyme(id);
+          renderPymes();
+        } else {
+          if (err) {
+            err.style.display = 'block';
+            err.textContent = out.error || 'El número no coincide con el titular registrado para esta empresa.';
+          }
+        }
+      } catch (e) {
+        if (err) { err.style.display = 'block'; err.textContent = 'Error de conexión: ' + e.message; }
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Verificar y Editar'; }
+      }
+    }
+
+    function abrirModalEditarMiPyme(id) {
+      const p = PYMES.find(x => x.id === id);
+      if (!p) return;
+      const token = localStorage.getItem('ea_pyme_token_' + id) || '';
+
+      document.getElementById('mi-pyme-id').value = id;
+      document.getElementById('mi-pyme-token').value = token;
+      document.getElementById('mi-pyme-empresa').value = p.nombre_empresa || '';
+      document.getElementById('mi-pyme-titulado').value = p.nombre_titulado || '';
+      document.getElementById('mi-pyme-ano').value = p.ano_titulacion || '';
+      document.getElementById('mi-pyme-rubro').value = p.rubro || '';
+      document.getElementById('mi-pyme-ciudad').value = p.ciudad || '';
+      document.getElementById('mi-pyme-wa').value = p.whatsapp || p.telefono || '';
+      document.getElementById('mi-pyme-email').value = p.email || '';
+      document.getElementById('mi-pyme-web').value = p.sitio_web || '';
+      document.getElementById('mi-pyme-ig').value = p.instagram || '';
+      document.getElementById('mi-pyme-fb').value = p.facebook || '';
+      document.getElementById('mi-pyme-desc').value = p.descripcion || '';
+
+      document.getElementById('modal-editar-mi-pyme')?.classList.remove('hidden');
+    }
+
+    function closeEditarMiPymeModal() {
+      document.getElementById('modal-editar-mi-pyme')?.classList.add('hidden');
+    }
+
+    async function guardarEdicionMiPyme() {
+      const id = document.getElementById('mi-pyme-id')?.value;
+      const token = document.getElementById('mi-pyme-token')?.value || localStorage.getItem('ea_pyme_token_' + id) || '';
+      const waVal = document.getElementById('mi-pyme-wa')?.value || '';
+      const btn = document.getElementById('btn-guardar-mi-pyme');
+
+      if (!id) return;
+
+      const empresa = (document.getElementById('mi-pyme-empresa')?.value || '').trim();
+      const titulado = (document.getElementById('mi-pyme-titulado')?.value || '').trim();
+      const rubro = (document.getElementById('mi-pyme-rubro')?.value || '').trim();
+      const ciudad = (document.getElementById('mi-pyme-ciudad')?.value || '').trim();
+      const wa = (document.getElementById('mi-pyme-wa')?.value || '').trim();
+      const desc = (document.getElementById('mi-pyme-desc')?.value || '').trim();
+
+      if (!empresa || !titulado || !rubro || !ciudad || !wa || !desc) {
+        alert('Por favor completa los campos obligatorios (*).');
+        return;
+      }
+
+      try {
+        if (btn) { btn.disabled = true; btn.textContent = 'Guardando cambios...'; }
+        const r = await apiFetch('/api/pymes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accion: 'editar_titular',
+            id: id,
+            token_edicion: token,
+            whatsapp_validacion: waVal,
+            nombre_empresa: empresa,
+            nombre_titulado: titulado,
+            ano_titulacion: document.getElementById('mi-pyme-ano').value,
+            rubro: rubro,
+            ciudad: ciudad,
+            whatsapp: wa,
+            telefono: wa,
+            email: document.getElementById('mi-pyme-email').value,
+            sitio_web: document.getElementById('mi-pyme-web').value,
+            instagram: document.getElementById('mi-pyme-ig').value,
+            facebook: document.getElementById('mi-pyme-fb').value,
+            descripcion: desc
+          })
+        });
+
+        const out = await r.json();
+        if (r.ok && out.ok) {
+          if (out.token_edicion) {
+            localStorage.setItem('ea_pyme_token_' + id, out.token_edicion);
+          }
+          alert('✅ ¡Tu empresa ha sido actualizada con éxito en la red!');
+          closeEditarMiPymeModal();
+          await loadPymes();
+        } else {
+          alert('No fue posible guardar los cambios: ' + (out.error || 'Acceso no autorizado'));
+        }
+      } catch (err) {
+        alert('Error de conexión: ' + err.message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Guardar Cambios`;
+        }
+      }
+    }
+
+    // =========================================================================
+    // ADMINISTRACIÓN MAESTRA DE PYMES
+    // =========================================================================
     function abrirModalAdminEditPyme(id) {
       const p = PYMES.find(x => x.id === id);
       if (!p) return;
@@ -4595,7 +4972,7 @@
       document.getElementById('edit-pyme-ig').value = p.instagram || '';
       document.getElementById('edit-pyme-fb').value = p.facebook || '';
       document.getElementById('edit-pyme-desc').value = p.descripcion || '';
-      document.getElementById('modal-admin-edit-pyme').classList.remove('hidden');
+      document.getElementById('modal-admin-edit-pyme')?.classList.remove('hidden');
     }
 
     function closeAdminEditPymeModal() {
@@ -4628,11 +5005,11 @@
         });
         const out = await r.json();
         if (r.ok && out.ok) {
-          alert('Empresa actualizada correctamente.');
+          alert('Empresa actualizada correctamente (Admin).');
           closeAdminEditPymeModal();
           await loadPymes();
         } else {
-          alert('Error: ' + (out.error || 'No se pudo actualizar'));
+          alert('Error: ' + (out.error || 'No se pudo guardar'));
         }
       } catch (err) {
         alert('Error: ' + err.message);
@@ -4640,12 +5017,15 @@
     }
 
     async function eliminarPymeDirectoAdmin(id) {
-      if (!confirm('¿Estás seguro de eliminar esta empresa de la vitrina?')) return;
+      const p = PYMES.find(x => x.id === id);
+      const nombre = p ? p.nombre_empresa : 'esta empresa';
+      if (!confirm(`¿Estás seguro de eliminar a "${nombre}" de la vitrina de colegas?`)) return;
+
       try {
         const r = await apiFetch('/api/admin-pymes', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ accion: 'eliminar', id })
+          body: JSON.stringify({ accion: 'eliminar', id: id })
         });
         const out = await r.json();
         if (r.ok && out.ok) {
@@ -4660,17 +5040,12 @@
     }
 
     async function eliminarPymeAdmin() {
-      if (PYME_EDIT_ID) {
-        await eliminarPymeDirectoAdmin(PYME_EDIT_ID);
-        closeAdminEditPymeModal();
-      }
+      const id = document.getElementById('edit-pyme-id')?.value;
+      if (!id) return;
+      await eliminarPymeDirectoAdmin(id);
+      closeAdminEditPymeModal();
     }
 
-    window.switchPymesView = switchPymesView;
-    window.filtrarPymePorRubro = filtrarPymePorRubro;
-    window.filtrarPymePorZona = filtrarPymePorZona;
-    window.loadPymes = loadPymes;
-    window.filtrarPymes = filtrarPymes;
     window.renderPymes = renderPymes;
     window.abrirModalInscribirPyme = abrirModalInscribirPyme;
     window.closeInscribirPymeModal = closeInscribirPymeModal;
@@ -4680,7 +5055,13 @@
     window.guardarEdicionPymeAdmin = guardarEdicionPymeAdmin;
     window.eliminarPymeDirectoAdmin = eliminarPymeDirectoAdmin;
     window.eliminarPymeAdmin = eliminarPymeAdmin;
-
+    window.solicitarAccesoTitularPyme = solicitarAccesoTitularPyme;
+    window.closeVerificarTitularPymeModal = closeVerificarTitularPymeModal;
+    window.procesarVerificacionTitular = procesarVerificacionTitular;
+    window.abrirModalEditarMiPyme = abrirModalEditarMiPyme;
+    window.closeEditarMiPymeModal = closeEditarMiPymeModal;
+    window.guardarEdicionMiPyme = guardarEdicionMiPyme;
+    window.esTitularPyme = esTitularPyme;
 
     // === OFERTAS LABORALES Y SEGUIMIENTO DE VIGENCIA ===
     let OFERTAS = [];
