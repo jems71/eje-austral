@@ -1663,7 +1663,10 @@
           <h2 style="font-family: 'Fraunces', serif; color: var(--uach-blue); margin: 0 0 6px 0; font-size: 24px;">🎓 Difusión y Seguimiento de Colegas (Grupo UACh)</h2>
           <p style="margin: 0; color: var(--text-muted); font-size: 14px;">Envía el acceso personalizado a cada integrante del grupo <strong>Titulad@s ConstrUach</strong> y monitorea automáticamente quiénes entran a la app y cuántas veces la usan.</p>
         </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+          <button type="button" onclick="abrirModalAgregarColega()" style="padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 6px; border: 1.5px solid #0284c7; background: #f0f9ff; color: #0369a1; font-family: inherit; display: inline-flex; align-items: center; gap: 6px;">
+            ➕ Agregar Nuevo Colega
+          </button>
           <button type="button" onclick="exportarColegasCSV()" style="padding: 8px 14px; font-size: 13px; font-weight: 700; cursor: pointer; border-radius: 6px; border: 1.5px solid #16a34a; background: #f0fdf4; color: #15803d; font-family: inherit;">📥 Descargar Planilla Excel (.csv)</button>
           <button type="button" class="btn-primary" onclick="loadColegasGrupo()" style="padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px;">🔄 Recargar</button>
         </div>
@@ -2618,6 +2621,46 @@
           <button type="button" class="btn-primary" onclick="guardarEdicionPymeAdmin()" style="padding: 8px 18px;">💾 Guardar Cambios</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- === MODAL: Agregar Nuevo Colega al Padrón === -->
+  <div id="modal-agregar-colega" class="modal-bg hidden" onclick="if (event.target === this) closeModalAgregarColega()">
+    <div class="modal" style="max-width: 480px; padding: 22px;">
+      <button class="modal-close" onclick="closeModalAgregarColega()">×</button>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+        <span style="font-size: 22px;">🎓</span>
+        <h3 class="serif" style="margin: 0; color: var(--uach-blue); font-size: 19px;">Agregar Nuevo Colega al Padrón</h3>
+      </div>
+      <p class="sub" style="margin-bottom: 16px;">
+        Registra a un nuevo integrante del grupo de WhatsApp para asignarle su enlace personalizado de seguimiento (<strong>?c=ID</strong>).
+      </p>
+
+      <form id="form-agregar-colega" onsubmit="event.preventDefault(); guardarNuevoColega();">
+        <div style="display: grid; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--text);">
+              Teléfono / WhatsApp *
+            </label>
+            <input type="tel" id="inp-col-fono" placeholder="+56 9 ... o 987654321" required style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13.5px; box-sizing: border-box;">
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 3px;">Pega el número tal como aparece en WhatsApp.</div>
+          </div>
+
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--text);">
+              Nombre Completo o Alias de WhatsApp
+            </label>
+            <input type="text" id="inp-col-nombre" placeholder="Ej: Pedro Soto / Colega UACh" style="width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 13.5px; box-sizing: border-box;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+          <button type="button" class="btn-secondary" onclick="closeModalAgregarColega()" style="padding: 8px 14px;">Cancelar</button>
+          <button type="submit" class="btn-primary" id="btn-save-colega" style="padding: 8px 18px; display: inline-flex; align-items: center; gap: 6px;">
+            <span>💾 Guardar e Integrar al Padrón</span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -6818,6 +6861,67 @@
     window.marcarConociaAppColega = marcarConociaAppColega;
     window.guardarFilaColega = guardarFilaColega;
     window.exportarColegasCSV = exportarColegasCSV;
+    function abrirModalAgregarColega() {
+      const modal = document.getElementById('modal-agregar-colega');
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.getElementById('form-agregar-colega')?.reset();
+        document.getElementById('inp-col-fono')?.focus();
+      }
+    }
+
+    function closeModalAgregarColega() {
+      document.getElementById('modal-agregar-colega')?.classList.add('hidden');
+    }
+
+    async function guardarNuevoColega() {
+      const fonoInp = document.getElementById('inp-col-fono');
+      const nombreInp = document.getElementById('inp-col-nombre');
+      const btn = document.getElementById('btn-save-colega');
+
+      let rawFono = (fonoInp?.value || '').replace(/\D/g, '');
+      if (rawFono.length < 8) {
+        alert('Por favor ingresa un número de teléfono válido.');
+        return;
+      }
+      if (rawFono.length === 8) rawFono = '569' + rawFono;
+      else if (rawFono.length === 9 && rawFono.startsWith('9')) rawFono = '56' + rawFono;
+
+      const fonoFinal = '+' + rawFono;
+      const nombre = (nombreInp?.value || '').trim() || 'Colega UACh';
+
+      try {
+        if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+        const r = await apiFetch('/api/admin-colegas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accion: 'agregar_colega',
+            fono: fonoFinal,
+            nombre_real: nombre,
+            alias_whatsapp: nombre
+          })
+        });
+        const out = await r.json();
+        if (r.ok && out.ok) {
+          alert('🎉 ¡Colega agregado exitosamente al padrón!');
+          closeModalAgregarColega();
+          await loadColegasGrupo();
+        } else {
+          alert('Error: ' + (out.error || 'No se pudo guardar el colega'));
+        }
+      } catch (err) {
+        alert('Error de conexión: ' + err.message);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = '💾 Guardar e Integrar al Padrón'; }
+      }
+    }
+
+    window.abrirModalAgregarColega = abrirModalAgregarColega;
+    window.closeModalAgregarColega = closeModalAgregarColega;
+    window.guardarNuevoColega = guardarNuevoColega;
+
+
 </script>
 </body>
 </html>
