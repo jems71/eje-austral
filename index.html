@@ -1433,6 +1433,31 @@
       </div>
     </div>
 
+    <!-- BANNER DE AVISO: Mensaje Nuevo de la Escuela de Construcción -->
+    <div id="banner-alerta-escuela" class="hidden" style="margin-bottom: 16px; background: linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 14px 18px; color: #fff; box-shadow: 0 4px 12px rgba(245,158,11,0.18); display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 26px;">🔔</span>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+            <span style="font-size: 11px; font-weight: 800; background: #f59e0b; color: #0f172a; padding: 2px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px;">Aviso Oficial</span>
+            <span style="font-size: 13.5px; font-weight: 700; color: #ffffff;">Nuevo mensaje de la Escuela de Construcción UACh</span>
+            <span style="font-size: 12px; color: #fde68a; font-weight: 600;">(+56 9 7891 9291)</span>
+          </div>
+          <div style="font-size: 12.5px; color: #cbd5e1; margin-top: 3px;" id="txt-alerta-escuela-fecha">
+            La Escuela publicó un nuevo mensaje en el grupo de WhatsApp. Entra a revisarlo.
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <a href="https://web.whatsapp.com" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #22c55e; color: #fff; border-radius: 6px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+          📲 Ir a WhatsApp
+        </a>
+        <button type="button" onclick="descartarAlertaEscuela()" style="display: inline-flex; align-items: center; gap: 4px; padding: 8px 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); color: #fff; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer;">
+          ✅ Marcar como Visto
+        </button>
+      </div>
+    </div>
+
     <!-- Subtabs del panel admin -->
     <div class="admin-subtabs-nav">
       <button id="subtab-btn-stats" class="admin-subtab-btn active" onclick="cambiarSubTabAdmin('stats')">
@@ -5972,6 +5997,63 @@
       } catch(e) {}
     }
 
+        async function checkAlertaEscuela() {
+      try {
+        const r = await apiFetch('/api/admin-alerta-escuela');
+        const data = await r.json();
+        const banner = document.getElementById('banner-alerta-escuela');
+        if (banner) {
+          if (r.ok && data.activa) {
+            banner.classList.remove('hidden');
+            const txt = document.getElementById('txt-alerta-escuela-fecha');
+            if (txt && data.fecha) {
+              const f = new Date(data.fecha);
+              const fStr = isNaN(f.getTime()) ? data.fecha : f.toLocaleDateString('es-CL', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+              txt.textContent = `Mensaje detectado el ${fStr}. Entra al grupo de WhatsApp a determinar de qué se trata.`;
+            }
+          } else {
+            banner.classList.add('hidden');
+          }
+        }
+      } catch (e) {
+        console.warn('Error verificando alerta escuela:', e);
+      }
+    }
+
+    async function descartarAlertaEscuela() {
+      try {
+        const r = await apiFetch('/api/admin-alerta-escuela', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'descartar' })
+        });
+        const out = await r.json();
+        if (r.ok && out.ok) {
+          document.getElementById('banner-alerta-escuela')?.classList.add('hidden');
+        } else {
+          document.getElementById('banner-alerta-escuela')?.classList.add('hidden');
+        }
+      } catch (e) {
+        document.getElementById('banner-alerta-escuela')?.classList.add('hidden');
+      }
+    }
+
+    async function activarAlertaEscuela(detalle) {
+      try {
+        await apiFetch('/api/admin-alerta-escuela', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ accion: 'activar', detalle: detalle || '' })
+        });
+        checkAlertaEscuela();
+      } catch (e) {}
+    }
+
+    window.checkAlertaEscuela = checkAlertaEscuela;
+    window.descartarAlertaEscuela = descartarAlertaEscuela;
+    window.activarAlertaEscuela = activarAlertaEscuela;
+
+
     async function loadEstadisticas() {
       const tbody = document.getElementById('stats-ranking-tbody');
       if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="padding: 30px; text-align: center; color: var(--text-muted);"><div class="spinner"></div> Cargando datos...</td></tr>';
@@ -5981,6 +6063,7 @@
         if (!r.ok || !out.ok) throw new Error(out.error || `HTTP ${r.status}`);
         STATS_DATA = out.stats;
         renderEstadisticas();
+        checkAlertaEscuela();
       } catch(e) {
         console.error(e);
         if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: #ef4444;">Error cargando estadísticas: ' + esc(e.message) + '</td></tr>';
