@@ -1260,64 +1260,62 @@
     </div>
   </section>
 
-  <!-- === VISTA: PYMES Y SERVICIOS DE COLEGAS === -->
+  <!-- === VISTA: PYMES Y SERVICIOS DE COLEGAS (SIMILAR A DIRECTORIO) === -->
   <section id="view-pymes" class="hidden">
-    <!-- Banner Hero Pymes -->
-    <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); border-radius: 12px; padding: 22px 26px; color: #fff; margin-bottom: 20px; box-shadow: 0 4px 14px rgba(15,23,42,0.12); position: relative; overflow: hidden;">
-      <div style="position: absolute; right: -20px; bottom: -20px; font-size: 130px; opacity: 0.07; pointer-events: none;">🏢</div>
-      <div style="max-width: 820px;">
-        <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); padding: 4px 10px; border-radius: 20px; margin-bottom: 10px;">
-          🎓 RED DE EMPRENDIMIENTOS & ESPECIALIDADES UACh
-        </span>
-        <h2 style="font-size: 22px; font-weight: 800; margin: 0 0 8px 0; font-family: var(--font-serif); color: #ffffff;">
-          Vitrina de Pymes, Subcontratos y Servicios de Colegas
-        </h2>
-        <p style="font-size: 13.5px; line-height: 1.6; color: #cbd5e1; margin: 0 0 16px 0;">
-          ¿Tienes tu propia empresa constructora, arriendo de maquinaria, oficina de proyectos o prestas asesorías técnicas? 
-          Publica tus servicios aquí con el respaldo oficial de la red. <strong>Antes de cotizar afuera, cotiza con un colega de Miraflores.</strong>
-        </p>
-        <button type="button" onclick="abrirModalInscribirPyme()" style="display: inline-flex; align-items: center; gap: 8px; background: #f59e0b; color: #0f172a; border: none; border-radius: 8px; padding: 10px 18px; font-size: 13.5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(245,158,11,0.3); transition: all .15s;" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">
-          <span>➕ Inscribir mi Empresa o Servicio</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Filtros y Buscador de Pymes -->
-    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-      <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
-        <div style="flex: 1; min-width: 260px; position: relative;">
-          <input type="text" id="pymes-search" placeholder="🔍 Buscar por empresa, colega, especialidad, ciudad..." oninput="filtrarPymes()" style="width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13.5px; outline: none; font-family: inherit; box-sizing: border-box;" onfocus="this.style.borderColor='var(--uach-blue)'" onblur="this.style.borderColor='var(--border)'">
+    <div class="toolbar-wrap">
+      <div class="toolbar-row toolbar-search-row">
+        <input type="text" id="pymes-search" placeholder="Buscar por empresa, colega, especialidad, ciudad..." class="search-input" oninput="filtrarPymes()" />
+        <div class="view-switcher">
+          <button class="view-btn active" id="btn-pymes-view-lista" onclick="switchPymesView('lista')" title="Vista Lista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Lista
+          </button>
+          <button class="view-btn" id="btn-pymes-view-tarjetas" onclick="switchPymesView('tarjetas')" title="Vista Tarjetas">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Tarjetas
+          </button>
         </div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
-          <select id="pymes-filtro-rubro" onchange="filtrarPymes()" style="padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-weight: 600; color: var(--text); background: #fff; outline: none;">
-            <option value="todos">Todas las Especialidades</option>
-            <option value="maquinaria">🚜 Maquinaria, Mov. Tierra & Áridos</option>
-            <option value="calculo">📐 Cálculo, Proyectos & Arquitectura</option>
-            <option value="subcontrato">🏗️ Subcontrato de Obra Gruesa / Term.</option>
-            <option value="sec">⚡ Instalaciones Eléctricas / SEC / Sanitarias</option>
-            <option value="topografia">🗺️ Topografía, Geomensura & Drones</option>
-            <option value="ito">🔍 ITO, Calidad, Recepción & Asesorías</option>
-            <option value="clima">❄️ Climatización, Hojalatería & Estructuras</option>
-            <option value="otro">📦 Otros Servicios Técnicos</option>
-          </select>
-          <select id="pymes-filtro-zona" onchange="filtrarPymes()" style="padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 12.5px; font-weight: 600; color: var(--text); background: #fff; outline: none;">
-            <option value="todas">Todas las Zonas</option>
-            <option value="valdivia">Valdivia / Los Ríos</option>
-            <option value="osorno">Osorno</option>
-            <option value="llanquihue">Llanquihue / Puerto Varas / Pto. Montt</option>
-            <option value="araucania">Temuco / Araucanía</option>
-            <option value="nacional">Cobertura Todo Chile</option>
-          </select>
+      </div>
+
+      <div class="toolbar-row toolbar-filter-row">
+        <span class="filter-label">RUBRO</span>
+        <div class="filter-group">
+          <button class="chip filter-pyme-rubro active" data-rubro="todos" onclick="filtrarPymePorRubro('todos', this)">Todos</button>
+          <button class="chip filter-pyme-rubro" data-rubro="obras" onclick="filtrarPymePorRubro('obras', this)">🏗️ Obras & Subcontrato</button>
+          <button class="chip filter-pyme-rubro" data-rubro="maquinaria" onclick="filtrarPymePorRubro('maquinaria', this)">🚜 Maquinaria & Áridos</button>
+          <button class="chip filter-pyme-rubro" data-rubro="calculo" onclick="filtrarPymePorRubro('calculo', this)">📐 Cálculo & Proyectos</button>
+          <button class="chip filter-pyme-rubro" data-rubro="sec" onclick="filtrarPymePorRubro('sec', this)">⚡ Instalaciones & SEC</button>
+          <button class="chip filter-pyme-rubro" data-rubro="topografia" onclick="filtrarPymePorRubro('topografia', this)">🗺️ Topografía & Drones</button>
+          <button class="chip filter-pyme-rubro" data-rubro="ito" onclick="filtrarPymePorRubro('ito', this)">🔍 ITO & Asesorías</button>
+          <button class="chip filter-pyme-rubro" data-rubro="clima" onclick="filtrarPymePorRubro('clima', this)">❄️ Clima & Estructuras</button>
+          <button class="chip filter-pyme-rubro" data-rubro="otro" onclick="filtrarPymePorRubro('otro', this)">📦 Otros</button>
+        </div>
+        <button class="add-btn" onclick="abrirModalInscribirPyme()">+ Inscribir mi Empresa</button>
+      </div>
+
+      <div class="toolbar-row toolbar-filter-row toolbar-zona-row">
+        <span class="filter-label">ZONA</span>
+        <div class="filter-group">
+          <button class="chip-sm filter-pyme-zona active" data-zona="todas" onclick="filtrarPymePorZona('todas', this)">Todas</button>
+          <button class="chip-sm filter-pyme-zona" data-zona="valdivia" onclick="filtrarPymePorZona('valdivia', this)">Valdivia</button>
+          <button class="chip-sm filter-pyme-zona" data-zona="osorno" onclick="filtrarPymePorZona('osorno', this)">Osorno</button>
+          <button class="chip-sm filter-pyme-zona" data-zona="llanquihue" onclick="filtrarPymePorZona('llanquihue', this)">Llanquihue / Pto. Montt</button>
+          <button class="chip-sm filter-pyme-zona" data-zona="araucania" onclick="filtrarPymePorZona('araucania', this)">Temuco / Araucanía</button>
+          <button class="chip-sm filter-pyme-zona" data-zona="nacional" onclick="filtrarPymePorZona('nacional', this)">Todo Chile</button>
         </div>
       </div>
     </div>
 
-    <!-- Grilla de Tarjetas de Pymes -->
-    <div id="grid-pymes" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
-      <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
-        <div class="spinner" style="margin: 0 auto 12px auto;"></div>
-        <div>Cargando empresas y servicios de colegas...</div>
+    <!-- VISTA 1: TABLA / LISTA DE PYMES (ESTILO DIRECTORIO) -->
+    <div class="list-wrap" id="wrap-tabla-pymes" style="margin-top: 10px; overflow-x: auto;">
+      <div id="list-pymes">
+        <div class="loading"><div class="spinner"></div><div>Cargando empresas y servicios...</div></div>
       </div>
+    </div>
+
+    <!-- VISTA 2: TARJETAS DE PYMES -->
+    <div class="grid hidden" id="grid-pymes" style="margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;">
+      <div class="loading" style="grid-column: 1/-1;"><div class="spinner"></div><div>Cargando empresas...</div></div>
     </div>
   </section>
 
@@ -4217,16 +4215,54 @@
     window.descargarAccesoDirectoEAA = descargarAccesoDirectoEAA;
 
 
-    // === VITRINA DE PYMES Y SERVICIOS DE COLEGAS ===
+    // === VITRINA DE PYMES Y SERVICIOS DE COLEGAS (ESTILO DIRECTORIO) ===
     let PYMES = [];
     let PYMES_CARGADAS = false;
     let PYME_EDIT_ID = null;
+    let PYMES_VIEW = 'lista';
+    let PYMES_FILTRO_RUBRO = 'todos';
+    let PYMES_FILTRO_ZONA = 'todas';
+
+    function switchPymesView(view) {
+      PYMES_VIEW = view;
+      const btnL = document.getElementById('btn-pymes-view-lista');
+      const btnT = document.getElementById('btn-pymes-view-tarjetas');
+      const wrapL = document.getElementById('wrap-tabla-pymes');
+      const gridT = document.getElementById('grid-pymes');
+
+      if (btnL && btnT && wrapL && gridT) {
+        btnL.classList.toggle('active', view === 'lista');
+        btnT.classList.toggle('active', view === 'tarjetas');
+        wrapL.classList.toggle('hidden', view !== 'lista');
+        gridT.classList.toggle('hidden', view !== 'tarjetas');
+      }
+    }
+
+    function filtrarPymePorRubro(rubro, btn) {
+      PYMES_FILTRO_RUBRO = rubro;
+      document.querySelectorAll('.filter-pyme-rubro').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderPymes();
+    }
+
+    function filtrarPymePorZona(zona, btn) {
+      PYMES_FILTRO_ZONA = zona;
+      document.querySelectorAll('.filter-pyme-zona').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderPymes();
+    }
+
+    function filtrarPymes() {
+      renderPymes();
+    }
 
     async function loadPymes() {
       try {
-        const grid = document.getElementById('grid-pymes');
-        if (!PYMES_CARGADAS && grid) {
-          grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);"><div class="spinner" style="margin: 0 auto 12px auto;"></div><div>Cargando empresas y servicios de colegas...</div></div>';
+        const wrapL = document.getElementById('list-pymes');
+        const gridT = document.getElementById('grid-pymes');
+        if (!PYMES_CARGADAS) {
+          if (wrapL) wrapL.innerHTML = '<div style="text-align: center; padding: 32px; color: var(--text-muted);"><div class="spinner" style="margin: 0 auto 10px auto;"></div><div>Cargando empresas y servicios...</div></div>';
+          if (gridT) gridT.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 32px; color: var(--text-muted);"><div class="spinner" style="margin: 0 auto 10px auto;"></div><div>Cargando empresas...</div></div>';
         }
         const r = await apiFetch('/api/pymes');
         const data = await r.json();
@@ -4236,38 +4272,32 @@
           const cnt = document.getElementById('cnt-pymes');
           if (cnt) cnt.textContent = PYMES.length;
           renderPymes();
-        } else {
-          console.warn('Error cargando pymes:', data.error);
         }
       } catch (err) {
-        console.error('Error al consultar pymes:', err);
+        console.error('Error cargando pymes:', err);
       }
     }
 
-    function filtrarPymes() {
-      renderPymes();
-    }
-
     function renderPymes() {
-      const grid = document.getElementById('grid-pymes');
-      if (!grid) return;
+      const wrapL = document.getElementById('list-pymes');
+      const gridT = document.getElementById('grid-pymes');
+      if (!wrapL && !gridT) return;
 
       const q = (document.getElementById('pymes-search')?.value || '').trim();
-      const rubroFiltro = (document.getElementById('pymes-filtro-rubro')?.value || 'todos').toLowerCase();
-      const zonaFiltro = (document.getElementById('pymes-filtro-zona')?.value || 'todas').toLowerCase();
-
+      const rubroFiltro = PYMES_FILTRO_RUBRO.toLowerCase();
+      const zonaFiltro = PYMES_FILTRO_ZONA.toLowerCase();
       const tokens = q ? normText(q).split(' ').filter(Boolean) : [];
 
       const filtradas = PYMES.filter(p => {
         if (rubroFiltro !== 'todos') {
           const rNorm = normText(p.rubro || '');
-          if (rubroFiltro === 'maquinaria' && !rNorm.includes('maquinaria') && !rNorm.includes('tierra') && !rNorm.includes('arido')) return false;
-          if (rubroFiltro === 'calculo' && !rNorm.includes('calculo') && !rNorm.includes('proyecto') && !rNorm.includes('arquitectura')) return false;
-          if (rubroFiltro === 'subcontrato' && !rNorm.includes('subcontrato') && !rNorm.includes('obra')) return false;
-          if (rubroFiltro === 'sec' && !rNorm.includes('sec') && !rNorm.includes('electr') && !rNorm.includes('sanitar')) return false;
+          if (rubroFiltro === 'obras' && !rNorm.includes('obra') && !rNorm.includes('construc') && !rNorm.includes('subcontrato') && !rNorm.includes('vivienda') && !rNorm.includes('edific')) return false;
+          if (rubroFiltro === 'maquinaria' && !rNorm.includes('maquinaria') && !rNorm.includes('tierra') && !rNorm.includes('arido') && !rNorm.includes('excav')) return false;
+          if (rubroFiltro === 'calculo' && !rNorm.includes('calculo') && !rNorm.includes('proyecto') && !rNorm.includes('arquitectura') && !rNorm.includes('estructur')) return false;
+          if (rubroFiltro === 'sec' && !rNorm.includes('sec') && !rNorm.includes('electr') && !rNorm.includes('sanitar') && !rNorm.includes('gas')) return false;
           if (rubroFiltro === 'topografia' && !rNorm.includes('topograf') && !rNorm.includes('geomen') && !rNorm.includes('dron')) return false;
-          if (rubroFiltro === 'ito' && !rNorm.includes('ito') && !rNorm.includes('calidad') && !rNorm.includes('asesor') && !rNorm.includes('recepc')) return false;
-          if (rubroFiltro === 'clima' && !rNorm.includes('clima') && !rNorm.includes('hojalat') && !rNorm.includes('estruct')) return false;
+          if (rubroFiltro === 'ito' && !rNorm.includes('ito') && !rNorm.includes('calidad') && !rNorm.includes('asesor') && !rNorm.includes('recepc') && !rNorm.includes('peritaje')) return false;
+          if (rubroFiltro === 'clima' && !rNorm.includes('clima') && !rNorm.includes('hojalat') && !rNorm.includes('galpon')) return false;
         }
 
         if (zonaFiltro !== 'todas') {
@@ -4276,13 +4306,14 @@
           if (zonaFiltro === 'osorno' && !cNorm.includes('osorno')) return false;
           if (zonaFiltro === 'llanquihue' && !cNorm.includes('llanquihue') && !cNorm.includes('puerto') && !cNorm.includes('varas')) return false;
           if (zonaFiltro === 'araucania' && !cNorm.includes('temuco') && !cNorm.includes('araucania')) return false;
-          if (zonaFiltro === 'nacional' && !cNorm.includes('chile') && !cNorm.includes('nacional')) return false;
+          if (zonaFiltro === 'nacional' && !cNorm.includes('chile') && !cNorm.includes('nacional') && !cNorm.includes('sur')) return false;
         }
 
         if (tokens.length > 0) {
           const hay = normText([
             p.nombre_empresa,
             p.nombre_titulado,
+            p.ano_titulacion,
             p.rubro,
             p.ciudad,
             p.cobertura,
@@ -4296,93 +4327,187 @@
       });
 
       if (filtradas.length === 0) {
-        grid.innerHTML = `
-          <div style="grid-column: 1/-1; text-align: center; padding: 48px 20px; background: #fff; border: 1.5px dashed var(--border); border-radius: 12px;">
+        const vacioHtml = `
+          <div style="text-align: center; padding: 48px 20px; background: #fff; border: 1.5px dashed var(--border); border-radius: 12px; margin-top: 10px;">
             <div style="font-size: 36px; margin-bottom: 10px;">🏢</div>
             <h3 style="font-size: 16px; font-weight: 700; color: var(--text); margin: 0 0 6px 0;">No se encontraron empresas con esos criterios</h3>
-            <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Prueba con otros términos de búsqueda o sé el primero en inscribir tu empresa.</p>
-            <button type="button" onclick="abrirModalInscribirPyme()" class="btn-primary" style="padding: 8px 16px; border-radius: 6px; font-size: 13px;">➕ Inscribir mi Empresa</button>
+            <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px 0;">Prueba seleccionando "Todos" o sé el primero en inscribir tu empresa en este rubro.</p>
+            <button type="button" onclick="abrirModalInscribirPyme()" class="btn-primary" style="padding: 8px 18px; border-radius: 6px; font-size: 13px;">➕ Inscribir mi Empresa</button>
           </div>
         `;
+        if (wrapL) wrapL.innerHTML = vacioHtml;
+        if (gridT) gridT.innerHTML = vacioHtml;
         return;
       }
 
-      grid.innerHTML = filtradas.map(p => {
-        const fonoLimpio = String(p.whatsapp || p.telefono || '').replace(/\D/g, '');
-        const msgWa = encodeURIComponent(`Hola colega ${p.nombre_titulado}, te saluda un colega de la red UACh. Vi la publicación de tu empresa "${p.nombre_empresa}" en Eje Austral y me gustaría cotizar / consultar por tus servicios.`);
-        const adminTools = esAdmin() ? `
-          <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; justify-content: flex-end;">
-            <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" style="padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">✏️ Editar</button>
-            <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" style="padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">🗑️ Eliminar</button>
-          </div>
-        ` : '';
+      // 1. RENDER VISTA LISTA / TABLA EJECUTIVA (ESTILO DIRECTORIO)
+      if (wrapL) {
+        wrapL.innerHTML = `
+          <table style="width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); text-align: left;">
+                <th style="padding: 12px 16px;">EMPRESA / TITULADO UACh</th>
+                <th style="padding: 12px 14px;">ESPECIALIDAD</th>
+                <th style="padding: 12px 14px;">CIUDAD / ZONA</th>
+                <th style="padding: 12px 14px;">SERVICIOS & CAPACIDAD</th>
+                <th style="padding: 12px 16px; text-align: center;">CONTACTO & REDES</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filtradas.map(p => {
+                const fonoLimpio = String(p.whatsapp || p.telefono || '').replace(/\D/g, '');
+                const msgWa = encodeURIComponent(`Hola colega ${p.nombre_titulado}, te saluda un colega de la red UACh. Vi tu empresa "${p.nombre_empresa}" en Eje Austral y me gustaría cotizar / consultar por tus servicios.`);
+                const adminBtns = esAdmin() ? `
+                  <div style="display: flex; gap: 4px; justify-content: center; margin-top: 6px;">
+                    <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" title="Editar" style="padding: 4px 8px; font-size: 11px; background: #fff; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">✏️</button>
+                    <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" title="Eliminar" style="padding: 4px 8px; font-size: 11px; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">🗑️</button>
+                  </div>
+                ` : '';
 
-        return `
-          <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; position: relative; border-top: 3px solid #f59e0b;">
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
-                <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
-                  🎓 Empresa Titulado UACh
-                </span>
-                <span style="font-size: 11px; color: var(--text-muted);">${esc(p.fecha_registro || '')}</span>
-              </div>
+                return `
+                  <tr style="border-bottom: 1px solid var(--border); transition: background .15s;" onmouseover="this.style.background='#fafbfd'" onmouseout="this.style.background='#ffffff'">
+                    <td style="padding: 14px 16px; vertical-align: top;">
+                      <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <span style="font-weight: 800; color: var(--uach-blue); font-size: 14.5px;">${esc(p.nombre_empresa)}</span>
+                        <span style="font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 10px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">🎓 Titulado UACh</span>
+                      </div>
+                      <div style="font-size: 12px; font-weight: 600; color: #475569; margin-top: 3px;">
+                        👤 ${esc(p.nombre_titulado)} ${p.ano_titulacion ? `<span style="color: var(--text-muted); font-weight: 400;">(${esc(p.ano_titulacion)})</span>` : ''}
+                      </div>
+                    </td>
 
-              <h3 class="serif" style="font-size: 16.5px; font-weight: 800; color: var(--uach-blue); margin: 0 0 4px 0; line-height: 1.25;">
-                ${esc(p.nombre_empresa)}
-              </h3>
+                    <td style="padding: 14px 14px; vertical-align: top; white-space: nowrap;">
+                      <span style="display: inline-block; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: #f1f5f9; color: #334155; border: 1px solid #e2e8f0;">
+                        📌 ${esc(p.rubro)}
+                      </span>
+                    </td>
 
-              <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 10px;">
-                👤 ${esc(p.nombre_titulado)} ${p.ano_titulacion ? `<span style="color: var(--text-muted); font-weight: 400;">(${esc(p.ano_titulacion)})</span>` : ''}
-              </div>
+                    <td style="padding: 14px 14px; vertical-align: top;">
+                      <div style="font-size: 12.5px; font-weight: 600; color: var(--text);">📍 ${esc(p.ciudad)}</div>
+                      ${p.cobertura ? `<div style="font-size: 11px; color: #7e22ce; margin-top: 2px;">🌐 ${esc(p.cobertura)}</div>` : ''}
+                    </td>
 
-              <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px;">
-                <span style="display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #334155; font-weight: 600;">
-                  📌 ${esc(p.rubro)}
-                </span>
-                <span style="display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #ecfdf5; color: #047857; font-weight: 600;">
-                  📍 ${esc(p.ciudad)}
-                </span>
-                ${p.cobertura ? `<span style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #faf5ff; color: #7e22ce; font-weight: 500;">🌐 ${esc(p.cobertura)}</span>` : ''}
-              </div>
+                    <td style="padding: 14px 14px; vertical-align: top; font-size: 12.5px; color: #334155; line-height: 1.45; max-width: 340px;">
+                      ${esc(p.descripcion)}
+                    </td>
 
-              <p style="font-size: 12.5px; line-height: 1.5; color: var(--text); margin: 0 0 14px 0; white-space: pre-line;">
-                ${esc(p.descripcion)}
-              </p>
-            </div>
-
-            <div>
-              <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--border); padding-top: 12px;">
-                ${fonoLimpio ? `
-                  <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: var(--green); color: #fff; border-radius: 6px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 3px rgba(34,197,94,0.2);">
-                    📲 WhatsApp Colega
-                  </a>
-                ` : ''}
-                ${p.email ? `
-                  <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="Enviar correo a ${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; padding: 8px 11px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: var(--text); text-decoration: none; font-size: 13px;">
-                    ✉️
-                  </a>
-                ` : ''}
-                ${p.sitio_web ? `
-                  <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Visitar Página Web: ${esc(p.sitio_web)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 12px; font-weight: 600;">
-                    🌐 Web
-                  </a>
-                ` : ''}
-                ${p.instagram ? `
-                  <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Ver Instagram: ${esc(p.instagram)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none; font-size: 12px; font-weight: 600;">
-                    📸 Instagram
-                  </a>
-                ` : ''}
-                ${p.facebook ? `
-                  <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Ver Facebook: ${esc(p.facebook)}" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 600;">
-                    👥 Facebook
-                  </a>
-                ` : ''}
-              </div>
-              ${adminTools}
-            </div>
-          </div>
+                    <td style="padding: 14px 16px; vertical-align: top; text-align: center; white-space: nowrap;">
+                      <div style="display: inline-flex; align-items: center; justify-content: center; gap: 5px; flex-wrap: wrap;">
+                        ${fonoLimpio ? `
+                          <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: var(--green); color: #fff; border-radius: 6px; font-size: 12px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 3px rgba(34,197,94,0.2);">
+                            📲 WhatsApp
+                          </a>
+                        ` : ''}
+                        ${p.sitio_web ? `
+                          <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Visitar Página Web" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 9px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 12px; font-weight: 600;">
+                            🌐 Web
+                          </a>
+                        ` : ''}
+                        ${p.instagram ? `
+                          <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Instagram" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none; font-size: 12px; font-weight: 600;">
+                            📸
+                          </a>
+                        ` : ''}
+                        ${p.facebook ? `
+                          <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Facebook" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 600;">
+                            👥
+                          </a>
+                        ` : ''}
+                        ${p.email ? `
+                          <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 8px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: var(--text); text-decoration: none; font-size: 12px;">
+                            ✉️
+                          </a>
+                        ` : ''}
+                      </div>
+                      ${adminBtns}
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
         `;
-      }).join('');
+      }
+
+      // 2. RENDER VISTA TARJETAS (ESTILO CARDS)
+      if (gridT) {
+        gridT.innerHTML = filtradas.map(p => {
+          const fonoLimpio = String(p.whatsapp || p.telefono || '').replace(/\D/g, '');
+          const msgWa = encodeURIComponent(`Hola colega ${p.nombre_titulado}, te saluda un colega de la red UACh. Vi tu empresa "${p.nombre_empresa}" en Eje Austral y me gustaría cotizar / consultar por tus servicios.`);
+          const adminTools = esAdmin() ? `
+            <div style="display: flex; gap: 6px; margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 10px; justify-content: flex-end;">
+              <button onclick="abrirModalAdminEditPyme('${esc(p.id)}')" style="padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: #f8fafc; border: 1px solid var(--border); border-radius: 4px; cursor: pointer;">✏️ Editar</button>
+              <button onclick="eliminarPymeDirectoAdmin('${esc(p.id)}')" style="padding: 4px 10px; font-size: 11.5px; font-weight: 600; background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; border-radius: 4px; cursor: pointer;">🗑️ Eliminar</button>
+            </div>
+          ` : '';
+
+          return `
+            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; position: relative; border-top: 3px solid #f59e0b;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+                  <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 12px; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;">
+                    🎓 Empresa Titulado UACh
+                  </span>
+                  <span style="font-size: 11px; color: var(--text-muted);">${esc(p.fecha_registro || '')}</span>
+                </div>
+
+                <h3 class="serif" style="font-size: 16.5px; font-weight: 800; color: var(--uach-blue); margin: 0 0 4px 0; line-height: 1.25;">
+                  ${esc(p.nombre_empresa)}
+                </h3>
+
+                <div style="font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 10px;">
+                  👤 ${esc(p.nombre_titulado)} ${p.ano_titulacion ? `<span style="color: var(--text-muted); font-weight: 400;">(${esc(p.ano_titulacion)})</span>` : ''}
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px;">
+                  <span style="display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #f1f5f9; color: #334155; font-weight: 600;">
+                    📌 ${esc(p.rubro)}
+                  </span>
+                  <span style="display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 4px; background: #ecfdf5; color: #047857; font-weight: 600;">
+                    📍 ${esc(p.ciudad)}
+                  </span>
+                  ${p.cobertura ? `<span style="display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; background: #faf5ff; color: #7e22ce; font-weight: 500;">🌐 ${esc(p.cobertura)}</span>` : ''}
+                </div>
+
+                <p style="font-size: 12.5px; line-height: 1.5; color: var(--text); margin: 0 0 14px 0; white-space: pre-line;">
+                  ${esc(p.descripcion)}
+                </p>
+              </div>
+
+              <div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; border-top: 1px solid var(--border); padding-top: 12px;">
+                  ${fonoLimpio ? `
+                    <a href="https://wa.me/${fonoLimpio}?text=${msgWa}" target="_blank" rel="noopener" style="flex: 1; min-width: 130px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; background: var(--green); color: #fff; border-radius: 6px; font-size: 12.5px; font-weight: 700; text-decoration: none; box-shadow: 0 1px 3px rgba(34,197,94,0.2);">
+                      📲 WhatsApp Colega
+                    </a>
+                  ` : ''}
+                  ${p.sitio_web ? `
+                    <a href="${esc(p.sitio_web.startsWith('http') ? p.sitio_web : 'https://' + p.sitio_web)}" target="_blank" rel="noopener" title="Página Web" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 11px; background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 6px; color: var(--uach-blue); text-decoration: none; font-size: 12px; font-weight: 600;">
+                      🌐 Web
+                    </a>
+                  ` : ''}
+                  ${p.instagram ? `
+                    <a href="${esc(p.instagram.startsWith('http') ? p.instagram : (p.instagram.startsWith('@') ? 'https://instagram.com/' + p.instagram.slice(1) : 'https://instagram.com/' + p.instagram))}" target="_blank" rel="noopener" title="Instagram" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 10px; background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 6px; color: #db2777; text-decoration: none; font-size: 12px; font-weight: 600;">
+                      📸
+                    </a>
+                  ` : ''}
+                  ${p.facebook ? `
+                    <a href="${esc(p.facebook.startsWith('http') ? p.facebook : 'https://facebook.com/' + p.facebook)}" target="_blank" rel="noopener" title="Facebook" style="display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 7px 10px; background: #f0f9ff; border: 1.5px solid #bae6fd; border-radius: 6px; color: #0284c7; text-decoration: none; font-size: 12px; font-weight: 600;">
+                      👥
+                    </a>
+                  ` : ''}
+                  ${p.email ? `
+                    <a href="mailto:${esc(p.email)}?subject=Contacto desde Eje Austral" target="_blank" rel="noopener" title="${esc(p.email)}" style="display: inline-flex; align-items: center; justify-content: center; padding: 7px 9px; background: #f8fafc; border: 1.5px solid var(--border); border-radius: 6px; color: var(--text); text-decoration: none; font-size: 12px;">
+                      ✉️
+                    </a>
+                  ` : ''}
+                </div>
+                ${adminTools}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     function abrirModalInscribirPyme() {
@@ -4541,6 +4666,9 @@
       }
     }
 
+    window.switchPymesView = switchPymesView;
+    window.filtrarPymePorRubro = filtrarPymePorRubro;
+    window.filtrarPymePorZona = filtrarPymePorZona;
     window.loadPymes = loadPymes;
     window.filtrarPymes = filtrarPymes;
     window.renderPymes = renderPymes;
