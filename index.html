@@ -829,6 +829,69 @@
       color: #ffffff;
     }
 
+
+    /* Visual Analytics & Charts (Estilo Vercel/Cloudflare) */
+    .analytics-charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    @media (max-width: 900px) {
+      .analytics-charts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .chart-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      position: relative;
+      cursor: pointer;
+      min-width: 36px;
+    }
+    .chart-bar-fill {
+      width: 100%;
+      max-width: 44px;
+      background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
+      border-radius: 6px 6px 2px 2px;
+      transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s;
+      position: relative;
+    }
+    .chart-bar-col:hover .chart-bar-fill {
+      transform: scaleY(1.04);
+      filter: brightness(1.12);
+    }
+    .chart-bar-fill.hoy {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .chart-bar-val {
+      position: absolute;
+      top: -24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    .chart-bar-label {
+      margin-top: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .chart-bar-label.hoy {
+      color: #059669;
+      font-weight: 800;
+    }
+
     /* KPI Cards Desktop */
     .kpi-grid {
       display: grid;
@@ -1538,6 +1601,62 @@
           </div>
           <div class="kpi-card-value text-purple">286</div>
           <div class="kpi-card-sub">Campaña de difusión activa</div>
+        </div>
+      </div>
+
+      <!-- Panel de Gráficos Visuales de Tracción (Analytics estilo Vercel) -->
+      <div class="admin-table-card" style="padding: 22px 24px; margin-bottom: 22px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 20px;">📈</span>
+              <h3 style="margin: 0; font-size: 17px; color: var(--uach-blue); font-family: 'Fraunces', serif;">Tracción y Evolución de Visitas (Analytics en Vivo)</h3>
+              <span style="display: inline-block; padding: 2px 8px; border-radius: 12px; background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700;">Cloudflare Edge Telemetry</span>
+            </div>
+            <p style="margin: 4px 0 0 0; font-size: 12.5px; color: var(--text-muted);">Métricas reales capturadas directamente en el borde de Cloudflare sin cookies de terceros.</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="text-align: right;">
+              <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px;">Pico Diario</div>
+              <div id="analytics-pico-trafico" style="font-size: 16px; font-weight: 800; color: #0f172a; font-family: 'Fraunces', serif;">12 visitas/día</div>
+            </div>
+            <div style="text-align: right; padding-left: 14px; border-left: 1px solid var(--border);">
+              <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px;">Móviles vs PC</div>
+              <div id="analytics-ratio-movil" style="font-size: 16px; font-weight: 800; color: #0284c7; font-family: 'Fraunces', serif;">83% Móviles</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layout 2 columnas: Gráfico de Barras Diarias + Distribución por Dispositivo -->
+        <div class="analytics-charts-grid">
+          <!-- Columna 1: Barras Diarias -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <span style="font-size: 12.5px; font-weight: 700; color: #334155;">📅 Visitas por Fecha (Últimos días registrados)</span>
+              <span id="analytics-dias-registrados" style="font-size: 11.5px; color: #64748b; font-weight: 600;">Cargando...</span>
+            </div>
+            <div id="chart-barras-visitas" style="height: 180px; display: flex; align-items: flex-end; gap: 14px; padding-top: 30px; padding-bottom: 6px; border-bottom: 1.5px solid #cbd5e1; position: relative;">
+              <div style="width:100%; text-align:center; color:#94a3b8; font-size:13px; align-self:center;">Cargando barras...</div>
+            </div>
+          </div>
+
+          <!-- Columna 2: Distribución de Dispositivos -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <span style="font-size: 12.5px; font-weight: 700; color: #334155;">📱 Dispositivos de Acceso</span>
+                <span style="font-size: 11px; color: #64748b; font-weight: 600;">Muestra Reciente</span>
+              </div>
+              <div id="chart-dispositivos-list" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Barras de porcentaje -->
+                <div style="color: #94a3b8; font-size: 12px;">Calculando distribución...</div>
+              </div>
+            </div>
+            <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; font-size: 12px;">
+              <span style="color: #64748b;">Navegadores top:</span>
+              <span id="analytics-top-navegador" style="font-weight: 700; color: #0f172a;">Chrome / Safari</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -6635,6 +6754,116 @@
       filtrarTablaStats();
       renderUltimosClics();
       renderVisitasLog();
+      renderAnalyticsCharts();
+    }
+
+
+    function renderAnalyticsCharts() {
+      if (!STATS_DATA) return;
+      const desgloses = (STATS_DATA.desglose_fechas || []).slice();
+      const ultimas = STATS_DATA.ultimas_visitas || [];
+      
+      // Orden cronológico (más antiguo a más nuevo, de izquierda a derecha)
+      desgloses.sort((a, b) => a.fecha.localeCompare(b.fecha));
+
+      const barContainer = document.getElementById('chart-barras-visitas');
+      const diasRegEl = document.getElementById('analytics-dias-registrados');
+      const picoEl = document.getElementById('analytics-pico-trafico');
+      const ratioMovilEl = document.getElementById('analytics-ratio-movil');
+      const devListEl = document.getElementById('chart-dispositivos-list');
+      const topNavEl = document.getElementById('analytics-top-navegador');
+
+      if (!barContainer) return;
+
+      // Calcular pico de tráfico
+      let maxVisitas = 1;
+      desgloses.forEach(d => {
+        const n = Number(d.total) || 0;
+        if (n > maxVisitas) maxVisitas = n;
+      });
+      if (picoEl) picoEl.textContent = `${maxVisitas} visitas/día`;
+      if (diasRegEl) diasRegEl.textContent = `${desgloses.length} días registrados`;
+
+      // Obtener fecha de hoy en formato YYYY-MM-DD
+      let hoyStr = '';
+      try {
+        hoyStr = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Santiago' }).format(new Date());
+      } catch(e) {
+        hoyStr = new Date().toISOString().slice(0, 10);
+      }
+
+      // Renderizar Barras Dinámicas
+      if (desgloses.length === 0) {
+        barContainer.innerHTML = '<div style="width:100%; text-align:center; color:#94a3b8; font-size:13px; align-self:center;">Sin suficientes datos para graficar.</div>';
+      } else {
+        barContainer.innerHTML = desgloses.map(d => {
+          const tot = Number(d.total) || 0;
+          const pct = Math.max(10, Math.round((tot / maxVisitas) * 100));
+          const esHoy = (d.fecha === hoyStr);
+          const fParts = d.fecha.split('-');
+          const fechaCorta = fParts.length === 3 ? `${fParts[2]}/${fParts[1]}` : d.fecha;
+
+          return `
+            <div class="chart-bar-col" title="${d.fecha}: ${tot} visitas">
+              <div class="chart-bar-fill ${esHoy ? 'hoy' : ''}" style="height: ${pct}%;">
+                <span class="chart-bar-val">${tot}</span>
+              </div>
+              <span class="chart-bar-label ${esHoy ? 'hoy' : ''}">${esHoy ? 'Hoy (' + fechaCorta + ')' : fechaCorta}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Desglose de dispositivos
+      const counts = { 'Android': 0, 'iPhone': 0, 'PC': 0, 'Otros': 0 };
+      const navegadores = {};
+      let totalMuestra = ultimas.length || 0;
+
+      ultimas.forEach(v => {
+        const d = (v.dispositivo || '').toLowerCase();
+        if (d.includes('android')) counts['Android']++;
+        else if (d.includes('iphone') || d.includes('ios')) counts['iPhone']++;
+        else if (d.includes('pc') || d.includes('computador') || d.includes('windows') || d.includes('mac')) counts['PC']++;
+        else counts['Otros']++;
+
+        const nav = v.navegador || 'Web';
+        navegadores[nav] = (navegadores[nav] || 0) + 1;
+      });
+
+      if (totalMuestra > 0) {
+        const moviles = counts['Android'] + counts['iPhone'];
+        const ratio = Math.round((moviles / totalMuestra) * 100);
+        if (ratioMovilEl) ratioMovilEl.textContent = `${ratio}% Móviles`;
+
+        // Navegador top
+        const navEntries = Object.entries(navegadores).sort((a,b) => b[1] - a[1]);
+        if (topNavEl && navEntries.length > 0) {
+          topNavEl.textContent = navEntries.slice(0, 2).map(e => `${e[0]} (${Math.round((e[1]/totalMuestra)*100)}%)`).join(' · ');
+        }
+
+        const itemsDev = [
+          { nombre: '📱 Teléfonos Android', count: counts['Android'], color: '#10b981' },
+          { nombre: '📱 Apple iPhone (iOS)', count: counts['iPhone'], color: '#0284c7' },
+          { nombre: '🖥️ Computadores (PC/Mac)', count: counts['PC'], color: '#6366f1' }
+        ];
+
+        if (devListEl) {
+          devListEl.innerHTML = itemsDev.map(it => {
+            const pct = Math.round((it.count / totalMuestra) * 100);
+            return `
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                  <span style="font-weight: 600; color: #334155;">${it.nombre}</span>
+                  <span style="font-weight: 700; color: #0f172a;">${it.count} <span style="font-weight: normal; color: #64748b;">(${pct}%)</span></span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                  <div style="width: ${pct}%; height: 100%; background: ${it.color}; border-radius: 4px; transition: width 0.4s ease;"></div>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
     }
 
     function renderVisitasLog() {
